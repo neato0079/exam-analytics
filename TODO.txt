@@ -1,5 +1,13 @@
 To do:
+- Create mock .csv of exam data
+- pass .csv from cli to Django app to be parsed
+- figure out what data structure will be created from the csv to be used by frontend graphing app
+- 
 ...
+
+django will take a csv supplied by the user
+csv will be converted to a data structure
+data will be passed to frontend to generated a graph to be displayed in the browser
 
 notes:
 
