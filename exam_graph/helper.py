@@ -14,4 +14,13 @@ july_data = df[df['Exam Complete Date/Tm'].str.contains('07/2024')]
 # Example: Group by Exam Order Name and count occurrences
 exam_counts = df['Exam Order Name'].value_counts()
 
-print(exam_counts)
+# Example: Plot the number of each type of exam
+exam_counts.plot(kind='bar', figsize=(10, 6))
+
+# Add titles and labels
+plt.title('Exams From July to September')
+plt.xlabel('Exams')
+plt.ylabel('Count')
+
+# Show the plot
+plt.show()
