@@ -17,12 +17,12 @@ def try_learn():
     # print(df.head())
 
     # Example: Filter data for a specific month
-    filt =df['Exam Complete Date/Tm'].str.contains('07')
-    filt2 = df['Exam Order Name'].str.contains('XR')
-    filt_big = filt & filt2
+    date_filt =df['Exam Complete Date/Tm'].str.contains('07')
+    modal_filt = df['Exam Order Name'].str.contains('XR')
+    filt_big = date_filt & modal_filt
     
-    july_data = df[filt_big]
-    print(july_data)
+    july_xr_data = df[filt_big]
+    print(july_xr_data)
     # Example: Group by Exam Order Name and count occurrences
     # exam_counts = df.loc['Exam Order Name', july_data]
     # print(exam_counts)
