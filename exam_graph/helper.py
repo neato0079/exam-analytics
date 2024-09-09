@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 df = pd.read_csv('./mock_exam_data.csv')
+
+# for any column with strings, strip white spaces
+df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+
 modalities = {
     'XR': 0,
     'CT': 0,
@@ -22,7 +26,8 @@ def try_learn():
     filt_big = date_filt & modal_filt
     
     july_xr_data = df[filt_big]
-    print(july_xr_data)
+    # print(july_xr_data)
+    print(df.head)
     # Example: Group by Exam Order Name and count occurrences
     # exam_counts = df.loc['Exam Order Name', july_data]
     # print(exam_counts)
