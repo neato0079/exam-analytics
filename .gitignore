@@ -17,3 +17,6 @@ staticfiles/
 
 # Ignore media files
 media/
+
+# Ignore apple
+*.DS_Store
