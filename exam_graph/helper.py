@@ -27,7 +27,7 @@ def try_learn():
     
     july_xr_data = df[filt_big]
     # print(july_xr_data)
-    print(df.head)
+    print(df.describe())
     # Example: Group by Exam Order Name and count occurrences
     # exam_counts = df.loc['Exam Order Name', july_data]
     # print(exam_counts)
