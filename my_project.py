@@ -18,12 +18,15 @@ def load_data(file_path):
     # Read CSV file
     df = pd.read_csv(file_path)
     
+    # for any column with strings, strip white spaces
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
     
     # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
-    df['Modality'] = df['Order Procedure Accession'].apply(lambda x: x.split('-')[1])
-    
+    df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
+    print(df['Modality'].head())
     return df
 
 def plot_data(df):
