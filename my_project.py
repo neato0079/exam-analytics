@@ -13,6 +13,12 @@ plot_filters = {
     'weekdays only': False,
 }
 
+shift_filters = {
+    'am': 0700,
+    'pm': 1500,
+    'noc': 2300
+}
+
 # Function to load and clean data
 def load_data(file_path):
     # Read CSV file
@@ -20,7 +26,7 @@ def load_data(file_path):
     
     # for any column with strings, strip white spaces
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
-    
+
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
     
