@@ -64,6 +64,26 @@
         .upload-button:hover {
             background-color: #738bb7; /* Slightly darker purple on hover */
         }
+
+        /* Footer styles */
+        footer {
+            position: absolute;
+            bottom: 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        footer a {
+            color: #90abdd;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
@@ -73,10 +93,15 @@
     </div>
 
     <div class="upload-container" id="upload-container">
-        <p>Drag and drop a file here, or</p>
+        <p>Drag and drop a .csv file here, or</p>
         <button class="upload-button" onclick="document.getElementById('file-input').click()">Browse Files</button>
         <input type="file" id="file-input" class="file-input">
     </div>
+
+    <footer>
+        <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
+        <a href="help/" target="_top">Help</a>
+    </footer>
 
     <script>
         const uploadContainer = document.getElementById('upload-container');

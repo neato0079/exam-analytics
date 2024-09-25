@@ -6,5 +6,5 @@ def home(request):
     return render(request, 'home.html')
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
-def not_home(request):
-    return HttpResponse('<h1>NOT HOME</h1>')
+def help(request):
+    return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
