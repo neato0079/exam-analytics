@@ -2,6 +2,8 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
+import base64
+from io import BytesIO
 
 plot_filters = {
     'date': False,
@@ -14,7 +16,7 @@ plot_filters = {
 }
 
 shift_filters = {
-    'am': 0700,
+    'am': 700,
     'pm': 1500,
     'noc': 2300
 }
@@ -78,10 +80,22 @@ def apply_filt(df, modality):
     return exam_counts
 
 def test_serve_browser():
+    # fig = plt.figure()
+    # #plot sth
+
+    # tmpfile = BytesIO()
+    # fig.savefig(tmpfile, format='png')
+    # encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+
+    file_path = './mock_exam_data.csv'
     df = load_data(file_path)
     filtered_data = apply_filt(df, "CT")
-    df_string = filtered_data.to_html()
+    print(filtered_data)
+    df_string = filtered_data
+
+    
     return df_string
+    # return "hello world"
 
 if __name__ == "__main__":
     # Ensure the user provides the modality as a command-line argument
