@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matt's Cool Upload Page</title>
+    <title>Custom Upload Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,8 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background-color: #f8f9fa;
+            background-color: #121212; /* Dark background */
+            color: #ffffff; /* White text */
         }
 
         .logo {
@@ -24,26 +25,26 @@
         .logo a {
             font-size: 48px;
             text-decoration: none;
-            color: #4285f4;
+            color: #90abdd; /* Light purple color for logo */
         }
 
         .upload-container {
             width: 400px;
             padding: 30px;
-            border: 2px dashed #ddd;
+            border: 2px dashed #666; /* Darker border for dark theme */
             border-radius: 10px;
             text-align: center;
-            background-color: white;
+            background-color: #1e1e1e; /* Dark background for the container */
             transition: border-color 0.3s ease;
         }
 
         .upload-container.drag-over {
-            border-color: #4285f4;
+            border-color: #ffffff; /* Highlight border on drag over */
         }
 
         .upload-container p {
             font-size: 18px;
-            color: #666;
+            color: #bbbbbb; /* Light gray text */
         }
 
         .file-input {
@@ -51,8 +52,8 @@
         }
 
         .upload-button {
-            background-color: #4285f4;
-            color: white;
+            background-color: #90abdd;
+            color: #121212;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
@@ -61,14 +62,14 @@
         }
 
         .upload-button:hover {
-            background-color: #357ae8;
+            background-color: #738bb7; /* Slightly darker purple on hover */
         }
     </style>
 </head>
 <body>
 
     <div class="logo">
-        <a href="#">MySite</a>
+        <a href="#">Matt's Cool Exam Analytics</a>
     </div>
 
     <div class="upload-container" id="upload-container">
