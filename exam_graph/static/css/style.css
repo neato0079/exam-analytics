@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* White text */
+}
+
+.logo {
+    margin-bottom: 20px;
+}
+
+.logo a {
+    font-size: 48px;
+    text-decoration: none;
+    color: #90abdd; /* Light blue color for logo */
+}
+
+.upload-container {
+    width: 400px;
+    padding: 30px;
+    border: 2px dashed #666; /* Darker border for dark theme */
+    border-radius: 10px;
+    text-align: center;
+    background-color: #1e1e1e; /* Dark background for the container */
+    transition: border-color 0.3s ease;
+}
+
+.upload-container.drag-over {
+    border-color: #ffffff; /* Highlight border on drag over */
+}
+
+.upload-container p {
+    font-size: 18px;
+    color: #bbbbbb; /* Light gray text */
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-button {
+    background-color: #90abdd;
+    color: #121212;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.upload-button:hover {
+    background-color: #738bb7; /* Slightly darker on hover */
+}
+
+/* Footer styles */
+footer {
+    position: absolute;
+    bottom: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+footer a {
+    color: #90abdd;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
