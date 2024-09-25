@@ -77,6 +77,11 @@ def apply_filt(df, modality):
     print(exam_counts)
     return exam_counts
 
+def test_serve_browser():
+    df = load_data(file_path)
+    filtered_data = apply_filt(df, "CT")
+    df_string = filtered_data.to_html()
+    return df_string
 
 if __name__ == "__main__":
     # Ensure the user provides the modality as a command-line argument
