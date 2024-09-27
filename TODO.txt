@@ -17,3 +17,20 @@ notes:
 Once the app is in a presentable state, use PyInstaller to package the project into an exe. Be sure to configure PyInstaller to start the Django server and then open up the browser to localhost:8000 when the exe is ran. 
 
 Also do error handling for if port 8000 is not free
+
+maybe make a data class
+
+csv
+	- filters
+		- by date
+			- year
+			- month
+			- day
+			- weekend
+		- by modality
+		- by shift
+		
+
+		- order priority
+		- ordering physician
+		- TAT
