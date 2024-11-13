@@ -64,7 +64,7 @@ def apply_filt(df, modality):
     filtered_df = df[df['Modality'] == modality]
     
     # # Group by 'Exam Complete Date/Tm' and count the number of exams
-    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size()
+    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().reset_index(name="count")
 
     # Extract the month and year from the 'Exam Complete Date/Tm' column
     filtered_df['Month'] = filtered_df['Exam Complete Date/Tm'].dt.to_period('M')
@@ -72,8 +72,8 @@ def apply_filt(df, modality):
 
     # Group by the 'Month' and count the number of exams
     if plot_filters['month']:
-        exam_counts = filtered_df.groupby('Month').size()
-
+        exam_counts = filtered_df.groupby('Month').size().reset_index(name="count")
+    # NOTE: exam_counts would be a pd series if we didnt give a name to the index. it is currently a df
     
     
     print(exam_counts)
@@ -90,11 +90,11 @@ def test_serve_browser():
     file_path = './mock_exam_data.csv'
     df = load_data(file_path)
     filtered_data = apply_filt(df, "CT")
-    print(filtered_data)
-    df_string = filtered_data
+    print(type(filtered_data))
+    df = filtered_data
 
     
-    return df_string
+    return df # returns pd series
     # return "hello world"
 
 if __name__ == "__main__":

@@ -13,5 +13,11 @@ def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
 def result_graph(request):
-    graph = test_serve_browser()
-    return render(request, 'results.html', {'graph': graph})
+    graph = test_serve_browser() # this is a pd series.... now its a df
+
+    # convert series to df
+    # df = graph.to_frame()
+
+    # convert df to html
+    html_table = graph.to_html()
+    return render(request, 'results.html', {'graph': html_table})
