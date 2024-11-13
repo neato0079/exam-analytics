@@ -16,8 +16,8 @@ def result_graph(request):
     graph = test_serve_browser() # this is a pd series.... now its a df
 
     # convert series to df
-    # df = graph.to_frame()
+    df = graph.to_frame()
 
     # convert df to html
-    html_table = graph.to_html()
+    html_table = df.to_html()
     return render(request, 'results.html', {'graph': html_table})

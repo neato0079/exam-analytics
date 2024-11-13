@@ -64,7 +64,7 @@ def apply_filt(df, modality):
     filtered_df = df[df['Modality'] == modality]
     
     # # Group by 'Exam Complete Date/Tm' and count the number of exams
-    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().reset_index(name="count")
+    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().rename("# of exams")
 
     # Extract the month and year from the 'Exam Complete Date/Tm' column
     filtered_df['Month'] = filtered_df['Exam Complete Date/Tm'].dt.to_period('M')
@@ -72,9 +72,8 @@ def apply_filt(df, modality):
 
     # Group by the 'Month' and count the number of exams
     if plot_filters['month']:
-        exam_counts = filtered_df.groupby('Month').size().reset_index(name="count")
-    # NOTE: exam_counts would be a pd series if we didnt give a name to the index. it is currently a df
-    
+        exam_counts = filtered_df.groupby('Month').size().rename("# of exams")
+    # NOTE: df.series.rename() keeps it a series where df.series.reset_index() turns it into a df
     
     print(exam_counts)
     return exam_counts
@@ -109,13 +108,17 @@ if __name__ == "__main__":
         plot_filters['month'] = True 
         print(len(sys.argv))
 
-    print(type(plot_filters['month']))
+    # print(type(plot_filters['month']))
 
     file_path = './mock_exam_data.csv'  # Path to your CSV file
     # Load the data
     df = load_data(file_path)
+    print('doodoo')
+    print(type(df))
     
     # Apply filters and plot the data for the specified modality
     filtered_data = apply_filt(df, modality)
+    print('too high for this')
+    print(type(filtered_data))
     plot_data(filtered_data)
 
