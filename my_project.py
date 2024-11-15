@@ -1,3 +1,4 @@
+# This file is just for testing functions from the cli rather than the browser
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -65,6 +66,7 @@ def apply_filt(df, modality):
     
     # # Group by 'Exam Complete Date/Tm' and count the number of exams
     exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().rename("# of exams")
+    # i think groupby turns the df into a series?
 
     # Extract the month and year from the 'Exam Complete Date/Tm' column
     filtered_df['Month'] = filtered_df['Exam Complete Date/Tm'].dt.to_period('M')
