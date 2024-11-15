@@ -13,7 +13,7 @@ def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
 def result_graph(request):
-    graph = test_serve_browser() # this is a pd series.... now its a df
+    graph = test_serve_browser() # this is a pd series
 
     # convert series to df
     df = graph.to_frame()
