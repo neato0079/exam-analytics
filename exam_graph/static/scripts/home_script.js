@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Trigger file input click when the button is clicked
     fileInput.addEventListener('change', function () {
-        if (fileInput.files.length > 0) {
+        if (fileInput.files) {
             uploadForm.submit(); // Submit form when a file is selected
         }
     });
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         uploadContainer.classList.remove('drag-over');
 
-        if (e.dataTransfer.files.length > 0) {
+        if (e.dataTransfer.files) {
             fileInput.files = e.dataTransfer.files; // Assign dropped file to input
             uploadForm.submit(); // Automatically submit the form
         }
