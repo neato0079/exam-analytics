@@ -44,7 +44,13 @@ def upload_csv(request):
 
         # Store the DataFrame in the session (serialize as needed)
         request.session['csv_data'] = df.to_json()  # Convert to JSON to store in the session
-        # return redirect('results')  # Redirect to the filter/graph generation page
-        return JsonResponse({'message': 'File processed and stored successfully'})
+        return redirect('test')  # Redirect to the filter/graph generation page
+
+        # return JsonResponse(
+        #     {
+        #         'message': 'File processed and stored successfully',
+        #         'files': f'{request.FILES}'
+        #         }
+        #     )
     else:
-        return JsonResponse({'error': 'Invalid request'}, status=400)
+        return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
