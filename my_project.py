@@ -25,13 +25,13 @@ shift_filters = {
 # Function to load and clean data
 def load_data(file_path):
     # Read CSV file
-    df = pd.read_csv(file_path)
+    df = pd.read_json(file_path)
     
     # for any column with strings, strip white spaces
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
-    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
+    df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'], format='%m/%d/%Y')
     
     # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
     df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
@@ -65,11 +65,11 @@ def apply_filt(df, modality):
     filtered_df = df[df['Modality'] == modality]
     
     # # Group by 'Exam Complete Date/Tm' and count the number of exams
-    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().rename("# of exams")
+    exam_counts = filtered_df.groupby('Exam Complete Date\\/Tm').size().rename("# of exams")
     # i think groupby turns the df into a series?
 
     # Extract the month and year from the 'Exam Complete Date/Tm' column
-    filtered_df['Month'] = filtered_df['Exam Complete Date/Tm'].dt.to_period('M')
+    filtered_df['Month'] = filtered_df['Exam Complete Date\\/Tm'].dt.to_period('M')
 
 
     # Group by the 'Month' and count the number of exams
@@ -88,7 +88,7 @@ def test_serve_browser():
     # fig.savefig(tmpfile, format='png')
     # encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
 
-    file_path = './mock_exam_data.csv'
+    file_path = './mock_data.json'
     df = load_data(file_path)
     filtered_data = apply_filt(df, "CT")
     print(type(filtered_data))
@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     # print(type(plot_filters['month']))
 
-    file_path = './mock_exam_data.csv'  # Path to your CSV file
+    file_path = './mock_data.json'  # Path to your CSV file
     # Load the data
     df = load_data(file_path)
     print('doodoo')
