@@ -44,13 +44,15 @@ def upload_csv(request):
 
         # Store the DataFrame in the session (serialize as needed)
         request.session['csv_data'] = df.to_json()  # Convert to JSON to store in the session
-        return redirect('test')  # Redirect to the filter/graph generation page
+        # return redirect('test')  # Redirect to the filter/graph generation page
 
-        # return JsonResponse(
-        #     {
-        #         'message': 'File processed and stored successfully',
-        #         'files': f'{request.FILES}'
-        #         }
-        #     )
+        return JsonResponse(
+            {
+                'message': 'File processed and stored successfully',
+                'files': f'{request.FILES}',
+                'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
+                'session_key': f'{request.session["csv_data"]}' # this gives us the exam data from the csv yay. also remember we tojson'd this shit
+                }
+            )
     else:
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
