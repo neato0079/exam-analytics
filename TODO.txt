@@ -34,3 +34,9 @@ csv
 		- order priority
 		- ordering physician
 		- TAT
+
+11/21:
+
+Currently, the user uploaded csv is stored in a django session. This should be fine for development but look into other ways to store that data for production. A session isn't meant for large files so it will cause preformance problems during production.
+
+maybe set up a db or have the app save the csv on disk and just read from there
