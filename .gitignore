@@ -20,3 +20,6 @@ media/
 
 # Ignore apple
 *.DS_Store
+
+# notes and shit
+scratch.py
