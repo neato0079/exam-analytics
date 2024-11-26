@@ -43,7 +43,7 @@ def upload_csv(request):
         df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
         # Store the DataFrame in the session (serialize as needed)
-        request.session['csv_data'] = df.to_json()  # Convert to JSON to store in the session
+        request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session
         # return redirect('test')  # Redirect to the filter/graph generation page
 
         return JsonResponse(
