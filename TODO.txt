@@ -40,3 +40,13 @@ csv
 Currently, the user uploaded csv is stored in a django session. This should be fine for development but look into other ways to store that data for production. A session isn't meant for large files so it will cause preformance problems during production.
 
 maybe set up a db or have the app save the csv on disk and just read from there
+
+11/26:
+
+when the user uploads the csv, it gets converted to json. but why. keep it csv for now.
+
+user uploads csv to django server
+server saves csv in a session (change this later. see 11/21 note)
+server then redirects to results view
+results view reads the csv stored in session and generates a graph
+then the view renders an html page with the generated graph
