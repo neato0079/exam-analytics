@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from my_project import test_serve_browser
 import pandas as pd
+import pprint
+import json
 
 
 # Create your views here.
@@ -43,16 +45,42 @@ def upload_csv(request):
         df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
         # Store the DataFrame in the session (serialize as needed)
-        request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session
+        request.session['csv_data']  
+        # request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session. idk why i needed this conversion
+
+
         # return redirect('test')  # Redirect to the filter/graph generation page
 
         return JsonResponse(
             {
                 'message': 'File processed and stored successfully',
+                'original_request': prettify_request(request),
                 'files': f'{request.FILES}',
                 'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
-                'session_key': f'{request.session["csv_data"]}' # this gives us the exam data from the csv yay. also remember we tojson'd this shit
+                'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
+                'debug_data': f'{prettify_request(request)}',
+                'session_guts': f'{request.session}'
                 }
             )
     else:
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
+
+
+
+# Debugging functions:
+def debug_request(request):
+    request_data = dir(request)  # Lists all attributes and methods of the request object
+    return pprint.pformat(request_data, indent=2)
+
+
+def prettify_request(request):
+    return {
+        "method": request.method,
+        "headers": dict(request.headers),
+        "GET_params": dict(request.GET) if request.GET else None,
+        "POST_params": dict(request.POST),
+        "FILES": {k: str(v) for k, v in request.FILES.items()},
+        "path": request.path,
+        "content_type": request.content_type,
+        "session_keys": list(request.session.keys()),
+    }
