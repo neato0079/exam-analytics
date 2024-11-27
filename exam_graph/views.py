@@ -7,6 +7,10 @@ import pandas as pd
 import pprint
 import json
 
+################
+#  DEBUG MODE  #
+debug_mode = True
+################
 
 # Create your views here.
 def home(request):
@@ -51,18 +55,40 @@ def upload_csv(request):
 
         # return redirect('test')  # Redirect to the filter/graph generation page
 
-        return JsonResponse(
-            {
-                'message': 'File processed and stored successfully',
-                'original_request': prettify_request(request),
-                'files': f'{request.FILES}',
-                'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
-                'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
-                'debug_data': f'{prettify_request(request)}',
-                'session_guts': f'{request.session}'
-                }
-            )
+        if debug_mode:
+            return JsonResponse(
+                {
+                    'message': 'File processed and stored successfully',
+                    'original_request': prettify_request(request),
+                    'files': f'{request.FILES}',
+                    'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
+                    'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
+                    'debug_data': f'{prettify_request(request)}',
+                    'session_guts': f'{request.session}'
+                    }
+                )
+        else:
+            
+            # PUT THE FOLLOWING FUNCTIONS IN THE HELPER FILE
+            # pull csv from session
+            def read_csv(): 
+                return 'csv in df form'
+            
+            # set default filters
+            def apply_filt():
+                return 'filtered df'
+
+            # generate graph
+            def plot_graph():
+                # convert graph to something html can display
+                return 'graph'
+            
+            df_csv = read_csv()
+            filtered_df = apply_filt(df_csv)
+            html_graph = plot_graph(filtered_df)
+            return render(request, 'results.html', {'graph': html_graph})
     else:
+
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
