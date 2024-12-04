@@ -64,4 +64,14 @@ def one_modality():
     plt.show()
   
 
-try_learn()
+# pull csv from session
+def read_csv(): 
+    return 'csv in df form'
+
+# set default filters
+def apply_filt():
+    return 'filtered df'
+# generate graph
+def plot_graph():
+    # convert graph to something html can display
+    return 'graph'
