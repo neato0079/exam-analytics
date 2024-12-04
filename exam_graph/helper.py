@@ -65,8 +65,10 @@ def one_modality():
   
 
 # pull csv from session
-def read_csv(): 
-    return 'csv in df form'
+def read_csv_from_session(file): 
+    df = pd.read_json(file)
+    
+    return type(df)
 
 # set default filters
 def apply_filt():

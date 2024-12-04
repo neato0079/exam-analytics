@@ -6,7 +6,7 @@ from my_project import test_serve_browser
 import pandas as pd
 import pprint
 import json
-import helper
+from . import helper
 
 ################
 #  DEBUG MODE  #
@@ -50,8 +50,8 @@ def upload_csv(request):
         df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
         # Store the DataFrame in the session (serialize as needed)
-        request.session['csv_data']  
-        # request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session. idk why i needed this conversion
+        # request.session['csv_data'] = df
+        request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session. idk why i needed this conversion. i know why now. you cant store a df in a session. you can store a json. so convert to json to store it
 
 
         # return redirect('test')  # Redirect to the filter/graph generation page
@@ -59,9 +59,9 @@ def upload_csv(request):
         if debug_mode:
 
             # make sure the helper functions are returning what then need to
-            df_csv = helper.read_csv() # csv in df form
-            filtered_df = helper.apply_filt(df_csv) # filtered df
-            html_graph = helper.plot_graph(filtered_df) # html friendly graph
+            df_csv = helper.read_csv_from_session(request.session['csv_data']) # csv in df form
+            # filtered_df = helper.apply_filt(df_csv) # filtered df
+            # html_graph = helper.plot_graph(filtered_df) # html friendly graph
             return JsonResponse(
                 {
                     'message': 'File processed and stored successfully',
@@ -71,7 +71,7 @@ def upload_csv(request):
                     'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
                     'debug_data': f'{prettify_request(request)}',
                     'session_guts': f'{request.session}',
-                    'read_csv() returns': f'{df_csv}'
+                    'reading from session to df': f'{df_csv}'
                     }
                 )
         else:
