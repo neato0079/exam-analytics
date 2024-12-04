@@ -6,6 +6,7 @@ from my_project import test_serve_browser
 import pandas as pd
 import pprint
 import json
+import helper
 
 ################
 #  DEBUG MODE  #
@@ -56,6 +57,11 @@ def upload_csv(request):
         # return redirect('test')  # Redirect to the filter/graph generation page
 
         if debug_mode:
+
+            # make sure the helper functions are returning what then need to
+            df_csv = helper.read_csv() # csv in df form
+            filtered_df = helper.apply_filt(df_csv) # filtered df
+            html_graph = helper.plot_graph(filtered_df) # html friendly graph
             return JsonResponse(
                 {
                     'message': 'File processed and stored successfully',
@@ -64,28 +70,16 @@ def upload_csv(request):
                     'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
                     'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
                     'debug_data': f'{prettify_request(request)}',
-                    'session_guts': f'{request.session}'
+                    'session_guts': f'{request.session}',
+                    'read_csv() returns': f'{df_csv}'
                     }
                 )
         else:
             
-            # PUT THE FOLLOWING FUNCTIONS IN THE HELPER FILE
-            # pull csv from session
-            def read_csv(): 
-                return 'csv in df form'
             
-            # set default filters
-            def apply_filt():
-                return 'filtered df'
-
-            # generate graph
-            def plot_graph():
-                # convert graph to something html can display
-                return 'graph'
-            
-            df_csv = read_csv()
-            filtered_df = apply_filt(df_csv)
-            html_graph = plot_graph(filtered_df)
+            df_csv = helper.read_csv()
+            filtered_df = helper.apply_filt(df_csv)
+            html_graph = helper.plot_graph(filtered_df)
             return render(request, 'results.html', {'graph': html_graph})
     else:
 
