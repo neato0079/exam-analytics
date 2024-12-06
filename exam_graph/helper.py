@@ -15,6 +15,16 @@ modalities = {
     'NM': 0,
 }
 
+plot_filters = {
+    'date': False,
+    'month': False,
+    'shift' : False,
+    'modalities': [],
+    'tat': False,
+    'weekends only': False,
+    'weekdays only': False,
+}
+
 def try_learn(): 
 
     # Display the first few rows of the DataFrame to check the data
@@ -68,11 +78,30 @@ def one_modality():
 def read_csv_from_session(file): 
     df = pd.read_json(file)
     
-    return type(df)
+    return df
 
 # set default filters
-def apply_filt():
-    return 'filtered df'
+def apply_filt(df, modality):
+    # Filter data based on the modality
+    filtered_df = df[df['Modality'] == modality]
+    
+    # # Group by 'Exam Complete Date/Tm' and count the number of exams
+    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().rename("# of exams")
+    # i think groupby turns the df into a series?
+
+    # SOMETHING IS FUCKED UP WITH THE TIME FORMAT. COME BACK TO THIS LATER
+    # Extract the month and year from the 'Exam Complete Date/Tm' column
+    # filtered_df['Month'] = filtered_df['Exam Complete Date/Tm'].dt.to_period('M')
+
+
+    # Group by the 'Month' and count the number of exams
+    if plot_filters['month']:
+        exam_counts = filtered_df.groupby('Month').size().rename("# of exams")
+    # NOTE: df.series.rename() keeps it a series where df.series.reset_index() turns it into a df
+    
+    print(exam_counts)
+    return exam_counts
+
 # generate graph
 def plot_graph():
     # convert graph to something html can display
