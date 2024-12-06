@@ -60,6 +60,8 @@ def upload_csv(request):
 
             # make sure the helper functions are returning what then need to
             df_csv = helper.read_csv_from_session(request.session['csv_data']) # csv in df form
+            filtered_df = helper.apply_filt(df_csv, 'XR')
+            # filtered_df = 'hellow worslkdf'
             # filtered_df = helper.apply_filt(df_csv) # filtered df
             # html_graph = helper.plot_graph(filtered_df) # html friendly graph
             return JsonResponse(
@@ -71,7 +73,8 @@ def upload_csv(request):
                     'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
                     'debug_data': f'{prettify_request(request)}',
                     'session_guts': f'{request.session}',
-                    'reading from session to df': f'{df_csv}'
+                    'reading from session to df': f'{df_csv}',
+                    'filtered df': f'{filtered_df}'
                     }
                 )
         else:
