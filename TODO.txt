@@ -50,3 +50,7 @@ server saves csv in a session (change this later. see 11/21 note)
 server then redirects to results view
 results view reads the csv stored in session and generates a graph
 then the view renders an html page with the generated graph
+
+12/6:
+
+in helpers.py, in apply_filt(), the original logic depended on a certain type of date/time format. this format changed after implementing a csv -> JSON conversion in order to store in dj sessions. idk format it is now or how it changes that function but look into it dweeb
