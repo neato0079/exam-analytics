@@ -54,3 +54,16 @@ then the view renders an html page with the generated graph
 12/6:
 
 in helpers.py, in apply_filt(), the original logic depended on a certain type of date/time format. this format changed after implementing a csv -> JSON conversion in order to store in dj sessions. idk format it is now or how it changes that function but look into it dweeb
+
+12/13:
+
+FOCUS MODE BEUCASE EOY IS CLOSE WTF
+
+CURRENT SHORT TERM GOAL:
+
+Get app to the following functionality:
+- Allow user to upload csv of exam analytics from RIS
+- Store csv data as JSON in django session
+- Read and create Panda dataframe from the user uploaded JSON
+- Apply filter to df
+- Generate html compatible graph to display in webapp 
