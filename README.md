@@ -16,3 +16,7 @@ Generate graphs displaying exam volume. Allows for filtering by modality, date, 
 
 ![](/img/ct-month.png)
 ![](/img/xr-month.png)
+
+### Notes
+
+run server with `python manage.py runserver`
