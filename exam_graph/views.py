@@ -80,7 +80,7 @@ def upload_csv(request):
         else:
             
             
-            df_csv = helper.read_csv()
+            df_csv = helper.read_csv_from_session()
             filtered_df = helper.apply_filt(df_csv)
             html_graph = helper.plot_graph(filtered_df)
             return render(request, 'results.html', {'graph': html_graph})
