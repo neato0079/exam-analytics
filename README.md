@@ -20,3 +20,4 @@ Generate graphs displaying exam volume. Allows for filtering by modality, date, 
 ### Notes
 
 run server with `python manage.py runserver`
+get back into the python env looking into the env/bin directory. instrunctions there
