@@ -67,3 +67,118 @@ Get app to the following functionality:
 - Read and create Panda dataframe from the user uploaded JSON
 - Apply filter to df
 - Generate html compatible graph to display in webapp 
+
+CURRENT LONG TERM GOALS:
+
+- Gut instinct tells me storing exam data in a session is dumb and inefficient. Figure out a better way to store user uploaded data
+	- Ideas for this:
+		- Store csv(maybe convert to JSON before storage? converting to JSON is neccessary for session storage but idk if there is another good reason to convert to JSON. Maybe pandas needs it to be JSON to display as a html graph? probably not) in the web app's server's file system and only store the file path in the django session
+		- Store csv in cache using Redis
+		- Use csv to create a DB
+
+Temp DB vs Cache for csv data store:
+
+1. Temporary Database Storage
+
+Using a database to store the CSV data allows you to query, filter, and manipulate the data efficiently. Temporary storage means the data might only persist for the user's session or until you explicitly clean it up.
+Steps to Implement:
+
+    Create a Model: Define a Django model to represent the structure of your CSV data. If the structure of the CSV varies, you might need to dynamically handle it.
+
+    Example:
+
+from django.db import models
+
+class UploadedData(models.Model):
+    session_key = models.CharField(max_length=255)  # To link with the user's session
+    row_data = models.JSONField()  # Store each CSV row as JSON
+    created_at = models.DateTimeField(auto_now_add=True)
+
+Save Data to the Database: When a user uploads a CSV, parse it into rows and store it as records in the database.
+
+Example:
+
+import pandas as pd
+from .models import UploadedData
+
+def store_csv_in_db(csv_file, session_key):
+    df = pd.read_csv(csv_file)
+    for _, row in df.iterrows():
+        UploadedData.objects.create(session_key=session_key, row_data=row.to_dict())
+
+Query Data: When the user applies filters, query the database for matching records and generate the graph.
+
+Clean Up: Periodically delete old records using a cron job or Django management command.
+
+    from datetime import timedelta
+    from django.utils.timezone import now
+    UploadedData.objects.filter(created_at__lt=now() - timedelta(hours=1)).delete()
+
+2. Caching
+
+Caching is a way to store data temporarily in memory for quick access. Django supports several caching backends, including Redis, Memcached, or file-based caching.
+Steps to Implement:
+
+    Set Up the Cache Backend: Install and configure a caching backend. For example, to use Redis:
+        Install Redis and the Python library:
+
+pip install redis django-redis
+
+Update your settings.py:
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
+    }
+
+Store Data in the Cache: When a CSV file is uploaded, convert it to JSON (or another serializable format) and store it in the cache.
+
+Example:
+
+from django.core.cache import cache
+import pandas as pd
+
+def store_csv_in_cache(csv_file, session_key):
+    df = pd.read_csv(csv_file)
+    cache.set(f"csv_data_{session_key}", df.to_json(), timeout=3600)  # Expires in 1 hour
+
+Retrieve Data from the Cache: When the user applies filters, retrieve the cached data and process it.
+
+Example:
+
+    def get_csv_from_cache(session_key):
+        csv_data = cache.get(f"csv_data_{session_key}")
+        if csv_data:
+            df = pd.read_json(csv_data)
+            return df
+        return None
+
+    Clean Up Automatically: Caches automatically expire after the specified timeout, so no manual cleanup is needed.
+
+When to Use Which:
+
+    Temporary Database:
+    Use this when:
+        You need to query/filter data frequently.
+        You expect larger datasets that wouldn’t fit well in memory.
+
+    Caching:
+    Use this when:
+        You want fast, temporary access to data.
+        The data size is manageable in memory.
+        The dataset doesn't require complex querying (e.g., filtering can be done in Python after retrieving the cached data).
+
+Comparison Table:
+
+Feature				|	Temporary Database				|	Caching
+--------------------|-----------------------------------|------------------------------
+Speed		    	|	Slower than cache (uses disk)	|	Very fast (uses memory)
+Data Size	    	|	Handles large datasets well		|	Limited by memory size
+Setup Complexity	|	Moderate (requires DB schema)	|	Easy to moderate (Redis/Memcached setup)
+Data Querying		|	Supports complex queries		|	Limited querying (simple retrieval)
+Persistence			|	Persists until manually cleared	|	Temporary (auto-expires)
