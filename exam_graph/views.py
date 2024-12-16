@@ -25,7 +25,36 @@ def help(request):
 
 # Testing for use with postman
 def test_api(request):
-    return JsonResponse({"Your request": request})
+    filters_post_requirement = {
+        'modality': None,
+        'shift': None,
+        'x-axis':{
+            'date':{
+            'year': None,
+            'month': None,
+            'day': None,
+            'weekend': None,
+            },
+        },
+        'y-axis':{
+            'n exams': 0,
+            'exam completion delta': 0,
+            'exam finalize delta': 0,
+            'ORU:ORM': 1
+        }
+    }
+
+    if request.method == 'POST':
+        try:
+            # Decode and parse the JSON body
+            body = json.loads(request.body.decode('utf-8'))
+            # This is where the filters will come in
+            return JsonResponse({"Your POST": body})
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON body"}, status=400)
+
+    else:
+        return JsonResponse({"Your GET": request.method})
 
 # This is just used to test the graph generation
 def result_graph(request):
