@@ -12,7 +12,7 @@ from pathlib import Path
 
 ################
 #  DEBUG MODE  #
-debug_mode = True
+debug_mode = False
 ################
 
 # Create your views here.
@@ -35,7 +35,7 @@ def result_graph(request):
     print(request)
     return render(request, 'results.html', {'graph': html_table})
 
-def upload_csv(request):
+def upload_csv(request, modality):
     if request.method == 'POST' and request.FILES['csv_file']:
         csv_file = request.FILES['csv_file']
 
@@ -62,7 +62,7 @@ def upload_csv(request):
 
             # make sure the helper functions are returning what then need to
             df_csv = helper.read_csv_from_session(request.session['csv_data']) # csv in df form
-            filtered_df = helper.apply_filt(df_csv, 'XR')
+            filtered_df = helper.apply_filt(df_csv, modality)
             print('This is the filtered df returned as a series:')
             print(filtered_df)
 
@@ -90,10 +90,11 @@ def upload_csv(request):
         else:
             
             
-            df_csv = helper.read_csv_from_session()
-            filtered_df = helper.apply_filt(df_csv)
-            html_graph = helper.plot_graph(filtered_df)
-            return render(request, 'results.html', {'graph': html_graph})
+            df_csv = helper.read_csv_from_session(request.session['csv_data'])
+            filtered_df = helper.apply_filt(df_csv, modality)
+            graph_file_name = helper.plot_graph(filtered_df)
+            graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
+            return render(request, 'results.html', {'graph_path': graph_file_path})
     else:
 
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
