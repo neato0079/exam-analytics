@@ -1,6 +1,12 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Use a non-GUI backend for server use
+import matplotlib.pyplot as plt
+import re
+from pathlib import Path
+
+from django.conf import settings
 
 df = pd.read_csv('./mock_exam_data.csv')
 
@@ -102,9 +108,40 @@ def apply_filt(df, modality):
     # print(exam_counts)
     return exam_counts # returns a panda series. NOT a df
 
+def get_next_graph_filename():
+    # Path to the static/img directory
+    img_dir = settings.STATICFILES_DIRS[0] / 'graphs'
+
+    # Ensure the directory exists
+    img_dir.mkdir(parents=True, exist_ok=True)
+
+    # Regex pattern to match files like 'test_graphX.png'
+    filename_pattern = re.compile(r'^test_graph(\d+)\.png$')
+
+    # List all files in the directory and filter those matching the pattern
+    existing_files = [f.name for f in img_dir.iterdir() if filename_pattern.match(f.name)]
+
+    # Extract numbers from matching filenames
+    numbers = [
+        int(filename_pattern.match(f).group(1))
+        for f in existing_files
+    ]
+
+    # Find the highest number, default to 0 if no files exist
+    next_number = max(numbers, default=0) + 1
+
+    # Construct the next filename
+    next_filename = f'test_graph{next_number}.png'
+    return next_filename  # Return only file name as a Path object
+     
+
 # generate graph
 def plot_graph(pd_series):
-    # convert graph to something html can display
+    # convert series to a graph that html can display
     cool_graph = pd_series.plot(kind='bar', color='skyblue')
-    cool_graph.savefig(fname = '/static/img/test_graph1.png', format='png')
-    return 'graph'
+    print(f'Type of "cool_graph": {type(cool_graph)}')
+    file_name = get_next_graph_filename()
+    file_path = settings.STATICFILES_DIRS[0] / 'graphs'/ file_name
+    plt.savefig(fname = file_path, format='png')
+    plt.close()
+    return file_name
