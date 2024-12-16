@@ -99,8 +99,8 @@ def apply_filt(df, modality):
         exam_counts = filtered_df.groupby('Month').size().rename("# of exams")
     # NOTE: df.series.rename() keeps it a series where df.series.reset_index() turns it into a df
     
-    print(exam_counts)
-    return exam_counts
+    # print(exam_counts)
+    return exam_counts # returns a panda series. NOT a df
 
 # generate graph
 def plot_graph():
