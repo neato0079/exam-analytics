@@ -103,6 +103,8 @@ def apply_filt(df, modality):
     return exam_counts # returns a panda series. NOT a df
 
 # generate graph
-def plot_graph():
+def plot_graph(pd_series):
     # convert graph to something html can display
+    cool_graph = pd_series.plot(kind='bar', color='skyblue')
+    cool_graph.savefig(fname = '/static/img/test_graph1.png', format='png')
     return 'graph'
