@@ -1,4 +1,5 @@
-# aka API handler i guess
+# aka API handler i guess??
+# the urls.py from this same directory "handles" the client's url requests by calling functions from this file
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -61,6 +62,8 @@ def upload_csv(request):
             # make sure the helper functions are returning what then need to
             df_csv = helper.read_csv_from_session(request.session['csv_data']) # csv in df form
             filtered_df = helper.apply_filt(df_csv, 'XR')
+            print('This is the filtered df returned as a series:')
+            print(filtered_df)
             # filtered_df = 'hellow worslkdf'
             # filtered_df = helper.apply_filt(df_csv) # filtered df
             # html_graph = helper.plot_graph(filtered_df) # html friendly graph
@@ -74,7 +77,7 @@ def upload_csv(request):
                     'debug_data': f'{prettify_request(request)}',
                     'session_guts': f'{request.session}',
                     'reading from session to df': f'{df_csv}',
-                    'filtered df': f'{filtered_df}'
+                    'filtered df to series': f'{filtered_df}'
                     }
                 )
         else:
