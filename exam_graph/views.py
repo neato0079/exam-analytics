@@ -8,6 +8,7 @@ import pandas as pd
 import pprint
 import json
 from . import helper
+from pathlib import Path
 
 ################
 #  DEBUG MODE  #
@@ -64,9 +65,14 @@ def upload_csv(request):
             filtered_df = helper.apply_filt(df_csv, 'XR')
             print('This is the filtered df returned as a series:')
             print(filtered_df)
-            # filtered_df = 'hellow worslkdf'
-            # filtered_df = helper.apply_filt(df_csv) # filtered df
+
             # html_graph = helper.plot_graph(filtered_df) # html friendly graph
+
+            # save graph as png
+            graph_file_name = helper.plot_graph(filtered_df)
+            print(graph_file_name)
+            graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
+
             return JsonResponse(
                 {
                     'message': 'File processed and stored successfully',
@@ -77,7 +83,8 @@ def upload_csv(request):
                     'debug_data': f'{prettify_request(request)}',
                     'session_guts': f'{request.session}',
                     'reading from session to df': f'{df_csv}',
-                    'filtered df to series': f'{filtered_df}'
+                    'filtered df to series': f'{filtered_df}',
+                    'graph_path': f'{graph_file_path}'
                     }
                 )
         else:
