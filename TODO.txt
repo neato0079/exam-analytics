@@ -59,7 +59,7 @@ in helpers.py, in apply_filt(), the original logic depended on a certain type of
 
 FOCUS MODE BEUCASE EOY IS CLOSE WTF
 
-CURRENT SHORT TERM GOAL:
+SHORT TERM GOAL(12/13):
 
 Get app to the following functionality:
 - Allow user to upload csv of exam analytics from RIS
@@ -67,6 +67,33 @@ Get app to the following functionality:
 - Read and create Panda dataframe from the user uploaded JSON
 - Apply filter to df
 - Generate html compatible graph to display in webapp 
+done! 12/16
+
+CURRENT SHORT TERM GOAL (12/16):
+
+- add to current filter function to allow the following
+	- filter by date/time:
+		- filter by month
+		- filter by shift
+- add form to results page. This is where the user can apply more detailed filters
+- filter settings:
+	- modality
+	- date range
+	- changeable x axis:
+		- day
+			- if by day, highlight weekends
+		- month
+		- quarter?
+		- year
+	- changeable y axis:
+		- number of exams
+		- exam order to exam complete time delta
+		- exam order to exam  read time delta (ORM to ORU)
+		- ratio of total exam completes to total exam order 
+	- include stacked bars to view different y values per shift
+- send a get request to /filtered via postman
+	- in the GET request, send a JSON that includes all the filter settings above
+	- /filtered should display the new graph with the GET request's filters applied
 
 CURRENT LONG TERM GOALS:
 
