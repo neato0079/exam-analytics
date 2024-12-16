@@ -23,6 +23,10 @@ def home(request):
 def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
+# Testing for use with postman
+def test_api(request):
+    return JsonResponse({"Your request": request})
+
 # This is just used to test the graph generation
 def result_graph(request):
     graph = test_serve_browser() # this is a pd series
