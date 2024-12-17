@@ -13,6 +13,12 @@ df = pd.read_csv('./mock_exam_data.csv')
 # for any column with strings, strip white spaces
 df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
+date_range = {
+    # make this ISO
+    'start': '00:00:0000',
+    'end': '00:00:0000'
+}
+
 modalities = {
     'XR': 0,
     'CT': 0,
@@ -21,9 +27,10 @@ modalities = {
     'NM': 0,
 }
 
-plot_filters = {
-    'date': False,
+x_plot_filters = {
+    'day': False,
     'month': False,
+    'year': False,
     'shift' : False,
     'modalities': [],
     'tat': False,
