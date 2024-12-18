@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import base64
 from io import BytesIO
+from exam_graph import filters
 
 plot_filters = {
     'date': False,
@@ -194,7 +195,6 @@ def plot_graph(pd_series: pd.Series):
     # Close the figure to free memory
     plt.close(fig)
 
-plot_data(my_data)
 
 # if __name__ == "__main__":
 #     # Ensure the user provides the modality as a command-line argument
@@ -221,3 +221,13 @@ plot_data(my_data)
 #     print('too high for this')
 #     print(type(filtered_data))
 #     plot_data(filtered_data)
+
+def test_import_filt():
+    mock_df = pd.read_json('./mock_data.json')
+    period_selection = 'day'
+    filtered_data = filters.period(mock_df, period_selection)
+    print(filtered_data)
+    plot_data(filtered_data)
+
+
+test_import_filt()
