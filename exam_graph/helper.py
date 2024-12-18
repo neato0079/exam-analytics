@@ -87,8 +87,22 @@ def one_modality():
     plt.show()
   
 
+
+
+"""
+You declare panda data types with type hints as follows
+Also read up on mypy: https://mypy-lang.org/
+This allows for datatype testing within functions i think
+
+import pandas as pd
+
+def filter1(df: pd.DataFrame) -> pd.Series: 
+    filtered_df = df[df['col1'] == 'value']
+    
+    return filtered_df
+"""
 # pull csv from session
-def read_csv_from_session(file): 
+def read_csv_from_session(file: str) -> pd.DataFrame: 
     df = pd.read_json(file)
     
     return df
