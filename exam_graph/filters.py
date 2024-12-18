@@ -1,3 +1,4 @@
+import pandas as pd
 
 filters = {
     "date_range": {
@@ -51,3 +52,43 @@ week_view_options = [
     'weekdays',
     None
 ]
+
+# x axis filters
+def period(df:pd.DataFrame, period_selection:str) -> pd.Series:
+
+    if period_selection == 'month':
+        # set time stamps to datetime object
+        df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+
+        # create new column to we can group by month
+        df['Exam Complete Month'] = df['Exam Complete Date\/Tm'].dt.to_period('M')
+        exams_by_month = df.groupby('Exam Complete Month').size()
+
+        return exams_by_month   
+    
+    elif period_selection == 'day':
+        # set time stamps to datetime object
+        df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+
+        # create new column to we can group by month
+        # df['Exam Complete Day'] = df['Exam Complete Date\/Tm'].dt.to_period('D')
+        # exams_by_month = df.groupby('Exam Complete Day').size()
+        exams_by_day = df.groupby('Exam Complete Date\/Tm').size()
+
+        return exams_by_day
+    
+    elif period_selection == 'year':
+        # set time stamps to datetime object
+        df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+
+        # create new column to we can group by year
+        df['Exam Complete Year'] = df['Exam Complete Date\/Tm'].dt.to_period('Y')
+        exams_by_year = df.groupby('Exam Complete Year').size()
+
+        return exams_by_year
+    
+"""
+NOTES
+
+Period aliases for pandas:https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-period-aliases
+"""
