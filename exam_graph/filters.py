@@ -70,9 +70,7 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.Series:
         # set time stamps to datetime object
         df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
 
-        # create new column to we can group by month
-        # df['Exam Complete Day'] = df['Exam Complete Date\/Tm'].dt.to_period('D')
-        # exams_by_month = df.groupby('Exam Complete Day').size()
+        # we can already group by day off of this column. its time is zeroed so it's effectively a day column
         exams_by_day = df.groupby('Exam Complete Date\/Tm').size()
 
         return exams_by_day
