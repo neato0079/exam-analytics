@@ -108,7 +108,7 @@ def apply_filt(df, modality):
 
 
     # Group by the 'Month' and count the number of exams
-    if plot_filters['month']:
+    if x_plot_filters['month']:
         exam_counts = filtered_df.groupby('Month').size().rename("# of exams")
     # NOTE: df.series.rename() keeps it a series where df.series.reset_index() turns it into a df
     
