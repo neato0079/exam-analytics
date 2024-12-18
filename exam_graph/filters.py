@@ -1,34 +1,49 @@
+modalities = [
+    'XR',
+    'CT',
+    'MR',
+    'US',
+    'NM'
+    ]
+
 filters = {
     'date_range': {
         # make this ISO. edit later. sample data set is small enough for this not to matter yet
         'start': '00:00:0000',
         'end': '00:00:0000'
     },
-    'modalities': {
-        'XR': 0,
-        'CT': 0,
-        'MR': 0,
-        'US': 0,
-        'NM': 0,
-    },
+
+    'shift_color_indicators': False,
+
     'x_plot_filters': {
-        'day': False,
-        'month': True,
-        'year': False,
-        'shift' : False,
-        'modalities': [],
-        'tat': False,
+        'period_increments':{
+            'day': False,
+            'month': True,
+            'year': False,
+        },
+        'period_filters': {
+            'shift' : {
+                'AM': True,
+                'PM': True,
+                'NOC': True,
+            },
         'weekends only': False,
         'weekdays only': False,
+        },
+        'exam_filters': {
+            'modalities': [],
+            'exam_name':'',
+        }
     },
+
     'y_plot_filters': {
-        'number of exams': True,
-        'exam start to finish time': '00:00',
-        'ratio of completed exams to ordered exams': {
+        'number_of_exams': True,
+        'exam_start_to_finish_time': '00:00',
+        'ratio_of_completed_exams_to_ordered_exams': {
             'completed': 0,
             'ordered':0
-        }
-    }
+        },
+    },
 }
 
 filter_selections = {
@@ -36,5 +51,7 @@ filter_selections = {
     "y_axis": "Exam Count",
     "modality": "CT",
     "date_range": ("2024-01", "2024-12"),
-    "view_shifts": False
+    "view_shifts": False,
+    "only_weekends": False,
+    "only_weekdays": False
 }
