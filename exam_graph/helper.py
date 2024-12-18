@@ -108,28 +108,6 @@ def read_csv_from_session(file: str) -> pd.DataFrame:
     
     return df
 
-# set default filters
-def apply_filt(df: pd.DataFrame, modality: str) -> pd.Series:
-    # Filter data based on the modality
-    filtered_df = df[df['Modality'] == modality]
-    
-    # # Group by 'Exam Complete Date/Tm' and count the number of exams
-    exam_counts = filtered_df.groupby('Exam Complete Date/Tm').size().rename("# of exams")
-    # i think groupby turns the df into a series?
-
-    # SOMETHING IS FUCKED UP WITH THE TIME FORMAT. COME BACK TO THIS LATER
-    # Extract the month and year from the 'Exam Complete Date/Tm' column
-    # filtered_df['Month'] = filtered_df['Exam Complete Date/Tm'].dt.to_period('M')
-
-
-    # Group by the 'Month' and count the number of exams
-    if x_plot_filters['month']:
-        exam_counts = filtered_df.groupby('Month').size().rename("# of exams")
-    # NOTE: df.series.rename() keeps it a series where df.series.reset_index() turns it into a df
-    
-    # print(exam_counts)
-    return exam_counts # returns a panda series. NOT a df
-
 def get_next_graph_filename():
     # Path to the static/img directory
     img_dir = settings.STATICFILES_DIRS[0] / 'graphs'
