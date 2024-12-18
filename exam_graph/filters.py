@@ -66,6 +66,21 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     return df
 
 
+# gets the exam turnaround time
+def tat(df:pd.DataFrame) -> pd.DataFrame:
+    df['tat'] = df['ORU - ORM']
+    return df
+
+
+# final filters
+
+# takes y filter and applies to x axis 
+# hardcoding turnaround time as y filter for now
+def wip_filt(x_filtered_df:pd.DataFrame, users_y_filt:str= 'tat') -> pd.Series:
+    da_end_filt = x_filtered_df.groupby(users_y_filt).mean()
+    return da_end_filt
+
+
 def n_exams_by_period(df:pd.DataFrame) -> pd.Series:
     exams_by_period = df.groupby('User_selected_period').size()
     return exams_by_period
