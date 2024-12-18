@@ -108,7 +108,7 @@ def read_csv_from_session(file: str) -> pd.DataFrame:
     return df
 
 # set default filters
-def apply_filt(df, modality):
+def apply_filt(df: pd.DataFrame, modality: str) -> pd.Series:
     # Filter data based on the modality
     filtered_df = df[df['Modality'] == modality]
     
@@ -157,7 +157,7 @@ def get_next_graph_filename():
      
 
 # generate graph
-def plot_graph(pd_series):
+def plot_graph(pd_series: pd.Series):
 
     # create the matplotlib figure/axes explicitly for better readability. By default Matplotlib uses a stateful interface for these objects
 
