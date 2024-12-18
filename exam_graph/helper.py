@@ -76,15 +76,6 @@ def try_learn():
     # plt.show()
 
 
-def count_by_modality():
-
-    for exam_name in df['Exam Order Name'].str.strip():
-        modality = exam_name[1:3]
-        if modality in modalities:
-            modalities[modality] += 1
-
-    print(modalities)
-
 
 def one_modality():
     filt = df['Exam Order Name'].str.contains('XR')
