@@ -144,11 +144,21 @@ def get_next_graph_filename():
 
 # generate graph
 def plot_graph(pd_series):
-    # convert series to a graph that html can display
-    cool_graph = pd_series.plot(kind='bar', color='skyblue')
-    print(f'Type of "cool_graph": {type(cool_graph)}')
+
+    # create the matplotlib figure/axes explicitly for better readability. By default Matplotlib uses a stateful interface for these objects
+
+    fig , ax = plt.subplots()
+
+    # Pass the axes object created above to plot data to our graph (fig)
+    cool_graph = pd_series.plot(kind='bar', color='skyblue', ax=ax)
+
+    # Set the title and axis labels using the `Axes` object
+    ax.set_title('Exams over some time')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('# of exams')
+    print(f'Type of "cool_graph": {type(cool_graph)}') # Matplt Axes object
     file_name = get_next_graph_filename()
     file_path = settings.STATICFILES_DIRS[0] / 'graphs'/ file_name
-    plt.savefig(fname = file_path, format='png')
-    plt.close()
+    fig.savefig(fname = file_path, format='png')
+    plt.close(fig)
     return file_name
