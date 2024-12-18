@@ -54,37 +54,22 @@ week_view_options = [
 ]
 
 # x axis filters
-def period(df:pd.DataFrame, period_selection:str) -> pd.Series:
 
-    if period_selection == 'month':
-        # set time stamps to datetime object
-        df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+# use pandas time period aliases for period_selection 
+def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
+    # set time stamps to datetime object
+    df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
 
-        # create new column to we can group by month
-        df['Exam Complete Month'] = df['Exam Complete Date\/Tm'].dt.to_period('M')
-        exams_by_month = df.groupby('Exam Complete Month').size()
+    # create new column to we can group by the user's selected period
+    df['User_selected_period'] = df['Exam Complete Date\/Tm'].dt.to_period(period_selection)
 
-        return exams_by_month   
-    
-    elif period_selection == 'day':
-        # set time stamps to datetime object
-        df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+    return df
 
-        # we can already group by day off of this column. its time is zeroed so it's effectively a day column
-        exams_by_day = df.groupby('Exam Complete Date\/Tm').size()
 
-        return exams_by_day
-    
-    elif period_selection == 'year':
-        # set time stamps to datetime object
-        df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+def n_exams_by_period(df:pd.DataFrame) -> pd.Series:
+    exams_by_period = df.groupby('User_selected_period').size()
+    return exams_by_period
 
-        # create new column to we can group by year
-        df['Exam Complete Year'] = df['Exam Complete Date\/Tm'].dt.to_period('Y')
-        exams_by_year = df.groupby('Exam Complete Year').size()
-
-        return exams_by_year
-    
 """
 NOTES
 

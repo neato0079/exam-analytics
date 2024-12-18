@@ -52,7 +52,7 @@ def plot_data(df):
     plt.tight_layout()
     
     # Format x-axis to show date without time
-    ax.set_xticklabels(df.index.strftime('%Y-%m'), rotation=90)
+    ax.set_xticklabels(df.index.strftime('%Y-%m-%d'), rotation=90)
 
     # Ensure y-axis displays integers
     plt.gca().yaxis.set_major_locator(mtick.MaxNLocator(integer=True))
@@ -222,10 +222,18 @@ def plot_graph(pd_series: pd.Series):
 #     print(type(filtered_data))
 #     plot_data(filtered_data)
 
+alias = {
+    'day': 'D',
+    'week':'W',
+    'month': 'M',
+    'year': 'Y'
+}
+
 def test_import_filt():
     mock_df = pd.read_json('./mock_data.json')
-    period_selection = 'day'
-    filtered_data = filters.period(mock_df, period_selection)
+    period_selection = alias['day']
+    period_data = filters.period(mock_df, period_selection)
+    filtered_data = filters.n_exams_by_period(period_data)
     print(filtered_data)
     plot_data(filtered_data)
 
