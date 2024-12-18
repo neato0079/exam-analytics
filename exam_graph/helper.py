@@ -13,29 +13,39 @@ df = pd.read_csv('./mock_exam_data.csv')
 # for any column with strings, strip white spaces
 df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
-date_range = {
-    # make this ISO
-    'start': '00:00:0000',
-    'end': '00:00:0000'
-}
 
-modalities = {
-    'XR': 0,
-    'CT': 0,
-    'MR': 0,
-    'US': 0,
-    'NM': 0,
-}
+filters = {
+    'date_range': {
+        # make this ISO. edit later. sample data set is small enough for this not to matter yet
+        'start': '00:00:0000',
+        'end': '00:00:0000'
+    },
+    'modalities': {
+        'XR': 0,
+        'CT': 0,
+        'MR': 0,
+        'US': 0,
+        'NM': 0,
+    },
+    'x_plot_filters': {
+        'day': False,
+        'month': True,
+        'year': False,
+        'shift' : False,
+        'modalities': [],
+        'tat': False,
+        'weekends only': False,
+        'weekdays only': False,
+    },
+    'y_plot_filters': {
+        'number of exams': True,
+        'exam start to finish time': '00:00',
+        'ratio of completed exams to ordered exams': {
+            'completed': 0,
+            'ordered':0
+        }
+    }
 
-x_plot_filters = {
-    'day': False,
-    'month': False,
-    'year': False,
-    'shift' : False,
-    'modalities': [],
-    'tat': False,
-    'weekends only': False,
-    'weekdays only': False,
 }
 
 def try_learn(): 
