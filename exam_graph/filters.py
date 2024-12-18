@@ -7,7 +7,7 @@ filters = {
     },
     
     "x_axis": { # Time filters
-        "group_by": "month",  # Options: "day", "month", "year"
+        "period": "month",  # Options: "day", "month", "year"
         "shift_filter": ["AM", "PM", "NOC"],  # List of shifts to include
         "week_view": None  # Options: "weekends", "weekdays", None
     },
@@ -32,7 +32,7 @@ metric_options = [
     'ratio_of_completed_exams_to_ordered_exams'
 ]
 
-groupby_options = [
+period_options = [
     'hour'
     'day'
     'month',
