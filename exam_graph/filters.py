@@ -65,6 +65,8 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
 
     return df
 
+def mod_filt(df:pd.DataFrame, modalities:list) -> pd.DataFrame:
+    return 1
 
 # gets the exam turnaround time
 def tat(df:pd.DataFrame) -> pd.DataFrame:
@@ -93,18 +95,24 @@ def n_exams_by_period(df:pd.DataFrame) -> pd.Series:
     return exams_by_period
 
 
-def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modality:list,):
+def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modality:list,) -> pd.Series:
 
     # get date range
     date_range = []
 
     # apply x axis value (time constraints)
-    x_filt_df = period(pd, xfilt['period'])
+    df = period(df, xfilt['period'])
+
+    # apply modality filters if needed
+    if xfilt['modalities'].len() > 0:
+        df = mod_filt(df, xfilt['modalities'])
+
 
     # apply y axis value (metric)
-    y_filt_series = y_filt()
+    series_axes = y_filt(df)
 
     # 
+    return series_axes
 """
 NOTES
 
