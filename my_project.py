@@ -55,10 +55,11 @@ def plot_data(df):
     ax.set_xticklabels(df.index.strftime('%Y-%m-%d'), rotation=90)
 
     # Ensure y-axis displays integers
-    plt.gca().yaxis.set_major_locator(mtick.MaxNLocator(integer=True))
+    # plt.gca().yaxis.set_major_locator(mtick.MaxNLocator(integer=True))
 
     # Show the plot
     plt.show()
+    plt.close()
 
 
 # Function to filter by modality, date, w/e
@@ -231,7 +232,7 @@ alias = {
 
 def test_import_filt():
     mock_df = pd.read_json('./mock_data.json')
-    period_selection = alias['month']
+    period_selection = alias['week']
     period_data = filters.period(mock_df, period_selection)
     filtered_data = filters.wip_filt(period_data, 'tat')
     # filtered_data = filters.n_exams_by_period(period_data)
