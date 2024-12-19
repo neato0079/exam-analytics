@@ -234,7 +234,7 @@ def test_import_filt():
     mock_df = pd.read_json('./mock_data.json')
     period_selection = alias['week']
     period_data = filters.period(mock_df, period_selection)
-    filtered_data = filters.wip_filt(period_data, 'tat')
+    filtered_data = filters.y_filt(period_data, 'tat')
     # filtered_data = filters.n_exams_by_period(period_data)
     print(filtered_data)
     plot_data(filtered_data)

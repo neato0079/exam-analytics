@@ -79,7 +79,7 @@ def tat(df:pd.DataFrame) -> pd.DataFrame:
 
 # takes y filter and applies to x axis 
 # hardcoding turnaround time as y filter for now
-def wip_filt(x_filtered_df:pd.DataFrame, users_y_filt:str= 'tat') -> pd.Series:
+def y_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     mydf = tat(x_filtered_df)
     small_df = mydf[['tat', 'User_selected_period']]
     mean_df = small_df.groupby('User_selected_period').mean()
@@ -92,6 +92,19 @@ def n_exams_by_period(df:pd.DataFrame) -> pd.Series:
     exams_by_period = df.groupby('User_selected_period').size()
     return exams_by_period
 
+
+def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modality:list,):
+
+    # get date range
+    date_range = []
+
+    # apply x axis value (time constraints)
+    x_filt_df = period(pd, xfilt['period'])
+
+    # apply y axis value (metric)
+    y_filt_series = y_filt()
+
+    # 
 """
 NOTES
 
