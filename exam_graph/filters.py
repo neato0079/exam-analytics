@@ -58,8 +58,14 @@ week_view_options = [
 
 # x axis filters
 
+# creates a new column for 'User_selected_period'
 # use pandas time period aliases for period_selection 
 def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
+
+    # If the user wants to only see modality metrics, we already have a modality column in our df so nothing needs to be done
+    if period_selection == 'modalities':
+        return df
+    
     # set time stamps to datetime object
     df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
 
@@ -68,8 +74,6 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
 
     return df
 
-def mod_filt(df:pd.DataFrame, modalities:list) -> pd.DataFrame:
-    return 1
 
 # gets the exam turnaround time
 def tat(df:pd.DataFrame) -> pd.DataFrame:
