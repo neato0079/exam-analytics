@@ -28,13 +28,14 @@ filters = {
 
 metric_options = [
     'number_of_exams',
-    'exam_start_to_finish_time'
+    'exam_start_to_finish_time',
     'ratio_of_completed_exams_to_ordered_exams'
 ]
 
 period_options = [
-    'hour'
-    'day'
+    'hour',
+    'day',
+    'week',
     'month',
     'year'
 ]

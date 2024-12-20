@@ -95,6 +95,23 @@ CURRENT SHORT TERM GOAL (12/16):
 	- in the GET request, send a JSON that includes all the filter settings above
 	- /filtered should display the new graph with the GET request's filters applied
 
+MANAGEABLE SHORT TERM GOALS(12/20):
+
+Get these filters working:
+    Periods:
+        - day
+        - week
+        - month
+        - year
+    
+    modalities:
+        - XR
+        - CT
+        - MR
+        - US
+        - NM
+
+
 CURRENT LONG TERM GOALS:
 
 - Gut instinct tells me storing exam data in a session is dumb and inefficient. Figure out a better way to store user uploaded data
