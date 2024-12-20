@@ -230,15 +230,17 @@ alias = {
     'year': 'Y'
 }
 
-def test_import_filt():
-    mock_df = pd.read_json('./mock_data.json')
+### TEST FILTERS
+
+mock_df = pd.read_json('./mock_data.json')
+def test_week_filt():
     period_selection = alias['week']
     period_data = filters.period(mock_df, period_selection)
-    filtered_data = filters.y_filt(period_data, 'tat')
-    # filtered_data = filters.n_exams_by_period(period_data)
+    # filtered_data = filters.y_filt(period_data, 'tat')
+    filtered_data = filters.n_exams_by_period(period_data)
     print(filtered_data)
     plot_data(filtered_data)
     # filters.tat(mock_df)
 
 
-test_import_filt()
+test_week_filt()
