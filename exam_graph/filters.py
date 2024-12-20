@@ -126,7 +126,7 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 # final filters
 
 # Metric function dictionary
-metrics = {
+metric_dict = {
     'totals': totals,
     'mean': mean,
     'tat': tat,
@@ -135,12 +135,8 @@ metrics = {
 # takes y filter and applies to x axis 
 # hardcoding turnaround time as y filter for now
 def metric_filt(x_filtered_df:pd.DataFrame, metric) -> pd.Series:
-    df = metric(x_filtered_df)
-    small_df = df[['tat', 'User_selected_period']]
-    mean_df = small_df.groupby('User_selected_period').mean()
+    return metric(x_filtered_df)
 
-    # da_end_filt = pd.Series(mean_df['tat'], index= mean_df['User_selected_period'])
-    return mean_df
 
 def metric_filt_og(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     mydf = tat(x_filtered_df)
@@ -151,7 +147,7 @@ def metric_filt_og(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     return mean_df
 
 
-def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modality:list,) -> pd.Series:
+def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str, modality:list,) -> pd.Series:
 
     # get date range
     date_range = []
@@ -160,12 +156,12 @@ def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modali
     df = period(df, xfilt['period'])
 
     # apply modality filters if needed
-    if xfilt['modalities'].len() > 0:
+    if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
 
 
     # apply y axis value (metric)
-    series_axes = metric_filt(df)
+    series_axes = metric_filt(df, metric_dict[metric])
 
     # 
     return series_axes
