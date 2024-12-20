@@ -233,6 +233,8 @@ alias = {
 ### TEST FILTERS
 
 mock_df = pd.read_json('./mock_data.json')
+modalities = ['XR','CT','US']
+
 def test_week_filt():
     period_selection = alias['week']
     period_data = filters.period(mock_df, period_selection)
@@ -243,4 +245,13 @@ def test_week_filt():
     # filters.tat(mock_df)
 
 
-test_week_filt()
+def test_modality_filt():
+    period_selection = alias['week']
+    period_data = filters.period(mock_df, period_selection)
+    mod_data = filters.mod_filt(period_data,modalities)
+    print(mod_data)
+    filtered_data = filters.n_exams_by_period(mod_data)
+    print(filtered_data)    
+    plot_data(filtered_data)
+
+test_modality_filt()
