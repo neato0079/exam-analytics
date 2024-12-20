@@ -97,20 +97,23 @@ CURRENT SHORT TERM GOAL (12/16):
 
 MANAGEABLE SHORT TERM GOALS(12/20):
 
-Get these filters working:
+Get these filters working and plotted:
     Periods:
-        - day
-        - week
-        - month
-        - year
+        - day done
+        - week done
+        - month done
+        - year done
     
-    modalities:
+    modalities: done
         - XR
         - CT
         - MR
         - US
         - NM
+done today(12/20)
 
+Next goal:
+figure out a clean way to pass data to the beeg filter function. messy rn
 
 CURRENT LONG TERM GOALS:
 
