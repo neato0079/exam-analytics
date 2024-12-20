@@ -9,11 +9,8 @@ filters = {
     "x_axis": { # Time filters
         "period": "month",  # Options: "day", "month", "year", "modalities"
         "shift_filter": ["AM", "PM", "NOC"],  # List of shifts to include
-        "week_view": None  # Options: "weekends", "weekdays", None
-    },
-
-    "exam_filters": {
-        "modalities": ["CT", "MRI"],  # List of selected modalities
+        "week_view": None,  # Options: "weekends", "weekdays", None
+        "modalities": ["XR", "CT", "MR", "US", "NM"],  # List of selected modalities
         "exam_name": "Head CT"  # Specific exam name
     },
 
@@ -73,6 +70,9 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     df['User_selected_period'] = df['Exam Complete Date\/Tm'].dt.to_period(period_selection)
 
     return df
+
+def mod_filt(df:pd.DataFrame, selected_modalities:list) -> pd.DataFrame:
+    return df[df['Modality'].isin(selected_modalities)]
 
 
 # gets the exam turnaround time
