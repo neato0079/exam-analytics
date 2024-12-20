@@ -275,4 +275,26 @@ def asdf():
     # a = a.reset_index(name='asdf')
     # print(a.groupby("Modality")['User_selected_period'].mean())
 # test_week_filt()
-asdf()
+
+xfilt = {
+    'period': alias['year'],
+    'modalities':['CT', 'US']
+}
+
+metrics = {
+    'totals': filters.totals,
+    'mean': filters.mean,
+    'tat': filters.tat,
+}
+yfilt = {
+
+}
+
+def test_total_filt():
+    date_range = []
+    modalities = []
+    data = filters.total_filter(mock_df,date_range,xfilt,'totals',modalities)
+    plot_data(data)
+    print(type(data))
+
+test_total_filt()
