@@ -89,8 +89,39 @@ def totals(df:pd.DataFrame) -> pd.Series:
     return exams_by_period
 
 def mean(df:pd.DataFrame) -> pd.Series:
-    exams_by_period = df.groupby('User_selected_period').mean()
-    return exams_by_period
+    
+    # Convert the date column to datetime
+    df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+
+    # Group by modality and date to count daily exams
+    daily_counts = df.groupby(["Modality", df["Exam Complete Date\/Tm"].dt.date]).size()
+    print(daily_counts)
+
+    # Reset the index to make the series easier to process
+    daily_counts = daily_counts.reset_index(name="Daily Exam Count")
+
+    # Calculate the average number of daily exams per modality
+    average_daily_counts = daily_counts.groupby("Modality")["Daily Exam Count"].mean()
+
+    print(average_daily_counts)
+
+
+def mean_by_modality(df:pd.DataFrame) -> pd.Series:
+    
+    # Group by modality and date to count daily exams
+    daily_counts = df.groupby(['Modality','User_selected_period']).size()
+    # return daily_counts
+
+    # Reset the index so that "modality" is a column not an index and so that we can perform a groupby again because reset_index returns a series to a dataframe
+    daily_counts = daily_counts.reset_index(name="Exam Count")
+
+    # Calculate the average number of daily exams per modality
+    average_daily_counts = daily_counts.groupby("Modality")["Exam Count"].mean()
+    print(average_daily_counts)
+
+    return average_daily_counts
+
+    print(average_daily_counts)
 
 # final filters
 
@@ -103,15 +134,15 @@ metrics = {
 
 # takes y filter and applies to x axis 
 # hardcoding turnaround time as y filter for now
-def metric_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
-    mydf = tat(x_filtered_df)
-    small_df = mydf[['tat', 'User_selected_period']]
+def metric_filt(x_filtered_df:pd.DataFrame, metric) -> pd.Series:
+    df = metric(x_filtered_df)
+    small_df = df[['tat', 'User_selected_period']]
     mean_df = small_df.groupby('User_selected_period').mean()
 
     # da_end_filt = pd.Series(mean_df['tat'], index= mean_df['User_selected_period'])
     return mean_df
 
-def metric_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
+def metric_filt_og(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     mydf = tat(x_filtered_df)
     small_df = mydf[['tat', 'User_selected_period']]
     mean_df = small_df.groupby('User_selected_period').mean()
