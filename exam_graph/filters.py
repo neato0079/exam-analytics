@@ -7,19 +7,20 @@ filters = {
     },
     
     "x_axis": { # Time filters
-        "period": "month",  # Options: "day", "month", "year"
+        "period": "month",  # Options: "day", "month", "year", "modalities"
         "shift_filter": ["AM", "PM", "NOC"],  # List of shifts to include
         "week_view": None  # Options: "weekends", "weekdays", None
-    },
-
-    "y_axis": { # Metrics
-        "metric": "number_of_exams",  # Options: "number_of_exams", "exam_start_to_finish_time", etc.
     },
 
     "exam_filters": {
         "modalities": ["CT", "MRI"],  # List of selected modalities
         "exam_name": "Head CT"  # Specific exam name
     },
+
+    "y_axis": { # Metrics
+        "metric": "number_of_exams",  # Options: "number_of_exams", "exam_start_to_finish_time", etc.
+    },
+
 
     "shift_color_indicators": False,
 }
@@ -37,7 +38,8 @@ period_options = [
     'day',
     'week',
     'month',
-    'year'
+    'year',
+    'modalities'
 ]
 
 modalities = [
@@ -80,9 +82,14 @@ def tat(df:pd.DataFrame) -> pd.DataFrame:
 
 # final filters
 
+# Metric function dictionary
+metrics = {
+    'tat': tat,
+}
+
 # takes y filter and applies to x axis 
 # hardcoding turnaround time as y filter for now
-def y_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
+def metric_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     mydf = tat(x_filtered_df)
     small_df = mydf[['tat', 'User_selected_period']]
     mean_df = small_df.groupby('User_selected_period').mean()
@@ -110,7 +117,7 @@ def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modali
 
 
     # apply y axis value (metric)
-    series_axes = y_filt(df)
+    series_axes = metric_filt(df)
 
     # 
     return series_axes
@@ -118,4 +125,22 @@ def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modali
 NOTES
 
 Period aliases for pandas:https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-period-aliases
+
+fitler flow
+
+date range gets set first. set this to a default range for mangable data sets (maybe just the past 3 months)
+
+x axis filters get set first. This tells us what portion of the data we want to analyize
+with this filter we essentially get rid of only rows from our dataset. all columns remain as the columns will be used later to determine what metrics  will be used
+any x axis filter can be combined (ie period=month, shift_filter=['AM'] + weekview=None). or rather, they are all mandatory. wouldnt make sense to not apply one of them?
+
+secondary x filters
+these will get set after as they only server to provide a more granular look at our og x filters but they cant be combined? untrue. make these the same as the x fitlers i guess
+
+y filters
+this tells us how we want to analyze our data. do we want to see turnaround times? total exam volume? average exam volume? ect The analyses are make on "grouped" data so these filters must be applied to already filtered data. hence we do this after the x filters
+
+pretty filters
+this just lets us make a stacked bar graph where different color show work shifts. figure this out later
+
 """
