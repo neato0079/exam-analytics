@@ -22,7 +22,7 @@ filters = {
 }
 
 
-# VALID OPTIONS FOR FILTERS:
+##### VALID OPTIONS FOR FILTERS #####
 
 metric_options = [
     'totals',
@@ -54,10 +54,20 @@ week_view_options = [
     None
 ]
 
-# x axis filters
+
+
+##### X AXIS FILTERS #####
 
 # creates a new column for 'User_selected_period'
 # use pandas time period aliases for period_selection 
+alias = {
+    'day': 'D',
+    'week':'W',
+    'month': 'M',
+    'year': 'Y'
+}
+
+
 def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
 
     # If the user wants to only see modality metrics, we already have a modality column in our df so nothing needs to be done
@@ -72,9 +82,14 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
 
     return df
 
+
+# filter df to only the selected modalities
 def mod_filt(df:pd.DataFrame, selected_modalities:list) -> pd.DataFrame:
     return df[df['Modality'].isin(selected_modalities)]
 
+
+
+##### METRIC FILTERS #####
 
 # gets the exam turnaround time
 def tat(df:pd.DataFrame) -> pd.DataFrame:
@@ -123,15 +138,6 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 
     print(average_daily_counts)
 
-# final filters
-
-# Metric function dictionary
-metric_dict = {
-    'totals': totals,
-    'mean': mean,
-    'tat': tat,
-}
-
 # takes y filter and applies to x axis 
 # hardcoding turnaround time as y filter for now
 def metric_filt(x_filtered_df:pd.DataFrame, metric) -> pd.Series:
@@ -148,6 +154,13 @@ def metric_filt_og(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
 
 
 def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd.Series:
+
+    # Metric function dictionary
+    metric_dict = {
+        'totals': totals,
+        'mean': mean,
+        'tat': tat,
+    }
 
     # get date range
     date_range = []
