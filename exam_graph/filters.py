@@ -25,7 +25,8 @@ filters = {
 # VALID OPTIONS FOR FILTERS:
 
 metric_options = [
-    'number_of_exams',
+    'totals',
+    'mean',
     'exam_start_to_finish_time',
     'ratio_of_completed_exams_to_ordered_exams'
 ]
@@ -83,11 +84,20 @@ def tat(df:pd.DataFrame) -> pd.DataFrame:
     # print(df)
     return df
 
+def totals(df:pd.DataFrame) -> pd.Series:
+    exams_by_period = df.groupby('User_selected_period').size()
+    return exams_by_period
+
+def mean(df:pd.DataFrame) -> pd.Series:
+    exams_by_period = df.groupby('User_selected_period').mean()
+    return exams_by_period
 
 # final filters
 
 # Metric function dictionary
 metrics = {
+    'totals': totals,
+    'mean': mean,
     'tat': tat,
 }
 
@@ -101,10 +111,13 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     # da_end_filt = pd.Series(mean_df['tat'], index= mean_df['User_selected_period'])
     return mean_df
 
+def metric_filt(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
+    mydf = tat(x_filtered_df)
+    small_df = mydf[['tat', 'User_selected_period']]
+    mean_df = small_df.groupby('User_selected_period').mean()
 
-def n_exams_by_period(df:pd.DataFrame) -> pd.Series:
-    exams_by_period = df.groupby('User_selected_period').size()
-    return exams_by_period
+    # da_end_filt = pd.Series(mean_df['tat'], index= mean_df['User_selected_period'])
+    return mean_df
 
 
 def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, yfilt:dict, modality:list,) -> pd.Series:
