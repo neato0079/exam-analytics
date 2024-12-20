@@ -52,7 +52,7 @@ def plot_data(df):
     plt.tight_layout()
     
     # Format x-axis to show date without time
-    ax.set_xticklabels(df.index.strftime('%Y-%m-%d'), rotation=90)
+    # ax.set_xticklabels(df.index.strftime('%Y-%m-%d'), rotation=90)
 
     # Ensure y-axis displays integers
     # plt.gca().yaxis.set_major_locator(mtick.MaxNLocator(integer=True))
@@ -236,22 +236,43 @@ mock_df = pd.read_json('./mock_data.json')
 modalities = ['XR','CT','US']
 
 def test_week_filt():
-    period_selection = alias['week']
+    period_selection = alias['month']
     period_data = filters.period(mock_df, period_selection)
+    print(period_data)
     # filtered_data = filters.y_filt(period_data, 'tat')
-    filtered_data = filters.n_exams_by_period(period_data)
+    filtered_data = filters.totals(period_data)
     print(filtered_data)
     plot_data(filtered_data)
     # filters.tat(mock_df)
 
 
 def test_modality_filt():
-    period_selection = alias['week']
+    period_selection = alias['month']
     period_data = filters.period(mock_df, period_selection)
     mod_data = filters.mod_filt(period_data,modalities)
     print(mod_data)
-    filtered_data = filters.n_exams_by_period(mod_data)
+    filtered_data = filters.totals(mod_data)
     print(filtered_data)    
     plot_data(filtered_data)
 
-test_modality_filt()
+
+# make tat() return a series where the index is 
+# def test_df_plot():
+#     mock_df = df
+#     tw_col_df = mock_df[['Exam Complete Date\/Tm', 'Modality']]
+#     plot_data(tw_col_df)
+
+def test_mean():
+    period_selection = alias['week']
+    period_data = filters.period(mock_df, period_selection)
+    filters.mean(mock_df)
+
+def asdf(): 
+    period_filt = filters.period(mock_df,alias['month'])
+    a = filters.better_mod(period_filt)
+    plot_data(a)
+    print(a)
+    # a = a.reset_index(name='asdf')
+    # print(a.groupby("Modality")['User_selected_period'].mean())
+# test_week_filt()
+asdf()
