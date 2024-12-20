@@ -1,26 +1,26 @@
 import pandas as pd
 
 filters = {
-    "date_range": {
-        "start": "2024-01-01",
-        "end": "2024-12-31"
+    'date_range': {
+        'start': '2024-01-01',
+        'end': '2024-12-31'
     },
     
-    "x_axis": { # Time filters
-        "period": "month",  # Options: "day", "month", "year", "modalities"
-        "shift_filter": ["AM", "PM", "NOC"],  # List of shifts to include
-        "week_view": None,  # Options: "weekends", "weekdays", None
-        "modalities": ["XR", "CT", "MR", "US", "NM"],  # List of selected modalities
-        "exam_name": "Head CT"  # Specific exam name
+    'x_axis': { # Time filters
+        'period': 'month',  # Options: 'day', 'month', 'year', 'modalities'
+        'shift_filter': ['AM', 'PM', 'NOC'],  # List of shifts to include
+        'week_view': None,  # Options: 'weekends', 'weekdays', None
+        'modalities': ['XR', 'CT', 'MR', 'US', 'NM'],  # List of selected modalities
+        'exam_name': 'Head CT'  # Specific exam name
     },
 
-    "y_axis": { # Metrics
-        "metric": "number_of_exams",  # Options: "number_of_exams", "exam_start_to_finish_time", etc.
+    'y_axis': { # Metrics
+        'metric': 'number_of_exams',  # Options: 'number_of_exams', 'exam_start_to_finish_time', etc.
     },
 
-
-    "shift_color_indicators": False,
+    'shift_color_indicators': False,
 }
+
 
 # VALID OPTIONS FOR FILTERS:
 
@@ -147,7 +147,7 @@ def metric_filt_og(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
     return mean_df
 
 
-def total_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str, modality:list,) -> pd.Series:
+def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd.Series:
 
     # get date range
     date_range = []

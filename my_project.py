@@ -278,7 +278,10 @@ def asdf():
 
 xfilt = {
     'period': alias['year'],
-    'modalities':['CT', 'US']
+    'shift_filter': ['AM', 'PM', 'NOC'],
+    'week_view': None,
+    'modalities':['CT', 'US'],
+    'exam_name': 'Head CT'
 }
 
 metrics = {
@@ -293,7 +296,7 @@ yfilt = {
 def test_total_filt():
     date_range = []
     modalities = []
-    data = filters.total_filter(mock_df,date_range,xfilt,'totals',modalities)
+    data = filters.master_filter(mock_df,date_range,xfilt,'totals',modalities)
     plot_data(data)
     print(type(data))
 
