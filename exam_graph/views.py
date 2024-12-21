@@ -10,6 +10,8 @@ import json
 from . import helper
 from . import filters
 from pathlib import Path
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
 
 ################
 #  DEBUG MODE  #
@@ -45,12 +47,23 @@ def test_api(request):
         }
     }
 
+    filters_post_requirementv2 = {
+        'dataframe': ''
+    }
+
     if request.method == 'POST':
         try:
             # Decode and parse the JSON body
-            body = json.loads(request.body.decode('utf-8'))
+            # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
+            # the file uploaded by postman is a django.core.files.uploadedfile object
+            # we need to convert this object to bytes before we can json read it
+            in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
+            in_memory_file.seek(0)
+            file_bytes = in_memory_file.read()
+            body = json.loads(file_bytes)
             # This is where the filters will come in
             return JsonResponse({"Your POST": body})
+            # return JsonResponse({'success': 'no logic worked'})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON body"}, status=400)
 
