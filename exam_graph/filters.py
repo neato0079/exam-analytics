@@ -96,8 +96,15 @@ def tat(df:pd.DataFrame) -> pd.DataFrame:
     order_time = pd.to_datetime(df['Exam Order Date\/Time'])
     final_time = pd.to_datetime(df['Final Date\/Tm'])
     df['tat'] = final_time - order_time
-    # print(df)
-    return df
+    tat_df = df[['tat', 'User_selected_period']]
+    tat_series = tat_df.groupby('User_selected_period')['tat'].mean()
+
+    # Look up this warning: 
+    # SettingWithCopyWarning: 
+    # A value is trying to be set on a copy of a slice from a DataFrame.
+    # Try using .loc[row_indexer,col_indexer] = value instead
+    return tat_series
+
 
 def totals(df:pd.DataFrame) -> pd.Series:
     exams_by_period = df.groupby('User_selected_period').size()
@@ -150,11 +157,6 @@ def metric_filt_v2(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
     
     xy_filtered_df = metric_dict[metric](x_filtered_df)
 
-    if metric == 'tat':
-        tat_df = xy_filtered_df[['tat', 'User_selected_period']]
-        tat_series = tat_df.groupby('User_selected_period')['tat'].mean()
-        return tat_series
- 
     return xy_filtered_df
    
 

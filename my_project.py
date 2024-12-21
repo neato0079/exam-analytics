@@ -295,7 +295,7 @@ yfilt = {
 
 def test_total_filt():
     date_range = []
-    metric ='totals'
+    metric ='tat'
     data = filters.master_filter(mock_df,date_range,xfilt,metric)
     plot_data(data)
     print(type(data))
