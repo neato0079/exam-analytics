@@ -136,7 +136,7 @@ def get_next_graph_filename():
      
 
 # generate graph
-def plot_graph(pd_series: pd.Series):
+def plot_graph(pd_series: pd.Series, xlabel:str, ylabel:str, title:str):
 
     # create the matplotlib figure/axes explicitly for better readability. By default Matplotlib uses a stateful interface for these objects
 
@@ -146,9 +146,9 @@ def plot_graph(pd_series: pd.Series):
     cool_graph = pd_series.plot(kind='bar', color='skyblue', ax=ax)
 
     # Set the title and axis labels using the `Axes` object
-    ax.set_title('Exams over some time')
-    ax.set_xlabel('Time')
-    ax.set_ylabel('# of exams')
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     print(f'Type of "cool_graph": {type(cool_graph)}') # Matplt Axes object
     file_name = get_next_graph_filename()
     file_path = settings.STATICFILES_DIRS[0] / 'graphs'/ file_name

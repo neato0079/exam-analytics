@@ -8,6 +8,7 @@ import pandas as pd
 import pprint
 import json
 from . import helper
+from . import filters
 from pathlib import Path
 
 ################
@@ -125,7 +126,7 @@ def upload_csv(request, modality):
             
             df_csv = helper.read_csv_from_session(request.session['csv_data'])
             filtered_df = helper.apply_filt(df_csv, modality)
-            graph_file_name = helper.plot_graph(filtered_df)
+            graph_file_name = helper.plot_graph(filtered_df, 'Time', '# of exams', 'Cool Graph Title')
             graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
             return render(request, 'results.html', {'graph_path': graph_file_path})
     else:
