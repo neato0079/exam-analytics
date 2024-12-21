@@ -114,6 +114,15 @@ done today(12/20)
 
 Next goal:
 figure out a clean way to pass data to the beeg filter function. messy rn
+Master filter is g2g for now. Refactor as needed in the future. (12/21)
+
+Next goal(12/21):
+
+views.py needs to receive a request body containing filter options. 
+
+- create a test func to run the master_filter
+- use postman to send the desired data to a views hook
+- return the series axes from master_filter into a json response
 
 CURRENT LONG TERM GOALS:
 
