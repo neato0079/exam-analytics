@@ -7,6 +7,9 @@ import matplotlib.ticker as mtick
 import base64
 from io import BytesIO
 from exam_graph import filters
+import json
+
+
 
 plot_filters = {
     'date': False,
@@ -301,3 +304,7 @@ def test_total_filt():
     print(type(data))
 
 # test_total_filt()
+
+with open('./mock_data.json') as f:
+    data = json.load(f)
+    print(type(data)) # json is <class 'dict'>

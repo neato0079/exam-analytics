@@ -11,6 +11,7 @@ from . import helper
 from . import filters
 from pathlib import Path
 from django.core.files.uploadedfile import InMemoryUploadedFile
+import json
 
 
 ################
@@ -60,9 +61,21 @@ def test_api(request):
             in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
             in_memory_file.seek(0)
             file_bytes = in_memory_file.read()
-            body = json.loads(file_bytes)
+            test_json = json.loads(file_bytes)
+
+            client_form = request.POST
+            # json_data = json.dumps(client_form)
+
+
             # This is where the filters will come in
-            return JsonResponse({"Your POST": body})
+            return JsonResponse({
+                'uploaded file type': str(type(test_json)),
+                'json type': 'JSON is <class "dict"> so we are good',
+                'uploaded file': str(in_memory_file),
+                'User_selected_metric': str(client_form['User_selected_metric']),
+                'User_selected_modality': str(client_form['User_selected_modality'])
+
+                                 })
             # return JsonResponse({'success': 'no logic worked'})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON body"}, status=400)
