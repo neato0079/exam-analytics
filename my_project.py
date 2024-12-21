@@ -277,7 +277,7 @@ def asdf():
 # test_week_filt()
 
 xfilt = {
-    'period': alias['year'],
+    'period': alias['month'],
     'shift_filter': ['AM', 'PM', 'NOC'],
     'week_view': None,
     'modalities':['CT', 'US'],

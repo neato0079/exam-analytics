@@ -138,22 +138,8 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 
     print(average_daily_counts)
 
-# takes y filter and applies to x axis 
-# hardcoding turnaround time as y filter for now
-def metric_filt(x_filtered_df:pd.DataFrame, metric) -> pd.Series:
-    return metric(x_filtered_df)
 
-
-def metric_filt_og(x_filtered_df:pd.DataFrame, metric:str= 'tat') -> pd.Series:
-    mydf = tat(x_filtered_df)
-    small_df = mydf[['tat', 'User_selected_period']]
-    mean_df = small_df.groupby('User_selected_period').mean()
-
-    # da_end_filt = pd.Series(mean_df['tat'], index= mean_df['User_selected_period'])
-    return mean_df
-
-
-def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd.Series:
+def metric_filt_v2(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
 
     # Metric function dictionary
     metric_dict = {
@@ -161,6 +147,26 @@ def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd
         'mean': mean,
         'tat': tat,
     }
+    
+    xy_filtered_df = metric_dict[metric](x_filtered_df)
+
+    if metric == 'tat':
+        tat_df = xy_filtered_df[['tat', 'User_selected_period']]
+        tat_series = tat_df.groupby('User_selected_period')['tat'].mean()
+        return tat_series
+ 
+    return xy_filtered_df
+   
+
+
+def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd.Series:
+
+    # Metric function dictionary
+    # metric_dict = {
+    #     'totals': totals,
+    #     'mean': mean,
+    #     'tat': tat,
+    # }
 
     # get date range
     date_range = []
@@ -174,7 +180,7 @@ def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd
 
 
     # apply y axis value (metric)
-    series_axes = metric_filt(df, metric_dict[metric])
+    series_axes = metric_filt_v2(df, metric)
 
     # 
     return series_axes
