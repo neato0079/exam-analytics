@@ -55,7 +55,6 @@ week_view_options = [
 ]
 
 
-
 ##### X AXIS FILTERS #####
 
 # creates a new column for 'User_selected_period'
@@ -92,7 +91,7 @@ def mod_filt(df:pd.DataFrame, selected_modalities:list) -> pd.DataFrame:
 ##### METRIC FILTERS #####
 
 # gets the exam turnaround time
-def tat(df:pd.DataFrame) -> pd.DataFrame:
+def tat(df:pd.DataFrame) -> pd.Series:
     order_time = pd.to_datetime(df['Exam Order Date\/Time'])
     final_time = pd.to_datetime(df['Final Date\/Tm'])
     df['tat'] = final_time - order_time
@@ -163,13 +162,6 @@ def metric_filt_v2(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
 
 def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd.Series:
 
-    # Metric function dictionary
-    # metric_dict = {
-    #     'totals': totals,
-    #     'mean': mean,
-    #     'tat': tat,
-    # }
-
     # get date range
     date_range = []
 
@@ -180,11 +172,9 @@ def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
 
-
     # apply y axis value (metric)
     series_axes = metric_filt_v2(df, metric)
 
-    # 
     return series_axes
 """
 NOTES
