@@ -28,6 +28,13 @@ def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
 # Testing for use with postman
+# usecase: again from postman 
+# ingest json (in prod we will just json_read the csv stored on disk), 
+# parse user's form request, 
+# apply filters, 
+# plot graph, 
+# save graph image, 
+# render in html 
 def test_api(request):
     filters_post_requirement = {
         'modality': None,
@@ -69,7 +76,7 @@ def test_api(request):
 
             # This is where the filters will come in
             return JsonResponse({
-                'uploaded file type': str(type(test_json)),
+                'uploaded file type': str(type(test_json)), # this should just be a session key or something in prod
                 'json type': 'JSON is <class "dict"> so we are good',
                 'uploaded file': str(in_memory_file),
                 'User_selected_metric': str(client_form['User_selected_metric']),
