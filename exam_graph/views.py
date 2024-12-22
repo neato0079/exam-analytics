@@ -29,7 +29,7 @@ def help(request):
 
 # Testing for use with postman
 # usecase: again from postman 
-# ingest json (in prod we will just json_read the csv stored on disk), 
+# ingest json (in prod we will just json_read the csv stored on disk), done
 # parse user's form request, 
 # apply filters, 
 # plot graph, 
@@ -55,8 +55,16 @@ def test_api(request):
         }
     }
 
+
     filters_post_requirementv2 = {
-        'dataframe': ''
+        'dataframe': 'test json',
+        'date range': '',
+        'xfilt': {
+            'period': '',
+            'modalities': []
+        },
+        'User_selected_metric': '',
+
     }
 
     if request.method == 'POST':
