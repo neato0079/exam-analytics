@@ -30,7 +30,7 @@ def help(request):
 # Testing for use with postman
 # usecase: again from postman 
 # ingest json (in prod we will just json_read the csv stored on disk), done
-# parse user's form request, 
+# parse user's form request, done
 # apply filters, 
 # plot graph, 
 # save graph image, 
@@ -56,16 +56,6 @@ def test_api(request):
     }
 
 
-    filters_post_requirementv2 = {
-        'dataframe': 'test json',
-        'date range': '',
-        'xfilt': {
-            'period': '',
-            'modalities': []
-        },
-        'User_selected_metric': '',
-
-    }
 
     if request.method == 'POST':
         try:
@@ -81,6 +71,24 @@ def test_api(request):
             client_form = request.POST
             # json_data = json.dumps(client_form)
 
+            # parse form request
+            metric = client_form['User_selected_metric']
+            modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')]
+            period = client_form['period']
+            filename = str(in_memory_file)
+
+
+            filters_post_requirementv2 = {
+                'dataframe name': filename,
+                'date range': '',
+                'xfilt': {
+                    'period': period,
+                    'modalities': modality
+                },
+                'User_selected_metric': metric,
+
+            }
+            return JsonResponse(filters_post_requirementv2)
 
             # This is where the filters will come in
             return JsonResponse({
@@ -88,9 +96,11 @@ def test_api(request):
                 'json type': 'JSON is <class "dict"> so we are good',
                 'uploaded file': str(in_memory_file),
                 'User_selected_metric': str(client_form['User_selected_metric']),
-                'User_selected_modality': str(client_form['User_selected_modality'])
+                'User_selected_modality': modality,
+                'period': str(client_form['period']),
 
                                  })
+        
             # return JsonResponse({'success': 'no logic worked'})
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON body"}, status=400)
