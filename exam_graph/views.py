@@ -12,6 +12,7 @@ from . import filters
 from pathlib import Path
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import json
+import io
 
 
 ################
@@ -67,6 +68,7 @@ def test_api(request):
             in_memory_file.seek(0)
             file_bytes = in_memory_file.read()
             test_json = json.loads(file_bytes)
+            myjson = json.dump(file_bytes)
 
             client_form = request.POST
             # json_data = json.dumps(client_form)
@@ -78,7 +80,9 @@ def test_api(request):
             filename = str(in_memory_file)
 
 
-            filters_post_requirementv2 = {
+            # mock_json = pd.read_json(test_json)
+
+            post_req = {
                 'dataframe name': filename,
                 'date range': '',
                 'xfilt': {
@@ -88,11 +92,14 @@ def test_api(request):
                 'User_selected_metric': metric,
 
             }
-            return JsonResponse(filters_post_requirementv2)
+
+            # plot_data = filters.master_filter(mock_json, post_req['date range'], post_req['xfilt'], post_req['User_selected_metric'])
+
+            # return JsonResponse({'plot data': str(plot_data)})
 
             # This is where the filters will come in
             return JsonResponse({
-                'uploaded file type': str(type(test_json)), # this should just be a session key or something in prod
+                'uploaded file type': str(type(myjson)), # this should just be a session key or something in prod
                 'json type': 'JSON is <class "dict"> so we are good',
                 'uploaded file': str(in_memory_file),
                 'User_selected_metric': str(client_form['User_selected_metric']),
