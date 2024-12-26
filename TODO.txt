@@ -244,8 +244,10 @@ Next step (12/26)
 
 organize url flow
 
+/generate_graph
+
 - get master copy JSON
 - format and parse JSON
 - set filter
 - save graph???
-- display in html
+- display in html 
