@@ -105,7 +105,7 @@ def test_api(request):
 
             }
 
-            # plot_data = filters.master_filter(mock_json, post_req['date range'], post_req['xfilt'], post_req['User_selected_metric'])
+            plot_data = filters.master_filter(mock_json, post_req['date range'], post_req['xfilt'], post_req['User_selected_metric'])
 
             # return JsonResponse({'plot data': str(plot_data)})
 
@@ -117,6 +117,7 @@ def test_api(request):
                 'User_selected_metric': str(client_form['User_selected_metric']),
                 'User_selected_modality': modality,
                 'period': str(client_form['period']),
+                'plot data as a pd series': str(type(plot_data))
                                  })
         
             # return JsonResponse({'success': 'no logic worked'})

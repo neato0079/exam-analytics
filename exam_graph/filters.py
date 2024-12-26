@@ -58,13 +58,6 @@ week_view_options = [
 ##### X AXIS FILTERS #####
 
 # creates a new column for 'User_selected_period'
-# use pandas time period aliases for period_selection 
-alias = {
-    'day': 'D',
-    'week':'W',
-    'month': 'M',
-    'year': 'Y'
-}
 
 
 def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
@@ -73,6 +66,18 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     if period_selection == 'modalities':
         return df
     
+    # use pandas time period aliases for period_selection 
+    alias = {
+        'day': 'D',
+        'week':'W',
+        'month': 'M',
+        'year': 'Y'
+    }
+
+    # map user's period selection to pandas period alias
+    period_selection = period_selection.lower()
+    period_selection = alias[period_selection]
+
     # set time stamps to datetime object
     df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
 
