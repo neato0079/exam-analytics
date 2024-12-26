@@ -105,9 +105,11 @@ def test_api(request):
 
             }
 
+            # Use user shit to plot data
             plot_data = filters.master_filter(mock_json, post_req['date range'], post_req['xfilt'], post_req['User_selected_metric'])
 
-            # return JsonResponse({'plot data': str(plot_data)})
+            # Save file to see if it works
+            helper.plot_graph(plot_data,'first', 'test', 'title')
 
             # This is where the filters will come in
             return JsonResponse({
