@@ -64,11 +64,28 @@ def test_api(request):
             # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
             # the file uploaded by postman is a django.core.files.uploadedfile object
             # we need to convert this object to bytes before we can json read it
+
+            # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
             in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
+
+            # stackoverflow says to do this but idk what seek() does
             in_memory_file.seek(0)
+
+            # read our object as bytes
             file_bytes = in_memory_file.read()
-            test_json = json.loads(file_bytes)
-            myjson = json.dump(file_bytes)
+
+            # decode bytes to JSON string
+            file_string = file_bytes.decode('utf-8')
+
+            # convert from bytes to JSON file
+            file_json = json.loads(file_string)
+
+            # convert from JSON to pandas DataFrame
+            mock_json = pd.DataFrame.from_dict(file_json)
+
+            # byt = open(file_bytes, 'rb')
+            # json_str = str(test_json)
+            # myjson = json.dump(file_bytes)
 
             client_form = request.POST
             # json_data = json.dumps(client_form)
@@ -80,7 +97,6 @@ def test_api(request):
             filename = str(in_memory_file)
 
 
-            # mock_json = pd.read_json(test_json)
 
             post_req = {
                 'dataframe name': filename,
@@ -99,7 +115,7 @@ def test_api(request):
 
             # This is where the filters will come in
             return JsonResponse({
-                'uploaded file type': str(type(myjson)), # this should just be a session key or something in prod
+                'uploaded file type': str(mock_json), # this should just be a session key or something in prod
                 'json type': 'JSON is <class "dict"> so we are good',
                 'uploaded file': str(in_memory_file),
                 'User_selected_metric': str(client_form['User_selected_metric']),
