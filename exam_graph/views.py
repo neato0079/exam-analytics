@@ -83,19 +83,15 @@ def test_api(request):
             # convert from JSON to pandas DataFrame
             mock_json = pd.DataFrame.from_dict(file_json)
 
-            # byt = open(file_bytes, 'rb')
-            # json_str = str(test_json)
-            # myjson = json.dump(file_bytes)
-
-            client_form = request.POST
-            # json_data = json.dumps(client_form)
 
             # parse form request
+
+            client_form = request.POST
+
             metric = client_form['User_selected_metric']
             modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')]
             period = client_form['period']
             filename = str(in_memory_file)
-
 
 
             post_req = {
@@ -121,7 +117,6 @@ def test_api(request):
                 'User_selected_metric': str(client_form['User_selected_metric']),
                 'User_selected_modality': modality,
                 'period': str(client_form['period']),
-
                                  })
         
             # return JsonResponse({'success': 'no logic worked'})
