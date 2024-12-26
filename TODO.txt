@@ -238,3 +238,14 @@ Data Size	    	|	Handles large datasets well		|	Limited by memory size
 Setup Complexity	|	Moderate (requires DB schema)	|	Easy to moderate (Redis/Memcached setup)
 Data Querying		|	Supports complex queries		|	Limited querying (simple retrieval)
 Persistence			|	Persists until manually cleared	|	Temporary (auto-expires)
+
+
+Next step (12/26)
+
+organize url flow
+
+- get master copy JSON
+- format and parse JSON
+- set filter
+- save graph???
+- display in html
