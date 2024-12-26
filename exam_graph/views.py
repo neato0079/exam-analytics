@@ -28,6 +28,64 @@ def home(request):
 def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
+def parse_filter_request(request) -> dict: 
+
+    if request.method == 'POST':
+        try:
+            # Decode and parse the JSON body
+            # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
+            # the file uploaded by postman is a django.core.files.uploadedfile object
+            # we need to convert this object to bytes before we can json read it
+
+            # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
+            in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
+
+            # stackoverflow says to do this but idk what seek() does
+            in_memory_file.seek(0)
+
+            # read our object as bytes
+            file_bytes = in_memory_file.read()
+
+            # decode bytes to JSON string
+            file_string = file_bytes.decode('utf-8')
+
+            # convert from bytes to JSON file
+            file_json = json.loads(file_string)
+
+            # convert from JSON to pandas DataFrame
+            mock_json = pd.DataFrame.from_dict(file_json)
+
+
+            # parse form request
+
+            client_form = request.POST
+
+            metric = client_form['User_selected_metric']
+            modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')]
+            period = client_form['period']
+            filename = str(in_memory_file)
+
+
+            post_req = {
+                'dataframe name': filename,
+                'date range': '',
+                'xfilt': {
+                    'period': period,
+                    'modalities': modality
+                },
+                'User_selected_metric': metric,
+
+            }
+
+            return post_req
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON body"}, status=400)
+
+    else:
+        return JsonResponse({"Your GET": request.method})
+    
+
 # Testing for use with postman
 # usecase: again from postman 
 # ingest json (in prod we will just json_read the csv stored on disk), done
