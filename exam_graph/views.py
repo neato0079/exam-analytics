@@ -180,7 +180,7 @@ def test_api(request):
                     'modalities': modality
                 },
                 'User_selected_metric': metric,
-
+            
             }
 
             # Use user shit to plot data
