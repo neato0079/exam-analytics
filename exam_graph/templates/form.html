@@ -11,37 +11,41 @@
     <form method="POST" action="/exam_graph/test/">
         {% csrf_token %}
         
-        <!-- User-selected Metric -->
         <label for="User_selected_metric">Select Metric:</label>
         <select id="User_selected_metric" name="User_selected_metric" required>
-            <option value="totals">Totals</option>
-            <option value="tat">Turn Around Time</option>
-            <option value="mean">Averages(this doesnt work yet)</option>
+            <option value="totals" {% if selected_metric == "totals" %}selected{% endif %}>totals</option>
+            <option value="tat" {% if selected_metric == "tat" %}selected{% endif %}>tat</option>
+            <option value="mean" {% if selected_metric == "mean" %}selected{% endif %}>avg(doesnt work yet)</option>
+            
         </select>
         <br><br>
-
-        <!-- User-selected Modality (Checkboxes) -->
+    
         <label>Select Modality:</label><br>
-        <input type="checkbox" id="modality_ct" name="User_selected_modality" value="CT">
+        <input type="checkbox" id="modality_ct" name="User_selected_modality" value="CT"
+               {% if "CT" in selected_modality %}checked{% endif %}>
         <label for="modality_ct">CT</label><br>
         
-        <input type="checkbox" id="modality_xray" name="User_selected_modality" value="XR">
+        <input type="checkbox" id="modality_xray" name="User_selected_modality" value="XR"
+               {% if "XR" in selected_modality %}checked{% endif %}>
         <label for="modality_xray">XR</label><br>
         
-        <input type="checkbox" id="modality_mri" name="User_selected_modality" value="MRI">
+        <input type="checkbox" id="modality_mri" name="User_selected_modality" value="MR"
+               {% if "MR" in selected_modality %}checked{% endif %}>
         <label for="modality_mri">MRI</label><br>
 
-        <input type="checkbox" id="modality_mri" name="User_selected_modality" value="US">
+        <input type="checkbox" id="modality_us" name="User_selected_modality" value="US"
+        {% if "US" in selected_modality %}checked{% endif %}>
         <label for="modality_us">US</label><br>
-
-        <!-- Period -->
+    
+        <br><br>
+    
         <label for="period">Select Period:</label>
         <select id="period" name="period" required>
-            <option value="hour">Hour</option>
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-            <option value="year">Year</option>
+            <option value="hour" {% if selected_period == "hour" %}selected{% endif %}>Hour</option>
+            <option value="day" {% if selected_period == "day" %}selected{% endif %}>Day</option>
+            <option value="week" {% if selected_period == "week" %}selected{% endif %}>Week</option>
+            <option value="month" {% if selected_period == "month" %}selected{% endif %}>Month</option>
+            <option value="year" {% if selected_period == "year" %}selected{% endif %}>Year</option>
         </select>
         <br><br>
 

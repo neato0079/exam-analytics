@@ -15,6 +15,7 @@ import json
 import io
 import matplotlib.pyplot as plt
 import base64
+import traceback
 
 ################
 #  DEBUG MODE  #
@@ -317,15 +318,24 @@ def filter_submission_handler(request):
         # Encode the buffer as base64
         graph_base64 = base64.b64encode(buffer.getvalue()).decode()
         buffer.close()
-        return render(request, 'form.html', {'graph': graph_base64})
 
+        stuff_for_html_render = {
+            'graph': graph_base64,
+            'selected_metric': filter_params['xfilt']['period'],
+            'selected_modality': filter_params['xfilt']['modalities'],
+            'selected_period': filter_params['User_selected_metric']
+        }
 
+        # print(stuff_for_html_render)
 
-    
+        return render(request, 'form.html', stuff_for_html_render)
+
     except Exception as e:
-        print(f"An error occurred: {e}") 
-        # return e
-        return HttpResponse(f"An error occurred: {e}")
+            error_message = f"An error occurred: {e}"
+            stack_trace = traceback.format_exc()  # Capture the full traceback
+            print(stack_trace)  # Log the detailed error in the console
+            return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
+
 
 
 # Debugging functions:
