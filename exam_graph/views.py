@@ -264,6 +264,24 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
+# handle user's filter submission
+def filter_submission_handler():
+    try:
+
+        # parse filter request
+        parse_filter_request()
+
+        # apply filters
+        filters.master_filter()
+
+        # generate graph
+
+        # render html graph
+        return 0
+    except Exception as e:
+        print(f"An error occurred: {e}") 
+        return e
+
 
 # Debugging functions:
 def debug_request(request):
