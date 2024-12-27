@@ -284,18 +284,9 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
-def asdf(request):
-    # parse filter request
-    filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
-    # apply filters
-    axes_data = filters.master_filter(build_test_master_json_df(),filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
-
-    return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
-
-# handle user's filter submission
 def filter_submission_handler(request):
 
-    # parsed_mocked_data = build_test_master_json_df()
+    parsed_mocked_data = build_test_master_json_df()
 
     try:
 
@@ -303,7 +294,7 @@ def filter_submission_handler(request):
         filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
         # apply filters
-        axes_data = filters.master_filter(build_test_master_json_df(),filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
+        axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
 
         # Generate graph using matplotlib
         plt.figure(figsize=(10, 6))
