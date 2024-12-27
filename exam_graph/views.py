@@ -180,7 +180,7 @@ def test_api(request):
                     'modalities': modality
                 },
                 'User_selected_metric': metric,
-            
+
             }
 
             # Use user shit to plot data
@@ -313,10 +313,10 @@ def filter_submission_handler(request):
         # return HttpResponse('<h1>AGRAPCH!</h1>')
         return HttpResponse(buffer, content_type='image/png')
     
-    except:
-        # print(f"An error occurred: {e}") 
+    except Exception as e:
+        print(f"An error occurred: {e}") 
         # return e
-        return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
+        return HttpResponse(f"An error occurred: {e}")
 
 
 # Debugging functions:
