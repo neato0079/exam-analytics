@@ -20,10 +20,19 @@
         </select>
         <br><br>
 
-        <!-- User-selected Modality -->
-        <label for="User_selected_modality">Select Modality (comma separated):</label>
-        <input type="text" id="User_selected_modality" name="User_selected_modality" required>
-        <br><br>
+        <!-- User-selected Modality (Checkboxes) -->
+        <label>Select Modality:</label><br>
+        <input type="checkbox" id="modality_ct" name="User_selected_modality" value="CT">
+        <label for="modality_ct">CT</label><br>
+        
+        <input type="checkbox" id="modality_xray" name="User_selected_modality" value="XR">
+        <label for="modality_xray">XR</label><br>
+        
+        <input type="checkbox" id="modality_mri" name="User_selected_modality" value="MRI">
+        <label for="modality_mri">MRI</label><br>
+
+        <input type="checkbox" id="modality_mri" name="User_selected_modality" value="US">
+        <label for="modality_us">US</label><br>
 
         <!-- Period -->
         <label for="period">Select Period:</label>

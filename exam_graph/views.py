@@ -81,7 +81,8 @@ def parse_filter_request(request) -> dict:
             client_form = request.POST
 
             metric = client_form['User_selected_metric']
-            modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')]
+            # modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')] # this is for postman
+            modality = client_form.getlist('User_selected_modality')
             period = client_form['period']
             df = mock_json
 
