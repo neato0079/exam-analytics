@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Upload Page</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+</head>
+<body>
+
+    <div class="logo">
+        <a href="#">Matt's Cool Exam Analytics</a>
+    </div>
+
+    <form id="upload-form" action="/exam_graph/result/XR/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="upload-container" id="upload-container">
+            <p>Drag and drop a .csv file here, or</p>
+            <button type="button" class="upload-button" onclick="document.getElementById('file-input').click()">Browse Files</button>
+            <input type="file" id="file-input" class="file-input" name="csv_file" style="display: none;">
+        </div>
+    </form>
+
+    <footer>
+        <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
+        <a href="help/" target="_top">Help</a>
+    </footer>
+
+    <script src="../static/scripts/home_script.js"></script>
+
+</body>
+</html>

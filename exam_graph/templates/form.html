@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Submission</title>
+</head>
+<body>
+    <h2>Select Filters for Graph Generation</h2>
+    
+    <form method="POST" action="{% url 'your_view_name' %}">
+        {% csrf_token %}
+        
+        <!-- User-selected Metric -->
+        <label for="User_selected_metric">Select Metric:</label>
+        <select id="User_selected_metric" name="User_selected_metric" required>
+            <option value="totals">Totals</option>
+            <option value="tat">Turn Around Time</option>
+            <option value="mean">Averages(this doesnt work yet)</option>
+        </select>
+        <br><br>
+
+        <!-- User-selected Modality -->
+        <label for="User_selected_modality">Select Modality (comma separated):</label>
+        <input type="text" id="User_selected_modality" name="User_selected_modality" required>
+        <br><br>
+
+        <!-- Period -->
+        <label for="period">Select Period:</label>
+        <select id="period" name="period" required>
+            <option value="hour">Hour</option>
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+        </select>
+        <br><br>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
