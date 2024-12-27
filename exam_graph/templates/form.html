@@ -48,6 +48,12 @@
         <!-- Submit Button -->
         <button type="submit">Submit</button>
     </form>
-
+    <div>
+            <!-- Display the graph -->
+    {% if graph %}
+    <h3>Generated Graph:</h3>
+    <img src="data:image/png;base64,{{ graph }}" alt="Generated Graph">
+    {% endif %}
+    </div>
 </body>
 </html>

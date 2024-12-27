@@ -14,6 +14,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import json
 import io
 import matplotlib.pyplot as plt
+import base64
 
 ################
 #  DEBUG MODE  #
@@ -26,7 +27,7 @@ def home(request):
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
 def form_page(request):
-    return render(request, 'form.html')
+    return render(request, 'form.html', {'graph': 'graph_file_path'})
 
 def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
@@ -313,9 +314,13 @@ def filter_submission_handler(request):
         buffer.seek(0)
         plt.close()
 
-        # Serve the image as an HTTP response
-        # return HttpResponse('<h1>AGRAPCH!</h1>')
-        return HttpResponse(buffer, content_type='image/png')
+        # Encode the buffer as base64
+        graph_base64 = base64.b64encode(buffer.getvalue()).decode()
+        buffer.close()
+        return render(request, 'form.html', {'graph': graph_base64})
+
+
+
     
     except Exception as e:
         print(f"An error occurred: {e}") 
