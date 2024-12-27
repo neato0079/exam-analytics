@@ -13,7 +13,7 @@ from pathlib import Path
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import json
 import io
-
+import matplotlib.pyplot as plt
 
 ################
 #  DEBUG MODE  #
@@ -28,7 +28,28 @@ def home(request):
 def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
+def build_test_master_json_df() -> pd.DataFrame:
+
+    mock_json = pd.read_json('./mock_data.json')
+
+    # # Read JSON into a DataFrame
+    # df = pd.read_csv(mock_json)
+
+    # # for any column with strings, strip white spaces
+    # df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+
+    # # Ensure that 'Exam Complete Date/Tm' is in datetime format
+    # df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
+
+    # # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
+    # df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
+
+    return mock_json
+
+
 def parse_filter_request(request) -> dict: 
+
+    mock_json = build_test_master_json_df
 
     if request.method == 'POST':
         try:
@@ -36,24 +57,24 @@ def parse_filter_request(request) -> dict:
             # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
             # the file uploaded by postman is a django.core.files.uploadedfile object
             # we need to convert this object to bytes before we can json read it
+            if len(request.FILES) > 0:
+                # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
+                in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
 
-            # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
-            in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
+                # stackoverflow says to do this but idk what seek() does
+                in_memory_file.seek(0)
 
-            # stackoverflow says to do this but idk what seek() does
-            in_memory_file.seek(0)
+                # read our object as bytes
+                file_bytes = in_memory_file.read()
 
-            # read our object as bytes
-            file_bytes = in_memory_file.read()
+                # decode bytes to JSON string
+                file_string = file_bytes.decode('utf-8')
 
-            # decode bytes to JSON string
-            file_string = file_bytes.decode('utf-8')
+                # convert from bytes to JSON file
+                file_json = json.loads(file_string)
 
-            # convert from bytes to JSON file
-            file_json = json.loads(file_string)
-
-            # convert from JSON to pandas DataFrame
-            mock_json = pd.DataFrame.from_dict(file_json)
+                # convert from JSON to pandas DataFrame
+                mock_json = pd.DataFrame.from_dict(file_json)
 
 
             # parse form request
@@ -63,11 +84,11 @@ def parse_filter_request(request) -> dict:
             metric = client_form['User_selected_metric']
             modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')]
             period = client_form['period']
-            filename = str(in_memory_file)
+            df = mock_json
 
 
             post_req = {
-                'dataframe name': filename,
+                'source dataframe': df,
                 'date range': '',
                 'xfilt': {
                     'period': period,
@@ -265,19 +286,34 @@ def upload_csv(request, modality):
 
 
 # handle user's filter submission
-def filter_submission_handler():
+def filter_submission_handler(request):
+
+    parsed_mocked_data = build_test_master_json_df
+
     try:
 
         # parse filter request
-        parse_filter_request()
+        filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
         # apply filters
-        filters.master_filter()
+        axes_data = filters.master_filter(filter_params) # returns a panda Series appropriate for graph generation
 
-        # generate graph
+        # Generate graph using matplotlib
+        plt.figure(figsize=(10, 6))
+        axes_data.plot(kind='bar')  # Adjust based on your axes_data
+        plt.title('Filtered Exam Data')
+        plt.xlabel('X-Axis Label')
+        plt.ylabel('Y-Axis Label')
 
-        # render html graph
-        return 0
+        # Save the graph to an in-memory buffer
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+
+        # Serve the image as an HTTP response
+        return HttpResponse(buffer, content_type='image/png')
+    
     except Exception as e:
         print(f"An error occurred: {e}") 
         return e
