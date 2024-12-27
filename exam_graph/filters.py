@@ -151,7 +151,7 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
     print(average_daily_counts)
 
 
-def metric_filt_v2(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
+def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
 
     # Metric function dictionary
     metric_dict = {
@@ -160,6 +160,7 @@ def metric_filt_v2(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'tat': tat,
     }
     
+    # Apply relevant metric function to df
     xy_filtered_df = metric_dict[metric](x_filtered_df)
 
     return xy_filtered_df
@@ -179,7 +180,7 @@ def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd
         df = mod_filt(df, xfilt['modalities'])
 
     # apply y axis value (metric)
-    series_axes = metric_filt_v2(df, metric)
+    series_axes = metric_filt(df, metric)
 
     return series_axes
 """
