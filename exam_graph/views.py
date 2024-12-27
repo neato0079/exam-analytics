@@ -213,17 +213,6 @@ def test_api(request):
     else:
         return JsonResponse({"Your GET": request.method})
 
-# This is just used to test the graph generation
-# def result_graph(request):
-#     graph = test_serve_browser() # this is a pd series
-
-#     # convert series to df
-#     df = graph.to_frame()
-
-#     # convert df to html
-#     html_table = df.to_html()
-#     print(request)
-#     return render(request, 'results.html', {'graph': html_table})
 
 def upload_csv(request, modality):
     if request.method == 'POST' and request.FILES['csv_file']:
