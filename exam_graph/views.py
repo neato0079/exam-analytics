@@ -3,7 +3,6 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-# from my_project import test_serve_browser
 import pandas as pd
 import pprint
 import json
@@ -36,18 +35,6 @@ def help(request):
 def build_test_master_json_df() -> pd.DataFrame:
 
     mock_json = pd.read_json('./mock_data.json')
-
-    # # Read JSON into a DataFrame
-    # df = pd.read_csv(mock_json)
-
-    # # for any column with strings, strip white spaces
-    # df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
-
-    # # Ensure that 'Exam Complete Date/Tm' is in datetime format
-    # df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
-
-    # # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
-    # df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
     return mock_json
 
@@ -111,108 +98,6 @@ def parse_filter_request(request) -> dict:
     else:
         return JsonResponse({"Your GET": request.method})
     
-
-# Testing for use with postman
-# usecase: again from postman 
-# ingest json (in prod we will just json_read the csv stored on disk), done
-# parse user's form request, done
-# apply filters, 
-# plot graph, 
-# save graph image, 
-# render in html 
-def test_api(request):
-    filters_post_requirement = {
-        'modality': None,
-        'shift': None,
-        'x-axis':{
-            'date':{
-            'year': None,
-            'month': None,
-            'day': None,
-            'weekend': None,
-            },
-        },
-        'y-axis':{
-            'n exams': 0,
-            'exam completion delta': 0,
-            'exam finalize delta': 0,
-            'ORU:ORM': 1
-        }
-    }
-
-
-
-    if request.method == 'POST':
-        try:
-            # Decode and parse the JSON body
-            # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
-            # the file uploaded by postman is a django.core.files.uploadedfile object
-            # we need to convert this object to bytes before we can json read it
-
-            # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
-            in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
-
-            # stackoverflow says to do this but idk what seek() does
-            in_memory_file.seek(0)
-
-            # read our object as bytes
-            file_bytes = in_memory_file.read()
-
-            # decode bytes to JSON string
-            file_string = file_bytes.decode('utf-8')
-
-            # convert from bytes to JSON file
-            file_json = json.loads(file_string)
-
-            # convert from JSON to pandas DataFrame
-            mock_json = pd.DataFrame.from_dict(file_json)
-
-
-            # parse form request
-
-            client_form = request.POST
-
-            metric = client_form['User_selected_metric']
-            modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')]
-            period = client_form['period']
-            filename = str(in_memory_file)
-
-
-            post_req = {
-                'dataframe name': filename,
-                'date range': '',
-                'xfilt': {
-                    'period': period,
-                    'modalities': modality
-                },
-                'User_selected_metric': metric,
-
-            }
-
-            # Use user shit to plot data
-            plot_data = filters.master_filter(mock_json, post_req['date range'], post_req['xfilt'], post_req['User_selected_metric'])
-
-            # Save file to see if it works
-            helper.plot_graph(plot_data,'first', 'test', 'title')
-
-            # This is where the filters will come in
-            return JsonResponse({
-                'uploaded file type': str(mock_json), # this should just be a session key or something in prod
-                'json type': 'JSON is <class "dict"> so we are good',
-                'uploaded file': str(in_memory_file),
-                'User_selected_metric': str(client_form['User_selected_metric']),
-                'User_selected_modality': modality,
-                'period': str(client_form['period']),
-                'plot data as a pd series': str(type(plot_data))
-                                 })
-        
-            # return JsonResponse({'success': 'no logic worked'})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON body"}, status=400)
-
-    else:
-        return JsonResponse({"Your GET": request.method})
-
 
 def upload_csv(request, modality):
     if request.method == 'POST' and request.FILES['csv_file']:
@@ -298,7 +183,7 @@ def filter_submission_handler(request):
         plt.xlabel('X-Axis Label')
         plt.ylabel('Y-Axis Label')
 
-        # # Save the graph to an in-memory buffer
+        # Save the graph to an in-memory buffer
         buffer = io.BytesIO()
         plt.savefig(buffer, format='png')
         buffer.seek(0)
@@ -314,8 +199,6 @@ def filter_submission_handler(request):
             'selected_modality': filter_params['xfilt']['modalities'],
             'selected_period': filter_params['User_selected_metric']
         }
-
-        # print(stuff_for_html_render)
 
         return render(request, 'form.html', stuff_for_html_render)
 
