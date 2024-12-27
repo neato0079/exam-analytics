@@ -68,6 +68,7 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     
     # use pandas time period aliases for period_selection 
     alias = {
+        'hour': 'H',
         'day': 'D',
         'week':'W',
         'month': 'M',
