@@ -25,6 +25,9 @@ def home(request):
     return render(request, 'index.html')
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
+def form_page(request):
+    return render(request, 'form.html')
+
 def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
