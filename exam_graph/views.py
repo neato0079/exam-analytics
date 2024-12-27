@@ -46,7 +46,6 @@ def build_test_master_json_df() -> pd.DataFrame:
 
     return mock_json
 
-print(build_test_master_json_df())
 def parse_filter_request(request) -> dict: 
 
     mock_json = build_test_master_json_df
@@ -285,10 +284,18 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
+def asdf(request):
+    # parse filter request
+    filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
+    # apply filters
+    axes_data = filters.master_filter(build_test_master_json_df(),filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
+
+    return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
+
 # handle user's filter submission
 def filter_submission_handler(request):
 
-    parsed_mocked_data = build_test_master_json_df
+    # parsed_mocked_data = build_test_master_json_df()
 
     try:
 
@@ -296,7 +303,7 @@ def filter_submission_handler(request):
         filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
         # apply filters
-        axes_data = filters.master_filter(filter_params) # returns a panda Series appropriate for graph generation
+        axes_data = filters.master_filter(build_test_master_json_df(),filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
 
         # Generate graph using matplotlib
         plt.figure(figsize=(10, 6))
@@ -305,18 +312,20 @@ def filter_submission_handler(request):
         plt.xlabel('X-Axis Label')
         plt.ylabel('Y-Axis Label')
 
-        # Save the graph to an in-memory buffer
+        # # Save the graph to an in-memory buffer
         buffer = io.BytesIO()
         plt.savefig(buffer, format='png')
         buffer.seek(0)
         plt.close()
 
         # Serve the image as an HTTP response
+        # return HttpResponse('<h1>AGRAPCH!</h1>')
         return HttpResponse(buffer, content_type='image/png')
     
-    except Exception as e:
-        print(f"An error occurred: {e}") 
-        return e
+    except:
+        # print(f"An error occurred: {e}") 
+        # return e
+        return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
 
 # Debugging functions:
