@@ -3,7 +3,7 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from my_project import test_serve_browser
+# from my_project import test_serve_browser
 import pandas as pd
 import pprint
 import json
@@ -46,7 +46,7 @@ def build_test_master_json_df() -> pd.DataFrame:
 
     return mock_json
 
-
+print(build_test_master_json_df())
 def parse_filter_request(request) -> dict: 
 
     mock_json = build_test_master_json_df
@@ -209,16 +209,16 @@ def test_api(request):
         return JsonResponse({"Your GET": request.method})
 
 # This is just used to test the graph generation
-def result_graph(request):
-    graph = test_serve_browser() # this is a pd series
+# def result_graph(request):
+#     graph = test_serve_browser() # this is a pd series
 
-    # convert series to df
-    df = graph.to_frame()
+#     # convert series to df
+#     df = graph.to_frame()
 
-    # convert df to html
-    html_table = df.to_html()
-    print(request)
-    return render(request, 'results.html', {'graph': html_table})
+#     # convert df to html
+#     html_table = df.to_html()
+#     print(request)
+#     return render(request, 'results.html', {'graph': html_table})
 
 def upload_csv(request, modality):
     if request.method == 'POST' and request.FILES['csv_file']:
