@@ -35,6 +35,6 @@ exam_graph/static/graphs
 *.tmp
 
 # Exported notebook files
-*.html
+
 *.pdf
 *.ipynb
