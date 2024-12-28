@@ -164,14 +164,14 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
-def gen_encoded_graph(axes_data: plt.axes) -> bytes:
+def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str) -> bytes:
         
         # Generate graph using matplotlib
         plt.figure(figsize=(10, 6))
         axes_data.plot(kind='bar')  # Adjust based on your axes_data
-        plt.title('Filtered Exam Data')
-        plt.xlabel('X-Axis Label')
-        plt.ylabel('Y-Axis Label')
+        plt.title(xlabel)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
 
         # Save the graph to an in-memory buffer
         buffer = io.BytesIO()
@@ -195,17 +195,21 @@ def filter_submission_handler(request):
         # parse filter request
         filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
+        period = filter_params['xfilt']['period']
+        modality_lst = filter_params['xfilt']['modalities']
+        metric = filter_params['User_selected_metric']
+
         # apply filters
         axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
 
         # generate buffer graph and encode
-        graph_base64 = gen_encoded_graph(axes_data)
+        graph_base64 = gen_encoded_graph(axes_data, period, metric)
 
         stuff_for_html_render = {
             'graph': graph_base64,
-            'selected_period': filter_params['xfilt']['period'],
-            'selected_modality': filter_params['xfilt']['modalities'],
-            'selected_metric': filter_params['User_selected_metric']
+            'selected_period': period,
+            'selected_modality': modality_lst,
+            'selected_metric': metric
         }
 
         return render(request, 'form.html', stuff_for_html_render)
