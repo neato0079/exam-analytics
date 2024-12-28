@@ -10,8 +10,10 @@ from django.conf import settings
 
 df = pd.read_csv('./mock_exam_data.csv')
 
+
 # for any column with strings, strip white spaces
-df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+def df_strip(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
 
 filters = {
@@ -48,47 +50,6 @@ filters = {
 
 }
 
-def try_learn(): 
-
-    # Display the first few rows of the DataFrame to check the data
-    # print(df.head())
-
-    # Example: Filter data for a specific month
-    date_filt =df['Exam Complete Date/Tm'].str.contains('07')
-    modal_filt = df['Exam Order Name'].str.contains('XR')
-    filt_big = date_filt & modal_filt
-    
-    july_xr_data = df[filt_big]
-    # print(july_xr_data)
-    print(df.describe())
-    # Example: Group by Exam Order Name and count occurrences
-    # exam_counts = df.loc['Exam Order Name', july_data]
-    # print(exam_counts)
-    # Example: Plot the number of each type of exam
-    # july_data.plot(kind='bar', figsize=(10, 6))
-
-    # Add titles and labels
-    # plt.title('Exams From July to September')
-    # plt.xlabel('Exams')
-    # plt.ylabel('Count')
-
-    # Show the plot
-    # plt.show()
-
-
-
-def one_modality():
-    filt = df['Exam Order Name'].str.contains('XR')
-    count = df[df['Exam Order Name'].str.contains('XR')].value_counts()
-    count.plot(kind='bar', figsize=(10, 6))
-    plt.title('Exams From July to September')
-    plt.xlabel('Exams')
-    plt.ylabel('Count') 
-    # Show the plot
-    plt.show()
-  
-
-
 
 """
 You declare panda data types with type hints as follows
@@ -108,7 +69,7 @@ def read_csv_from_session(file: str) -> pd.DataFrame:
     
     return df
 
-def get_next_graph_filename():
+def get_next_graph_filename() -> str:
     # Path to the static/img directory
     img_dir = settings.STATICFILES_DIRS[0] / 'graphs'
 
@@ -135,7 +96,7 @@ def get_next_graph_filename():
     return next_filename  # Return only file name as a Path object
      
 
-# generate graph
+# generate graph and save as png
 def plot_graph(pd_series: pd.Series, xlabel:str, ylabel:str, title:str):
 
     # create the matplotlib figure/axes explicitly for better readability. By default Matplotlib uses a stateful interface for these objects
