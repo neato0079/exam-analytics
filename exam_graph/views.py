@@ -164,18 +164,8 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
-def filter_submission_handler(request):
-
-    parsed_mocked_data = build_test_master_json_df()
-
-    try:
-
-        # parse filter request
-        filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
-
-        # apply filters
-        axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
-
+def gen_encoded_graph(axes_data: plt.axes) -> bytes:
+        
         # Generate graph using matplotlib
         plt.figure(figsize=(10, 6))
         axes_data.plot(kind='bar')  # Adjust based on your axes_data
@@ -193,11 +183,29 @@ def filter_submission_handler(request):
         graph_base64 = base64.b64encode(buffer.getvalue()).decode()
         buffer.close()
 
+        return graph_base64
+
+
+def filter_submission_handler(request):
+
+    parsed_mocked_data = build_test_master_json_df()
+
+    try:
+
+        # parse filter request
+        filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
+
+        # apply filters
+        axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
+
+        # generate buffer graph and encode
+        graph_base64 = gen_encoded_graph(axes_data)
+
         stuff_for_html_render = {
             'graph': graph_base64,
-            'selected_metric': filter_params['xfilt']['period'],
+            'selected_period': filter_params['xfilt']['period'],
             'selected_modality': filter_params['xfilt']['modalities'],
-            'selected_period': filter_params['User_selected_metric']
+            'selected_metric': filter_params['User_selected_metric']
         }
 
         return render(request, 'form.html', stuff_for_html_render)
