@@ -166,21 +166,32 @@ def upload_csv(request, modality):
 
 def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) -> bytes:
         
+        # format label strings 
         metric = ylabel.capitalize()
         period = xlabel.capitalize()
         lst_strp_table = str.maketrans('','',"[]'")
         mod = str(mod).translate(lst_strp_table)
+        title = f'{metric} per {period} for Modalities: {mod}'
         
-        # Generate graph using matplotlib
-        plt.figure(figsize=(10, 6))
-        axes_data.plot(kind='bar')  # Adjust based on your axes_data
-        plt.title(f'{metric} per {period} for Modalities: {mod}')
-        plt.xlabel(period)
-        plt.ylabel(metric)
+        
+        ## Generate graph using matplotlib
+
+        # initialize matplot lib fig and ax objects
+        fig , ax = plt.subplots()
+
+        fig.set_size_inches(10,6)
+
+        # fill axes object with axes_data
+        axes_data.plot(kind='bar', color='skyblue', ax=ax)
+
+        # Set the title and axis labels using the `Axes` object
+        ax.set_title(title)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
 
         # Save the graph to an in-memory buffer
         buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
+        fig.savefig(buffer, format='png')
         buffer.seek(0)
         plt.close()
 
