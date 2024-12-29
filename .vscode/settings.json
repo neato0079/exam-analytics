@@ -1,0 +1,7 @@
+{
+    "css.format.spaceAroundSelectorSeparator": true,
+    "css.lint.duplicateProperties": "warning",
+    "python.analysis.completeFunctionParens": true,
+    "python.analysis.inlayHints.functionReturnTypes": false,
+    "python.analysis.typeCheckingMode": "off"
+}
