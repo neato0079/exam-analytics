@@ -164,6 +164,55 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
+def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) -> bytes:
+        
+        # format label strings 
+        metric = ylabel.capitalize()
+        period = xlabel.capitalize()
+        lst_strp_table = str.maketrans('','',"[]'")
+        mod = str(mod).translate(lst_strp_table)
+        title = f'{metric} per {period} for Modalities: {mod}'
+        
+
+        ## Generate graph using matplotlib
+
+        # initialize matplot lib fig and ax objects
+        fig , ax = plt.subplots()
+        fig.set_size_inches(10,6)
+        fig.set_facecolor('gainsboro')
+
+        # Generate bar positions and labels
+        bar_positions = range(len(axes_data))
+        bar_labels = axes_data.index
+
+        # Create bar chart
+        ax.bar(bar_positions, axes_data, width=0.5,color='steelblue')
+        ax.set_facecolor('gainsboro')
+
+        # Format x-axis
+        ax.set_xticks(bar_positions)
+        ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
+
+
+        # format axes display
+        ax.tick_params(axis='x', labelrotation = 45)
+        ax.set_title(title)
+        ax.set_xlabel(period)
+        ax.set_ylabel(metric)
+
+        # Save the graph to an in-memory buffer
+        buffer = io.BytesIO()
+        fig.savefig(buffer, format='png', dpi = 200, bbox_inches='tight')
+        buffer.seek(0)
+        plt.close()
+
+        # Encode the buffer as base64
+        graph_base64 = base64.b64encode(buffer.getvalue()).decode()
+        buffer.close()
+
+        return graph_base64
+
+
 def filter_submission_handler(request):
 
     parsed_mocked_data = build_test_master_json_df()
@@ -173,31 +222,21 @@ def filter_submission_handler(request):
         # parse filter request
         filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
+        period = filter_params['xfilt']['period']
+        modality_lst = filter_params['xfilt']['modalities']
+        metric = filter_params['User_selected_metric']
+
         # apply filters
         axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
 
-        # Generate graph using matplotlib
-        plt.figure(figsize=(10, 6))
-        axes_data.plot(kind='bar')  # Adjust based on your axes_data
-        plt.title('Filtered Exam Data')
-        plt.xlabel('X-Axis Label')
-        plt.ylabel('Y-Axis Label')
-
-        # Save the graph to an in-memory buffer
-        buffer = io.BytesIO()
-        plt.savefig(buffer, format='png')
-        buffer.seek(0)
-        plt.close()
-
-        # Encode the buffer as base64
-        graph_base64 = base64.b64encode(buffer.getvalue()).decode()
-        buffer.close()
+        # generate buffer graph and encode
+        graph_base64 = gen_encoded_graph(axes_data, period, metric, modality_lst)
 
         stuff_for_html_render = {
             'graph': graph_base64,
-            'selected_metric': filter_params['xfilt']['period'],
-            'selected_modality': filter_params['xfilt']['modalities'],
-            'selected_period': filter_params['User_selected_metric']
+            'selected_period': period,
+            'selected_modality': modality_lst,
+            'selected_metric': metric
         }
 
         return render(request, 'form.html', stuff_for_html_render)
