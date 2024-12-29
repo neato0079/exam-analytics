@@ -179,17 +179,20 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         # initialize matplot lib fig and ax objects
         fig , ax = plt.subplots()
         fig.set_size_inches(10,6)
+        fig.set_facecolor('gainsboro')
 
         # Generate bar positions and labels
         bar_positions = range(len(axes_data))
         bar_labels = axes_data.index
 
         # Create bar chart
-        ax.bar(bar_positions, axes_data, width=0.5,color='skyblue')
+        ax.bar(bar_positions, axes_data, width=0.5,color='steelblue')
+        ax.set_facecolor('gainsboro')
 
         # Format x-axis
         ax.set_xticks(bar_positions)
-        ax.set_xticklabels(bar_labels, rotation=45, ha='right')  # Rotate and align text
+        ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
+
 
         # format axes display
         ax.tick_params(axis='x', labelrotation = 45)

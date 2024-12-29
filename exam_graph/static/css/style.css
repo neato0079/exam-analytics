@@ -91,6 +91,7 @@ footer a:hover {
     max-width: 90%; 
     height: 90%;
     overflow: hidden;
+    border-radius: 10px;
 }
 
 .side-bar {
