@@ -164,14 +164,19 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
-def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str) -> bytes:
+def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) -> bytes:
+        
+        metric = ylabel.capitalize()
+        period = xlabel.capitalize()
+        lst_strp_table = str.maketrans('','',"[]'")
+        mod = str(mod).translate(lst_strp_table)
         
         # Generate graph using matplotlib
         plt.figure(figsize=(10, 6))
         axes_data.plot(kind='bar')  # Adjust based on your axes_data
-        plt.title(xlabel)
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
+        plt.title(f'{metric} per {period} for Modalities: {mod}')
+        plt.xlabel(period)
+        plt.ylabel(metric)
 
         # Save the graph to an in-memory buffer
         buffer = io.BytesIO()
@@ -203,7 +208,7 @@ def filter_submission_handler(request):
         axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
 
         # generate buffer graph and encode
-        graph_base64 = gen_encoded_graph(axes_data, period, metric)
+        graph_base64 = gen_encoded_graph(axes_data, period, metric, modality_lst)
 
         stuff_for_html_render = {
             'graph': graph_base64,
