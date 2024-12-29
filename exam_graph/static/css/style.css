@@ -3,12 +3,12 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     height: 100vh;
-    background-color: #121212; /* Dark background */
-    color: #bfc3ca; /* White text */
+    background-color: #121212; 
+    color: #bfc3ca; 
 }
 
 .logo {
@@ -18,7 +18,7 @@ body {
 .logo a {
     font-size: 48px;
     text-decoration: none;
-    color: #90abdd; /* Light blue color for logo */
+    color: #90abdd; 
 }
 
 .upload-container {
@@ -37,7 +37,7 @@ body {
 
 .upload-container p {
     font-size: 18px;
-    color: #bbbbbb; /* Light gray text */
+    color: #bbbbbb; 
 }
 
 .file-input {
@@ -60,7 +60,7 @@ body {
 
 /* Footer styles */
 footer {
-    position: absolute;
+    align-self: flex-end;
     bottom: 10px;
     text-align: center;
     width: 100%;
@@ -75,4 +75,62 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+#graph-container{
+    display: flex;
+    flex-direction: column;
+    justify-content:space-around;
+    align-items: center;
+    width: 90%;
+    height: 85%;
+
+}
+
+#graph-container img {
+    max-width: 90%; 
+    height: 90%;
+    overflow: hidden;
+}
+
+.side-bar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 3%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    background-color: #2b2a46;
+}
+
+.sidebar-content {
+    flex-grow: .95;  
+}
+
+.main {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 100vh;
+    background-color: #121212; 
+    color: #bfc3ca; 
+    margin-bottom: 50px;
+}
+
+.content {
+    
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin-top: 50px;
+    
 }
