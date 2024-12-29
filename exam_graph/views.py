@@ -178,7 +178,6 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
 
         # initialize matplot lib fig and ax objects
         fig , ax = plt.subplots()
-
         fig.set_size_inches(10,6)
 
         # Generate bar positions and labels
@@ -191,7 +190,6 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         # Format x-axis
         ax.set_xticks(bar_positions)
         ax.set_xticklabels(bar_labels, rotation=45, ha='right')  # Rotate and align text
-
 
         # format axes display
         ax.tick_params(axis='x', labelrotation = 45)
