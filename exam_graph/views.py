@@ -115,6 +115,8 @@ def upload_csv(request, modality):
         # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
         df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
+
+        #### TODO STORE FILE IN A BETTER PLACE #####
         # Store the DataFrame in the session (serialize as needed)
         # request.session['csv_data'] = df
         request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session. idk why i needed this conversion. i know why now. you cant store a df in a session. you can store a json. so convert to json to store it
@@ -214,7 +216,7 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
 
 
 def filter_submission_handler(request):
-
+    #### TODO: READ USERS FILE FROM SOMEWHERE######
     parsed_mocked_data = build_test_master_json_df()
 
     try:
