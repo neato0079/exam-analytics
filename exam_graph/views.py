@@ -173,7 +173,7 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         mod = str(mod).translate(lst_strp_table)
         title = f'{metric} per {period} for Modalities: {mod}'
         
-        
+
         ## Generate graph using matplotlib
 
         # initialize matplot lib fig and ax objects
@@ -181,17 +181,27 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
 
         fig.set_size_inches(10,6)
 
-        # fill axes object with axes_data
-        axes_data.plot(kind='bar', color='skyblue', ax=ax)
+        # Generate bar positions and labels
+        bar_positions = range(len(axes_data))
+        bar_labels = axes_data.index
 
-        # Set the title and axis labels using the `Axes` object
+        # Create bar chart
+        ax.bar(bar_positions, axes_data, width=0.5,color='skyblue')
+
+        # Format x-axis
+        ax.set_xticks(bar_positions)
+        ax.set_xticklabels(bar_labels, rotation=45, ha='right')  # Rotate and align text
+
+
+        # format axes display
+        ax.tick_params(axis='x', labelrotation = 45)
         ax.set_title(title)
-        ax.set_xlabel(xlabel)
-        ax.set_ylabel(ylabel)
+        ax.set_xlabel(period)
+        ax.set_ylabel(metric)
 
         # Save the graph to an in-memory buffer
         buffer = io.BytesIO()
-        fig.savefig(buffer, format='png')
+        fig.savefig(buffer, format='png', dpi = 200, bbox_inches='tight')
         buffer.seek(0)
         plt.close()
 
