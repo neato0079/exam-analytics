@@ -143,3 +143,14 @@ footer a:hover {
     justify-content: center;   
     align-items: center;       
 }
+
+
+.logo h3 a{
+    font-size: 18px; /* Adjust to your desired size */
+    text-decoration: underline; /* Or none, as needed */
+
+}
+
+h3 a:hover {
+    text-decoration: underline; /* Adds underline on hover */
+}

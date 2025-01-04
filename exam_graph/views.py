@@ -32,6 +32,11 @@ def form_page(request):
 def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
+def display_mock_csv(request):
+    df = build_test_master_json_df()
+    graph = df.to_html()
+    return render(request, 'test_template.html', {'graph': graph})
+
 def build_test_master_json_df() -> pd.DataFrame:
 
     mock_json = pd.read_json('./mock_data.json')
