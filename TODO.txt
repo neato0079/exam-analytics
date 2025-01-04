@@ -255,3 +255,8 @@ organize url flow
 this is a test commit after git fuckery
 
 test
+
+1/3/25 new year fuck me arc:
+
+allow user to demo mock data
+describe proper csv format to user
