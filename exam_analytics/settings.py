@@ -128,3 +128,8 @@ STATICFILES_DIRS = [
     ]
 
 STATIC_URL = '/static/'
+
+# Security
+
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
