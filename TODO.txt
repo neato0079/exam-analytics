@@ -260,3 +260,12 @@ test
 
 allow user to demo mock data
 describe proper csv format to user
+
+update requirements with this:
+
+pip freeze > requirements.txt
+pip install pipreqs
+pipreqs /path/to/your/project
+
+pip install gunicorn
+gunicorn exam_analytics.wsgi:application --bind 0.0.0.0:8000
