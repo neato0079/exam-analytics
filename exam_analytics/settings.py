@@ -31,7 +31,7 @@ DEBUG = config('DEBUG', cast=bool)
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = ['exam-analytics.onrender.com']
+ALLOWED_HOSTS = ['exam-analytics.onrender.com', '127.0.0.1']
 
 
 # Application definition
