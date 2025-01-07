@@ -154,3 +154,13 @@ footer a:hover {
 h3 a:hover {
     text-decoration: underline; /* Adds underline on hover */
 }
+
+.logo h4 a{
+    font-size: 18px; /* Adjust to your desired size */
+    text-decoration: underline; /* Or none, as needed */
+
+}
+
+h4 a:hover {
+    text-decoration: underline; /* Adds underline on hover */
+}
