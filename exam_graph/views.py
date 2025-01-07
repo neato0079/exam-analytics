@@ -117,7 +117,7 @@ def filter_submission_handler(request):
 
         # apply filters
         axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
-        print(f'Series for graph: {axes_data}')
+        # print(f'Series for graph: {axes_data}')
 
         # generate buffer graph and encode
         graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
