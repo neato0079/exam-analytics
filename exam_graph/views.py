@@ -111,9 +111,10 @@ def filter_submission_handler(request):
         period = filter_params['xfilt']['period']
         modality_lst = filter_params['xfilt']['modalities']
         metric = filter_params['User_selected_metric']
+        daterange = filter_params['date range']
 
         # apply filters
-        axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric']) # returns a panda Series appropriate for graph generation
+        axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric'],daterange) # returns a panda Series appropriate for graph generation
         print(f'Series for graph: {axes_data}')
 
         # generate buffer graph and encode
