@@ -108,13 +108,14 @@ def filter_submission_handler(request):
         # parse filter request
         filter_params = helper.parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
+        # df = filter_params['source_dataframe']
         period = filter_params['xfilt']['period']
         modality_lst = filter_params['xfilt']['modalities']
         metric = filter_params['User_selected_metric']
-        daterange = filter_params['date range']
+        daterange = filter_params['date_range']
 
         # apply filters
-        axes_data = filters.master_filter(parsed_mocked_data,filter_params['date range'], filter_params['xfilt'], filter_params['User_selected_metric'],daterange) # returns a panda Series appropriate for graph generation
+        axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
         print(f'Series for graph: {axes_data}')
 
         # generate buffer graph and encode
