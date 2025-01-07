@@ -13,7 +13,7 @@ df = pd.read_csv('./mock_exam_data.csv')
 
 def build_test_master_json_df() -> pd.DataFrame:
 
-    mock_json = pd.read_json('./mock_data.json')
+    mock_json = pd.read_json('./mock_datav2.json')
 
     return mock_json
 
