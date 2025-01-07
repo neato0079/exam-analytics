@@ -192,7 +192,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str, daterange) -> pd.Series:
+def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd.Series:
 
     # get date range
     start = daterange[0]
