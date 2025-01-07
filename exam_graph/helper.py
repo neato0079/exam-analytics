@@ -5,10 +5,19 @@ matplotlib.use('Agg')  # Use a non-GUI backend for server use
 import matplotlib.pyplot as plt
 import re
 from pathlib import Path
-
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.conf import settings
+import json
+from django.http import JsonResponse
+
 
 df = pd.read_csv('./mock_exam_data.csv')
+
+def build_test_master_json_df() -> pd.DataFrame:
+
+    mock_json = pd.read_json('./mock_data.json')
+
+    return mock_json
 
 
 # for any column with strings, strip white spaces
@@ -96,23 +105,64 @@ def get_next_graph_filename() -> str:
     return next_filename  # Return only file name as a Path object
      
 
-# generate graph and save as png
-def plot_graph(pd_series: pd.Series, xlabel:str, ylabel:str, title:str):
 
-    # create the matplotlib figure/axes explicitly for better readability. By default Matplotlib uses a stateful interface for these objects
+# take user's filter request and convert it into a dictionary compliant with our graphing function
+def parse_filter_request(request) -> dict: 
 
-    fig , ax = plt.subplots()
+    mock_json = build_test_master_json_df
 
-    # Pass the axes object created above to plot data to our graph (fig)
-    cool_graph = pd_series.plot(kind='bar', color='skyblue', ax=ax)
+    if request.method == 'POST':
+        try:
+            # Decode and parse the JSON body
+            # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
+            # the file uploaded by postman is a django.core.files.uploadedfile object
+            # we need to convert this object to bytes before we can json read it
+            if len(request.FILES) > 0:
+                # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
+                in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
 
-    # Set the title and axis labels using the `Axes` object
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    print(f'Type of "cool_graph": {type(cool_graph)}') # Matplt Axes object
-    file_name = get_next_graph_filename()
-    file_path = settings.STATICFILES_DIRS[0] / 'graphs'/ file_name
-    fig.savefig(fname = file_path, format='png')
-    plt.close(fig)
-    return file_name
+                # stackoverflow says to do this but idk what seek() does
+                in_memory_file.seek(0)
+
+                # read our object as bytes
+                file_bytes = in_memory_file.read()
+
+                # decode bytes to JSON string
+                file_string = file_bytes.decode('utf-8')
+
+                # convert from bytes to JSON file
+                file_json = json.loads(file_string)
+
+                # convert from JSON to pandas DataFrame
+                mock_json = pd.DataFrame.from_dict(file_json)
+
+
+            # parse form request
+
+            client_form = request.POST
+
+            metric = client_form['User_selected_metric']
+            # modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')] # this is for postman
+            modality = client_form.getlist('User_selected_modality')
+            period = client_form['period']
+            df = mock_json
+
+
+            post_req = {
+                'source dataframe': df,
+                'date range': '',
+                'xfilt': {
+                    'period': period,
+                    'modalities': modality
+                },
+                'User_selected_metric': metric,
+
+            }
+
+            return post_req
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON body"}, status=400)
+
+    else:
+        return JsonResponse({"Your GET": request.method})
