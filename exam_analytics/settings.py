@@ -31,7 +31,7 @@ DEBUG = config('DEBUG', cast=bool)
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = ['exam-analytics.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['exam-analytics.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -143,3 +143,20 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+# Error logs
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
