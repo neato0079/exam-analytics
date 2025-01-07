@@ -17,6 +17,13 @@
                 <form method="POST" action="/exam_graph/result/">
                     {% csrf_token %}
                     
+
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" value="yyyymmdd" required><br><br>
+
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" value="yyyymmdd" required><br><br>
+
                     <label for="User_selected_metric">Select Metric:</label>
                     <select id="User_selected_metric" name="User_selected_metric" required>
                         <option value="totals" {% if selected_metric == "totals" %}selected{% endif %}>totals</option>
