@@ -98,10 +98,21 @@ def mod_filt(df:pd.DataFrame, selected_modalities:list) -> pd.DataFrame:
 
 # gets the exam turnaround time
 def tat(df:pd.DataFrame) -> pd.Series:
+
+    # convert date strings to dt objects
     order_time = pd.to_datetime(df['Exam Order Date\/Time'])
     final_time = pd.to_datetime(df['Final Date\/Tm'])
+
+    # get the dt difference and set a new df column to hold these values
     df['tat'] = final_time - order_time
+
+    # convert timedelta to total minutes
+    df['tat'] = df['tat'].dt.total_seconds() / 60  
+
+    # create small df of just the relevat data for plotting tat
     tat_df = df[['tat', 'User_selected_period']]
+
+    # create a series by getting the mean values per period
     tat_series = tat_df.groupby('User_selected_period')['tat'].mean()
 
     # Look up this warning: 
