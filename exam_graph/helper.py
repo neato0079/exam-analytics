@@ -153,8 +153,8 @@ def parse_filter_request(request) -> dict:
 
 
             post_req = {
-                'source dataframe': df,
-                'date range': [start_date, end_date],
+                'source_dataframe': df,
+                'date_range': [start_date, end_date],
                 'xfilt': {
                     'period': period,
                     'modalities': modality
