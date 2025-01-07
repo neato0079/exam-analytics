@@ -113,6 +113,7 @@ def filter_submission_handler(request):
         modality_lst = filter_params['xfilt']['modalities']
         metric = filter_params['User_selected_metric']
         daterange = filter_params['date_range']
+        datestr = filter_params['date_str']
 
         # apply filters
         axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
@@ -125,7 +126,9 @@ def filter_submission_handler(request):
             'graph': graph_base64,
             'selected_period': period,
             'selected_modality': modality_lst,
-            'selected_metric': metric
+            'selected_metric': metric,
+            'start_date': datestr[0],
+            'end_date': datestr[1]
         }
 
         return render(request, 'form.html', stuff_for_html_render)

@@ -137,10 +137,10 @@ def parse_filter_request(request) -> dict:
 
             # parse form request
 
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
-            start_date = datetime.strptime(start_date, '%Y-%m-%d') if start_date else None
-            end_date = datetime.strptime(end_date, '%Y-%m-%d') if end_date else None
+            start_str = request.POST.get('start_date')
+            end_str = request.POST.get('end_date')
+            start_date = datetime.strptime(start_str, '%Y-%m-%d') if start_str else None
+            end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
 
 
             client_form = request.POST
@@ -154,7 +154,8 @@ def parse_filter_request(request) -> dict:
 
             post_req = {
                 'source_dataframe': df,
-                'date_range': [start_date, end_date],
+                'date_range': [start_date, end_date], 
+                'date_str': [start_str, end_str],
                 'xfilt': {
                     'period': period,
                     'modalities': modality
