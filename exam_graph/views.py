@@ -5,16 +5,12 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 import pandas as pd
 import pprint
-import json
 from . import helper
 from . import filters
-from pathlib import Path
 from django.core.files.uploadedfile import InMemoryUploadedFile
-import json
-import io
 import matplotlib.pyplot as plt
-import base64
 import traceback
+from . import myplot
 
 ################
 #  DEBUG MODE  #
@@ -33,76 +29,10 @@ def help(request):
     return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
 def display_mock_csv(request):
-    df = build_test_master_json_df()
+    df = helper.build_test_master_json_df()
     graph = df.to_html()
     return render(request, 'test_template.html', {'graph': graph})
 
-def build_test_master_json_df() -> pd.DataFrame:
-
-    mock_json = pd.read_json('./mock_data.json')
-
-    return mock_json
-
-def parse_filter_request(request) -> dict: 
-
-    mock_json = build_test_master_json_df
-
-    if request.method == 'POST':
-        try:
-            # Decode and parse the JSON body
-            # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
-            # the file uploaded by postman is a django.core.files.uploadedfile object
-            # we need to convert this object to bytes before we can json read it
-            if len(request.FILES) > 0:
-                # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
-                in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
-
-                # stackoverflow says to do this but idk what seek() does
-                in_memory_file.seek(0)
-
-                # read our object as bytes
-                file_bytes = in_memory_file.read()
-
-                # decode bytes to JSON string
-                file_string = file_bytes.decode('utf-8')
-
-                # convert from bytes to JSON file
-                file_json = json.loads(file_string)
-
-                # convert from JSON to pandas DataFrame
-                mock_json = pd.DataFrame.from_dict(file_json)
-
-
-            # parse form request
-
-            client_form = request.POST
-
-            metric = client_form['User_selected_metric']
-            # modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')] # this is for postman
-            modality = client_form.getlist('User_selected_modality')
-            period = client_form['period']
-            df = mock_json
-
-
-            post_req = {
-                'source dataframe': df,
-                'date range': '',
-                'xfilt': {
-                    'period': period,
-                    'modalities': modality
-                },
-                'User_selected_metric': metric,
-
-            }
-
-            return post_req
-        
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON body"}, status=400)
-
-    else:
-        return JsonResponse({"Your GET": request.method})
-    
 
 def upload_csv(request, modality):
     if request.method == 'POST' and request.FILES['csv_file']:
@@ -169,67 +99,14 @@ def upload_csv(request, modality):
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
 
-def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) -> bytes:
-        
-        # edit y label for turnaround time
-        if ylabel == 'tat':
-            ylabel = 'tat (min)'
-        
-        # format label strings 
-        metric = ylabel.capitalize()
-        period = xlabel.capitalize()
-        lst_strp_table = str.maketrans('','',"[]'")
-        mod = str(mod).translate(lst_strp_table)
-        title = f'{metric} per {period} for Modalities: {mod}'
-        
-
-        ## Generate graph using matplotlib
-
-        # initialize matplot lib fig and ax objects
-        fig , ax = plt.subplots()
-        fig.set_size_inches(10,6)
-        fig.set_facecolor('gainsboro')
-
-        # Generate bar positions and labels
-        bar_positions = range(len(axes_data))
-        bar_labels = axes_data.index
-
-        # Create bar chart
-        ax.bar(bar_positions, axes_data, width=0.5,color='steelblue')
-        ax.set_facecolor('gainsboro')
-
-        # Format x-axis
-        ax.set_xticks(bar_positions)
-        ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
-
-
-        # format axes display
-        ax.tick_params(axis='x', labelrotation = 45)
-        ax.set_title(title)
-        ax.set_xlabel(period)
-        ax.set_ylabel(metric)
-
-        # Save the graph to an in-memory buffer
-        buffer = io.BytesIO()
-        fig.savefig(buffer, format='png', dpi = 200, bbox_inches='tight')
-        buffer.seek(0)
-        plt.close()
-
-        # Encode the buffer as base64
-        graph_base64 = base64.b64encode(buffer.getvalue()).decode()
-        buffer.close()
-
-        return graph_base64
-
-
 def filter_submission_handler(request):
 
-    parsed_mocked_data = build_test_master_json_df()
+    parsed_mocked_data = helper.build_test_master_json_df()
 
     try:
 
         # parse filter request
-        filter_params = parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
+        filter_params = helper.parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
         period = filter_params['xfilt']['period']
         modality_lst = filter_params['xfilt']['modalities']
@@ -240,7 +117,7 @@ def filter_submission_handler(request):
         print(f'Series for graph: {axes_data}')
 
         # generate buffer graph and encode
-        graph_base64 = gen_encoded_graph(axes_data, period, metric, modality_lst)
+        graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
 
         stuff_for_html_render = {
             'graph': graph_base64,
