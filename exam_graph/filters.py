@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime
 
 filters = {
     'date_range': {
@@ -54,6 +55,19 @@ week_view_options = [
     None
 ]
 
+# cut df down to a date range
+def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
+    # Ensure 'Exam Order Date/Time' is a datetime object
+    df['Exam Order Date\/Time'] = pd.to_datetime(df['Exam Order Date\/Time'])
+
+    
+    # Define the start and end date range
+
+    
+    # Filter rows where 'Exam Order Date/Time' is between start and end
+    filtered_df = df[(df['Exam Order Date\/Time'] >= start) & (df['Exam Order Date\/Time'] <= end)]
+    
+    return filtered_df
 
 ##### X AXIS FILTERS #####
 
@@ -178,10 +192,13 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, date_range:str, xfilt:dict, metric:str) -> pd.Series:
+def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd.Series:
 
     # get date range
-    date_range = []
+    start = daterange[0]
+    end = daterange[1]
+
+    df = dt_range(df,start,end)
 
     # apply x axis value (time constraints)
     df = period(df, xfilt['period'])

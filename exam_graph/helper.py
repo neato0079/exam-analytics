@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.conf import settings
 import json
 from django.http import JsonResponse
+from datetime import datetime
 
 
 df = pd.read_csv('./mock_exam_data.csv')
@@ -136,6 +137,12 @@ def parse_filter_request(request) -> dict:
 
             # parse form request
 
+            start_str = request.POST.get('start_date')
+            end_str = request.POST.get('end_date')
+            start_date = datetime.strptime(start_str, '%Y-%m-%d') if start_str else None
+            end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
+
+
             client_form = request.POST
 
             metric = client_form['User_selected_metric']
@@ -146,8 +153,9 @@ def parse_filter_request(request) -> dict:
 
 
             post_req = {
-                'source dataframe': df,
-                'date range': '',
+                'source_dataframe': df,
+                'date_range': [start_date, end_date], 
+                'date_str': [start_str, end_str],
                 'xfilt': {
                     'period': period,
                     'modalities': modality
