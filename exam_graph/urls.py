@@ -6,7 +6,6 @@ urlpatterns = [
     path('', views.home, name='thehome'),
     path('result/', views.filter_submission_handler, name='test'),
     path('form/', views.form_page, name='formyayay'),
-    path('result/<str:modality>/', views.upload_csv, name='result'),
     path('mock_data/', views.display_mock_csv, name='mock'),
 
 ]

@@ -5,15 +5,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 import pandas as pd
 import pprint
-import json
 from . import helper
 from . import filters
-from pathlib import Path
 from django.core.files.uploadedfile import InMemoryUploadedFile
-import json
-import io
 import matplotlib.pyplot as plt
-import base64
 import traceback
 from . import myplot
 

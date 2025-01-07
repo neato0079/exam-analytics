@@ -1,10 +1,7 @@
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')  # Use a non-GUI backend for server use
-import matplotlib.pyplot as plt
 import re
-from pathlib import Path
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.conf import settings
 import json
