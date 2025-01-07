@@ -1,0 +1,50 @@
+Read up on:
+    Logging configs to allow for easier debugging.
+        https://docs.python.org/3/library/logging.html
+        logging examples : https://docs.python.org/3/howto/logging-cookbook.html
+        https://realpython.com/python-logging/
+
+    Caching
+
+    Webapp infrastructure 
+
+    Matplotlib
+
+    Pandas
+
+recommened topics from chat generate_graph
+
+Backend Development
+
+    Django Advanced Topics: ORM optimization, middleware, signals, custom user models, and class-based views.
+    API Development: RESTful APIs using Django REST Framework (DRF) or GraphQL.
+
+3. Database Management
+
+    SQL: Basic to advanced SQL queries, indexing, and optimization.
+    NoSQL Databases: Introduction to MongoDB, Redis, or Firebase for different use cases.
+    Database Migrations: How to manage schema changes effectively with Django migrations.
+
+4. DevOps and Deployment
+
+    Containerization: Basics of Docker for creating portable and consistent development environments.
+    CI/CD Pipelines: Understanding tools like GitHub Actions, Travis CI, or Jenkins for automated testing and deployment.
+    Cloud Platforms: AWS, Azure, or Google Cloud fundamentals, even if you are currently using Render.
+
+5. Security
+
+    Web Security Basics: OWASP Top Ten (e.g., XSS, CSRF, SQL Injection).
+    Authentication and Authorization: OAuth, JWT, and Django’s authentication system.
+    Secure Coding Practices: How to write secure code to prevent common vulnerabilities.
+
+6. Testing
+
+    Unit Testing: Using Python’s unittest or pytest for testing Django models, views, and forms.
+    Integration Testing: Ensuring different parts of your application work together.
+    End-to-End Testing: Tools like Selenium or Cypress for testing the full user experience.
+
+7. Performance Optimization
+
+    Caching Strategies: Advanced caching (e.g., Memcached, Redis) and cache invalidation.
+    Profiling and Benchmarking: Using tools like cProfile, django-debug-toolbar, and New Relic.
+    Scaling Applications: Concepts of horizontal and vertical scaling, load balancing.
