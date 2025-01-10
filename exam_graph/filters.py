@@ -70,7 +70,7 @@ def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
     return filtered_df
 
 
-def get_shifts():
+def get_shifts(df):
 
     # set shift definitions
     shifts = {
@@ -79,17 +79,10 @@ def get_shifts():
         'NOC': ['2300', '0700']
     }
     
-    # convert to date time objects
-    for shift in shifts:
-        time_range = shifts[shift]
+    # Convert shift time strings to time objects using list and dict comprehension 
+    shifts = {shift: [datetime.strptime(time, '%H%M').time() for time in times] for shift, times in shifts.items()}
 
-        for i in range(len(time_range)):
-            time_range[i] = datetime.strptime(time_range[i], '%H%M').time()
-            
-
-    print(shifts)
-    # initialize mock data
-    df = build_test_master_json_df()
+    
 
     # convert to dt
     comp_time = pd.to_datetime(df['Exam Order Date\/Time'])
