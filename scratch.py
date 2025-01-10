@@ -65,10 +65,11 @@ def df_with_shift():
 
     # print(df)
     # Reset index to make 'Exam Date' a column and reformat the output
-    print(df.columns)
+    return df
     # print(df['AM'])
     # print(df.index)
 
+def plot_shift(df):
     # Plotting
     width = 0.5
     fig, ax = plt.subplots()
@@ -89,4 +90,4 @@ def df_with_shift():
 
     plt.show()
 
-print(df_with_shift())
+plot_shift(df_with_shift())
