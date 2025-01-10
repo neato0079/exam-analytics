@@ -65,8 +65,10 @@ def plot_shift(df):
     # Generate bar positions and labels
     bar_positions = range(len(df))
     bar_labels = df.index
-    for column in df.columns:  
-        ax.bar(bar_positions, df[column], width, label=column, bottom=bottom) # error here
+    # Custom colors for each shift
+    colors = ['#2fbfd5', '#2f7dd5', '#552fd5']  # Example colors for AM, PM, NOC
+    for i, column in enumerate(df.columns):
+        ax.bar(bar_positions, df[column], width, label=column, bottom=bottom, color=colors[i]) # error here
         bottom += df[column]
 
     # Format x-axis
