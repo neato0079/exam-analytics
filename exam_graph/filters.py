@@ -69,6 +69,35 @@ def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
     
     return filtered_df
 
+
+def get_shifts():
+
+    # set shift definitions
+    shifts = {
+        'AM': ['0700', '1500'],
+        'PM': ['1500', '2300'],
+        'NOC': ['2300', '0700']
+    }
+    
+    # convert to date time objects
+    for shift in shifts:
+        time_range = shifts[shift]
+
+        for i in range(len(time_range)):
+            time_range[i] = datetime.strptime(time_range[i], '%H%M').time()
+            
+
+    print(shifts)
+    # initialize mock data
+    df = build_test_master_json_df()
+
+    # convert to dt
+    comp_time = pd.to_datetime(df['Exam Order Date\/Time'])
+
+    # check to see if shifts are formatted right
+
+    return shifts
+
 ##### X AXIS FILTERS #####
 
 # creates a new column for 'User_selected_period'
