@@ -62,9 +62,10 @@ def df_with_shift():
     df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
     # df = df.reset_index()
     df.index = df.index.to_timestamp()
+
     # print(df)
     # Reset index to make 'Exam Date' a column and reformat the output
-    print(df)
+    print(df.columns)
     # print(df['AM'])
     # print(df.index)
 
@@ -73,10 +74,16 @@ def df_with_shift():
     fig, ax = plt.subplots()
     bottom = np.zeros(len(df))
 
-    for column in df.columns[1:]:  
-        ax.bar(df.index, df[column], width, label=column, bottom=bottom) # error here
+    # Generate bar positions and labels
+    bar_positions = range(len(df))
+    bar_labels = df.index
+    for column in df.columns:  
+        ax.bar(bar_positions, df[column], width, label=column, bottom=bottom) # error here
         bottom += df[column]
 
+    # Format x-axis
+    ax.set_xticks(bar_positions)
+    ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
     ax.set_title("Number of Radiolog Exams")
     ax.legend(loc="upper right")
 
