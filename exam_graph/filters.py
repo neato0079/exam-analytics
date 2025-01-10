@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+from . import helper
 
 filters = {
     'date_range': {
@@ -185,6 +186,20 @@ def mean(df:pd.DataFrame) -> pd.Series:
     print(average_daily_counts)
 
 
+def shift_view(df:pd.DataFrame) -> pd.DataFrame:
+ 
+    # Ensure 'Exam Order Date/Time' is a datetime object
+    df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
+    df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+    df['User_selected_period']= df['Exam Complete Date\\/Tm'].dt.to_period('M')
+
+    # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
+    df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
+    df.index = df.index.to_timestamp()
+
+    return df
+
+
 def mean_by_modality(df:pd.DataFrame) -> pd.Series:
     
     # Group by modality and date to count daily exams
@@ -210,6 +225,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'totals': totals,
         'mean': mean,
         'tat': tat,
+        'shift': shift_view
     }
     
     # Apply relevant metric function to df
@@ -233,6 +249,11 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd
     # apply modality filters if needed
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
+
+    # if metric == 'shift view'
+    df_axes = metric_filt(df, metric)
+    return df_axes
+
 
     # apply y axis value (metric)
     series_axes = metric_filt(df, metric)
