@@ -21,8 +21,6 @@ media/
 # Ignore apple
 *.DS_Store
 
-# notes and shit
-scratch.py
 
 # Ignore graphs image directory. This is just for development. Feels like graphs should be stored in a different way for prod
 exam_graph/static/graphs
