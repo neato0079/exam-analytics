@@ -82,6 +82,11 @@ def get_shifts(df):
     # Convert shift time strings to time objects using list and dict comprehension 
     shifts = {shift: [datetime.strptime(time, '%H%M').time() for time in times] for shift, times in shifts.items()}
 
+    # is this more readable though or am i just a noob. maybe two for loops would be better like this
+    # for shift in shifts:
+    #     time_range = shifts[shift]
+    #     for i, time in enumerate(time_range):
+    #         time_range[i] = datetime.strptime(time, '%H%M').time()
     
 
     # convert to dt
