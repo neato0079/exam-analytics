@@ -115,12 +115,16 @@ def filter_submission_handler(request):
         daterange = filter_params['date_range']
         datestr = filter_params['date_str']
 
-        # apply filters
-        axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
-        # print(f'Series for graph: {axes_data}')
+        # # apply filters
+        # axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
+        # # print(f'Series for graph: {axes_data}')
 
-        # generate buffer graph and encode
-        graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
+        # # generate buffer graph and encode
+        # graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
+
+        # TESTING SHIFT PLOT. TOTALS ONLY
+        axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange)
+        graph_base64 = myplot.plot_shift(axes_data)
 
         stuff_for_html_render = {
             'graph': graph_base64,
