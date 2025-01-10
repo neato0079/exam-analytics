@@ -60,6 +60,8 @@ def df_with_shift():
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
     df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
+    # Reordering columns
+    df = df[['AM', 'PM', 'NOC']]
     # df = df.reset_index()
     df.index = df.index.to_timestamp()
 

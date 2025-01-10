@@ -194,6 +194,8 @@ def shift_view(df:pd.DataFrame) -> pd.DataFrame:
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
     df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
+    # Reordering columns
+    df = df[['AM', 'PM', 'NOC']]
     df.index = df.index.to_timestamp()
 
     return df
