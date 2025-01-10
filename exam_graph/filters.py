@@ -191,7 +191,6 @@ def shift_view(df:pd.DataFrame) -> pd.DataFrame:
     # Ensure 'Exam Order Date/Time' is a datetime object
     df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
     df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
-    df['User_selected_period']= df['Exam Complete Date\\/Tm'].dt.to_period('M')
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
     df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
@@ -251,7 +250,7 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd
         df = mod_filt(df, xfilt['modalities'])
 
     # if metric == 'shift view'
-    df_axes = metric_filt(df, metric)
+    df_axes = metric_filt(df, 'shift')
     return df_axes
 
 
