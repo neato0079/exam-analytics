@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.conf import settings
 import json
 from django.http import JsonResponse
-from datetime import datetime
+from datetime import datetime, time
 
 
 df = pd.read_csv('./mock_exam_data.csv')
@@ -171,3 +171,20 @@ def parse_filter_request(request) -> dict:
 
     else:
         return JsonResponse({"Your GET": request.method})
+    
+
+def get_shift(exam_time:datetime):
+
+    shifts = {
+    'AM': [time(7, 0), time(15, 0)],
+    'PM': [time(15, 0), time(23, 0)],
+    'NOC': [time(23, 0), time(7, 0)]
+}
+    exam_time_only = exam_time.time()
+    for shift, (start, end) in shifts.items():
+        if start <= end:  # AM and PM shifts
+            if start <= exam_time_only < end:
+                return shift
+        else:  # NOC shift (overnight)
+            if exam_time_only >= start or exam_time_only < end:
+                return shift
