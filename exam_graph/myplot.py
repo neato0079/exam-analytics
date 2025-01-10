@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import base64
 import io
+import numpy as np
 
 def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) -> bytes:
         
@@ -54,3 +55,33 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         buffer.close()
 
         return graph_base64
+
+def plot_shift(df):
+    # Plotting
+    width = 0.5
+    fig, ax = plt.subplots()
+    bottom = np.zeros(len(df))
+
+    # Generate bar positions and labels
+    bar_positions = range(len(df))
+    bar_labels = df.index
+    for column in df.columns:  
+        ax.bar(bar_positions, df[column], width, label=column, bottom=bottom) # error here
+        bottom += df[column]
+
+    # Format x-axis
+    ax.set_xticks(bar_positions)
+    ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
+    ax.set_title("Number of Radiolog Exams")
+    ax.legend(loc="upper right", reverse = True)
+
+    # Save the graph to an in-memory buffer
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format='png', dpi = 200, bbox_inches='tight')
+    buffer.seek(0)
+    plt.close()
+
+    # Encode the buffer as base64
+    graph_base64 = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
+    return graph_base64
