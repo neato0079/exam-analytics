@@ -107,7 +107,7 @@ def filter_submission_handler(request):
     try:
 
         # parse filter request
-        filter_params = helper.parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
+        filter_params: dict = helper.parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
 
         # df = filter_params['source_dataframe']
         period = filter_params['xfilt']['period']
@@ -117,31 +117,28 @@ def filter_submission_handler(request):
         datestr = filter_params['date_str']
         shift_view = filter_params['shift_view']
 
-        # # apply filters
-        # axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
-        # # print(f'Series for graph: {axes_data}')
-
-        # # generate buffer graph and encode
-        # graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
-
         # TESTING SHIFT PLOT. TOTALS ONLY
+
+        axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange, filter_params)
+        
         if shift_view:
-
-            axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange)
             graph_base64 = myplot.plot_shift(axes_data)
-
-            stuff_for_html_render = {
-                'graph': graph_base64,
-                'selected_period': period,
-                'selected_modality': modality_lst,
-                'selected_metric': metric,
-                'start_date': datestr[0],
-                'end_date': datestr[1]
-            }
-
-            return render(request, 'form.html', stuff_for_html_render)
         else:
-            return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
+            # graph without shift view
+            graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
+
+        stuff_for_html_render = {
+            'graph': graph_base64,
+            'selected_period': period,
+            'selected_modality': modality_lst,
+            'selected_metric': metric,
+            'start_date': datestr[0],
+            'end_date': datestr[1],
+            'shift_view': shift_view
+        }
+
+        return render(request, 'form.html', stuff_for_html_render)
+
 
     except Exception as e:
             error_message = f"An error occurred: {e}"

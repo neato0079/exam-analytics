@@ -239,7 +239,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd.Series:
+def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filters:dict) -> pd.Series:
     # print(df)
     # get date range
     start = daterange[0]
@@ -254,9 +254,12 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
 
+    if filters['shift_view']:
+        return metric_filt(df, 'shift') # returns a df not series
+
     # if metric == 'shift view'
     print(df)
-    df_axes = metric_filt(df, 'shift')
+    df_axes = metric_filt(df, metric)
     return df_axes
 
 

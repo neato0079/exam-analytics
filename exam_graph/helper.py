@@ -150,7 +150,7 @@ def parse_filter_request(request) -> dict:
             modality = client_form.getlist('User_selected_modality')
             period = client_form['period']
             df = mock_json
-            # shift_view = client_form['shift_view']
+            shift_view = None
 
             if 'shift_view' in client_form:
                 
@@ -166,7 +166,7 @@ def parse_filter_request(request) -> dict:
                     'modalities': modality
                 },
                 'User_selected_metric': metric,
-                'shift_view': None
+                'shift_view': shift_view
 
             }
 
