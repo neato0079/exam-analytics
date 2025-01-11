@@ -63,7 +63,7 @@
 
                     <br><br>
                     
-                    <input type="checkbox" id="shift_view" name="shift_view" value="True"  />
+                    <input type="checkbox" id="shift_view" name="shift_view" value="True" {% if shift_view == "True" %}checked{% endif %}/>
                     <label for="shift_view">Shift view on</label>
                     <br><br>
                     <button type="submit">Plot Graph</button>

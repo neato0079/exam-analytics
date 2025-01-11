@@ -258,7 +258,7 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filte
         return metric_filt(df, 'shift') # returns a df not series
 
     # if metric == 'shift view'
-    print(df)
+    
     df_axes = metric_filt(df, metric)
     return df_axes
 
