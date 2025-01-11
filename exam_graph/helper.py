@@ -150,6 +150,7 @@ def parse_filter_request(request) -> dict:
             modality = client_form.getlist('User_selected_modality')
             period = client_form['period']
             df = mock_json
+            shift_view = client_form['shift_view']
 
 
             post_req = {
@@ -161,6 +162,7 @@ def parse_filter_request(request) -> dict:
                     'modalities': modality
                 },
                 'User_selected_metric': metric,
+                'shift_view': shift_view
 
             }
 

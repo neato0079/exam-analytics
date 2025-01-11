@@ -114,6 +114,7 @@ def filter_submission_handler(request):
         metric = filter_params['User_selected_metric']
         daterange = filter_params['date_range']
         datestr = filter_params['date_str']
+        shift_view = filter_params['shift_view']
 
         # # apply filters
         # axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange) # returns a panda Series appropriate for graph generation
@@ -123,19 +124,21 @@ def filter_submission_handler(request):
         # graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
 
         # TESTING SHIFT PLOT. TOTALS ONLY
-        axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange)
-        graph_base64 = myplot.plot_shift(axes_data)
+        if shift_view:
 
-        stuff_for_html_render = {
-            'graph': graph_base64,
-            'selected_period': period,
-            'selected_modality': modality_lst,
-            'selected_metric': metric,
-            'start_date': datestr[0],
-            'end_date': datestr[1]
-        }
+            axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange)
+            graph_base64 = myplot.plot_shift(axes_data)
 
-        return render(request, 'form.html', stuff_for_html_render)
+            stuff_for_html_render = {
+                'graph': graph_base64,
+                'selected_period': period,
+                'selected_modality': modality_lst,
+                'selected_metric': metric,
+                'start_date': datestr[0],
+                'end_date': datestr[1]
+            }
+
+            return render(request, 'form.html', stuff_for_html_render)
 
     except Exception as e:
             error_message = f"An error occurred: {e}"
