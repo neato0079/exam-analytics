@@ -122,7 +122,7 @@ def filter_submission_handler(request):
         axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange, filter_params)
         
         if shift_view:
-            graph_base64 = myplot.plot_shift(axes_data)
+            graph_base64 = myplot.plot_shift(axes_data, period)
         else:
             # graph without shift view
             graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)

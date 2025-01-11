@@ -28,6 +28,7 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         # Generate bar positions and labels
         bar_positions = range(len(axes_data))
         bar_labels = axes_data.index
+        print(bar_labels)
 
         # Create bar chart
         ax.bar(bar_positions, axes_data, width=0.5,color='steelblue')
@@ -56,7 +57,21 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
 
         return graph_base64
 
-def plot_shift(df):
+def plot_shift(df, period):
+
+    # use pandas time period aliases for period_selection 
+    alias = {
+        'hour': 'H',
+        'day': 'D',
+        'week':'W',
+        'month': 'M',
+        'year': 'Y'
+    }
+
+    # map user's period selection to pandas period alias
+    period = period.lower()
+    period = alias[period]
+
     print(df)
     # Plotting
     width = 0.5
@@ -68,7 +83,8 @@ def plot_shift(df):
 
     # Generate bar positions and labels
     bar_positions = range(len(df))
-    bar_labels = df.index
+    bar_labels = df.index.to_period(period)
+    print(bar_labels)
     # Custom colors for each shift
     colors = ['#2fbfd5', '#2f7dd5', '#552fd5']  # Example colors for AM, PM, NOC
     for i, column in enumerate(df.columns):
@@ -78,7 +94,7 @@ def plot_shift(df):
     # Format x-axis
     ax.set_xticks(bar_positions)
     ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
-    ax.set_title("Number of Radiolog Exams")
+    ax.set_title("Number of Radiology Exams")
     ax.legend(loc="upper right", reverse = True)
 
     # Save the graph to an in-memory buffer
