@@ -1,4 +1,7 @@
 - Save user uploaded data to disk. The app's intention is to be used across mulitple facilities across one region so this data should be shared between mulitple users.
 
 - Allow for shift visualization
+    - it functions (1/10)
+    - add shift view option to html forma
+    - remove hardcode stuff
 
