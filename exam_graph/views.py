@@ -102,6 +102,7 @@ def upload_csv(request, modality):
 def filter_submission_handler(request):
 
     parsed_mocked_data = helper.build_test_master_json_df()
+    
 
     try:
 
@@ -139,6 +140,8 @@ def filter_submission_handler(request):
             }
 
             return render(request, 'form.html', stuff_for_html_render)
+        else:
+            return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
 
     except Exception as e:
             error_message = f"An error occurred: {e}"

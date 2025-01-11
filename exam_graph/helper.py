@@ -143,14 +143,18 @@ def parse_filter_request(request) -> dict:
             end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
 
 
-            client_form = request.POST
+            client_form: dict = request.POST
 
             metric = client_form['User_selected_metric']
             # modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')] # this is for postman
             modality = client_form.getlist('User_selected_modality')
             period = client_form['period']
             df = mock_json
-            shift_view = client_form['shift_view']
+            # shift_view = client_form['shift_view']
+
+            if 'shift_view' in client_form:
+                
+                shift_view = client_form['shift_view']
 
 
             post_req = {
@@ -162,7 +166,7 @@ def parse_filter_request(request) -> dict:
                     'modalities': modality
                 },
                 'User_selected_metric': metric,
-                'shift_view': shift_view
+                'shift_view': None
 
             }
 

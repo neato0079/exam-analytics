@@ -175,7 +175,7 @@ def mean(df:pd.DataFrame) -> pd.Series:
 
     # Group by modality and date to count daily exams
     daily_counts = df.groupby(["Modality", df["Exam Complete Date\/Tm"].dt.date]).size()
-    print(daily_counts)
+    # print(daily_counts)
 
     # Reset the index to make the series easier to process
     daily_counts = daily_counts.reset_index(name="Daily Exam Count")
@@ -183,12 +183,13 @@ def mean(df:pd.DataFrame) -> pd.Series:
     # Calculate the average number of daily exams per modality
     average_daily_counts = daily_counts.groupby("Modality")["Daily Exam Count"].mean()
 
-    print(average_daily_counts)
+    # print(average_daily_counts)
 
 
 def shift_view(df:pd.DataFrame) -> pd.DataFrame:
  
     # Ensure 'Exam Order Date/Time' is a datetime object
+    # print(df)
     df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
     df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
 
@@ -212,7 +213,7 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 
     # Calculate the average number of daily exams per modality
     average_daily_counts = daily_counts.groupby("Modality")["Exam Count"].mean()
-    print(average_daily_counts)
+    # print(average_daily_counts)
 
     return average_daily_counts
 
@@ -220,6 +221,7 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 
 
 def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
+    # print(x_filtered_df)
 
     # Metric function dictionary
     metric_dict = {
@@ -231,13 +233,14 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
     
     # Apply relevant metric function to df
     xy_filtered_df = metric_dict[metric](x_filtered_df)
+    # print(xy_filtered_df)
 
     return xy_filtered_df
    
 
 
 def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd.Series:
-
+    # print(df)
     # get date range
     start = daterange[0]
     end = daterange[1]
@@ -252,6 +255,7 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd
         df = mod_filt(df, xfilt['modalities'])
 
     # if metric == 'shift view'
+    print(df)
     df_axes = metric_filt(df, 'shift')
     return df_axes
 
