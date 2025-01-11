@@ -60,6 +60,9 @@ def plot_shift(df):
     # Plotting
     width = 0.5
     fig, ax = plt.subplots()
+    fig.set_size_inches(10,6)
+    fig.set_facecolor('gainsboro')
+    ax.set_facecolor('gainsboro')
     bottom = np.zeros(len(df))
 
     # Generate bar positions and labels
