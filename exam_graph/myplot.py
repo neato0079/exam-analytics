@@ -57,6 +57,7 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         return graph_base64
 
 def plot_shift(df):
+    print(df)
     # Plotting
     width = 0.5
     fig, ax = plt.subplots()

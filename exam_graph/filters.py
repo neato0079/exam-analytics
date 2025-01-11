@@ -189,7 +189,6 @@ def mean(df:pd.DataFrame) -> pd.Series:
 def shift_view(df:pd.DataFrame) -> pd.DataFrame:
  
     # Ensure 'Exam Order Date/Time' is a datetime object
-    # print(df)
     df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
     df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
 
@@ -221,7 +220,6 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 
 
 def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
-    # print(x_filtered_df)
 
     # Metric function dictionary
     metric_dict = {
@@ -233,14 +231,13 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
     
     # Apply relevant metric function to df
     xy_filtered_df = metric_dict[metric](x_filtered_df)
-    # print(xy_filtered_df)
 
     return xy_filtered_df
    
 
 
 def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filters:dict) -> pd.Series:
-    # print(df)
+
     # get date range
     start = daterange[0]
     end = daterange[1]
