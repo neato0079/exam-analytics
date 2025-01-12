@@ -6,14 +6,14 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.conf import settings
 import json
 from django.http import JsonResponse
-from datetime import datetime
+from datetime import datetime, time
 
 
 df = pd.read_csv('./mock_exam_data.csv')
 
 def build_test_master_json_df() -> pd.DataFrame:
 
-    mock_json = pd.read_json('./mock_data.json')
+    mock_json = pd.read_json('./mock_datav2.json')
 
     return mock_json
 
@@ -143,13 +143,18 @@ def parse_filter_request(request) -> dict:
             end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
 
 
-            client_form = request.POST
+            client_form: dict = request.POST
 
             metric = client_form['User_selected_metric']
             # modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')] # this is for postman
             modality = client_form.getlist('User_selected_modality')
             period = client_form['period']
             df = mock_json
+            shift_view = None
+
+            if 'shift_view' in client_form:
+                
+                shift_view = client_form['shift_view']
 
 
             post_req = {
@@ -161,6 +166,7 @@ def parse_filter_request(request) -> dict:
                     'modalities': modality
                 },
                 'User_selected_metric': metric,
+                'shift_view': shift_view
 
             }
 
@@ -171,3 +177,28 @@ def parse_filter_request(request) -> dict:
 
     else:
         return JsonResponse({"Your GET": request.method})
+    
+
+def get_shift(exam_time:datetime):
+
+    shifts = {
+    'AM': [time(7, 0), time(15, 0)],
+    'PM': [time(15, 0), time(23, 0)],
+    'NOC': [time(23, 0), time(7, 0)]
+}
+    exam_time_only = exam_time.time()
+    for shift, (start, end) in shifts.items():
+        if start <= end:  # AM and PM shifts
+            if start <= exam_time_only < end:
+                return shift
+        else:  # NOC shift (overnight)
+            if exam_time_only >= start or exam_time_only < end:
+                return shift
+
+# set any date strings to a dt object  
+def set_dt_columns(df:pd.DataFrame) -> None:
+    for column in df.columns:
+        try:
+            df[column] = pd.to_datetime(df[column])
+        except ValueError:
+            print(f"Column {column} could not be converted to datetime.")

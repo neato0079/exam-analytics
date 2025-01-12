@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+from . import helper
 
 filters = {
     'date_range': {
@@ -69,6 +70,33 @@ def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
     
     return filtered_df
 
+
+def get_shifts(df):
+
+    # set shift definitions
+    shifts = {
+        'AM': ['0700', '1500'],
+        'PM': ['1500', '2300'],
+        'NOC': ['2300', '0700']
+    }
+    
+    # Convert shift time strings to time objects using list and dict comprehension 
+    shifts = {shift: [datetime.strptime(time, '%H%M').time() for time in times] for shift, times in shifts.items()}
+
+    # is this more readable though or am i just a noob. maybe two for loops would be better like this
+    # for shift in shifts:
+    #     time_range = shifts[shift]
+    #     for i, time in enumerate(time_range):
+    #         time_range[i] = datetime.strptime(time, '%H%M').time()
+    
+
+    # convert to dt
+    comp_time = pd.to_datetime(df['Exam Order Date\/Time'])
+
+    # check to see if shifts are formatted right
+
+    return shifts
+
 ##### X AXIS FILTERS #####
 
 # creates a new column for 'User_selected_period'
@@ -133,7 +161,40 @@ def tat(df:pd.DataFrame) -> pd.Series:
     # SettingWithCopyWarning: 
     # A value is trying to be set on a copy of a slice from a DataFrame.
     # Try using .loc[row_indexer,col_indexer] = value instead
+    # print(tat_series)
     return tat_series
+
+
+def tat_shift_view(df:pd.DataFrame) -> pd.DataFrame:
+
+    # convert date strings to dt objects
+    order_time = pd.to_datetime(df['Exam Order Date\/Time'])
+    final_time = pd.to_datetime(df['Final Date\/Tm'])
+
+    df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+
+
+    # get the dt difference and set a new df column to hold these values
+    df['tat'] = final_time - order_time
+
+    # convert timedelta to total minutes
+    df['tat'] = df['tat'].dt.total_seconds() / 60  
+
+    # create small df of just the relevat data for plotting tat
+    tat_df = df[['tat', 'User_selected_period','Shift']]
+
+    # get the mean of tat
+    tat_series = tat_df.groupby(['User_selected_period', 'Shift'])['tat'].mean()
+
+    # set series to df for stacked bar chart
+    tat_shift = tat_series.unstack(fill_value=0)
+
+        # Reordering columns
+    tat_shift = tat_shift[['AM', 'PM', 'NOC']]
+    tat_shift.index = tat_shift.index.to_timestamp()
+    # print(tat_shift)
+
+    return tat_shift
 
 
 def totals(df:pd.DataFrame) -> pd.Series:
@@ -147,7 +208,7 @@ def mean(df:pd.DataFrame) -> pd.Series:
 
     # Group by modality and date to count daily exams
     daily_counts = df.groupby(["Modality", df["Exam Complete Date\/Tm"].dt.date]).size()
-    print(daily_counts)
+    # print(daily_counts)
 
     # Reset the index to make the series easier to process
     daily_counts = daily_counts.reset_index(name="Daily Exam Count")
@@ -155,7 +216,22 @@ def mean(df:pd.DataFrame) -> pd.Series:
     # Calculate the average number of daily exams per modality
     average_daily_counts = daily_counts.groupby("Modality")["Daily Exam Count"].mean()
 
-    print(average_daily_counts)
+    # print(average_daily_counts)
+
+
+def shift_view(df:pd.DataFrame) -> pd.DataFrame:
+ 
+    # Ensure 'Exam Order Date/Time' is a datetime object
+    df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
+    df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+
+    # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
+    df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
+    # Reordering columns
+    df = df[['AM', 'PM', 'NOC']]
+    df.index = df.index.to_timestamp()
+
+    return df
 
 
 def mean_by_modality(df:pd.DataFrame) -> pd.Series:
@@ -169,7 +245,7 @@ def mean_by_modality(df:pd.DataFrame) -> pd.Series:
 
     # Calculate the average number of daily exams per modality
     average_daily_counts = daily_counts.groupby("Modality")["Exam Count"].mean()
-    print(average_daily_counts)
+    # print(average_daily_counts)
 
     return average_daily_counts
 
@@ -183,6 +259,8 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'totals': totals,
         'mean': mean,
         'tat': tat,
+        'shift': shift_view,
+        'tat_shift': tat_shift_view
     }
     
     # Apply relevant metric function to df
@@ -192,7 +270,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd.Series:
+def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filters:dict) -> pd.Series:
 
     # get date range
     start = daterange[0]
@@ -206,6 +284,20 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list) -> pd
     # apply modality filters if needed
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
+
+    # handle shift view on tat
+    if filters['shift_view'] and filters['User_selected_metric'] == 'tat':
+        return metric_filt(df, 'tat_shift') # returns a df not series
+
+    # handle shift view on totals
+    if filters['shift_view']:
+        return metric_filt(df, 'shift') # returns a df not series
+
+    # if metric == 'shift view'
+    
+    df_axes = metric_filt(df, metric)
+    return df_axes
+
 
     # apply y axis value (metric)
     series_axes = metric_filt(df, metric)
