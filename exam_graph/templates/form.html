@@ -79,13 +79,13 @@
         </footer>
     </div>
     <div id="graph-container">
-    {% if graph %}
-    <img src="data:image/png;base64,{{ graph }}" alt="Generated Graph">
-    {% endif %}
-    </div>
-    <div id="summary">
-        <h3>Analysis Summary</h3>
-        {{ summary|safe }}
+        {% if graph %}
+        <img src="data:image/png;base64,{{ graph }}" alt="Generated Graph">
+        {% endif %}
+        <div id="summary">
+            <h3>Analysis Summary</h3>
+            {{ summary|safe }}
+        </div>
     </div>
 </body>
 </html>

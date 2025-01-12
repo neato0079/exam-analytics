@@ -179,9 +179,9 @@ table {
     width: 50%;
     border-collapse: collapse;
     margin: 20px 0;
-    font-size: 18px;
+    font-size: 14px;
     text-align: left;
-    background-color: #f8f9fa;
+    background-color: #5d5d71;
 }
 
 /* Table headers */
@@ -202,7 +202,7 @@ td {
 
 /* Stripe effect for table rows */
 tr:nth-child(even) {
-    background-color: #e9ecef;
+    background-color: #4e4b5e;
 }
 
 /* Hover effect for table rows */
@@ -213,7 +213,7 @@ tr:hover {
 /* Responsive design */
 @media (max-width: 768px) {
     table {
-        font-size: 16px;
+        font-size: 10px;
     }
 
     th, td {
