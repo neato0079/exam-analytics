@@ -3,5 +3,9 @@
 - Allow for shift visualization
     - it functions (1/10)
     - add shift view option to html forma
+        done
     - remove hardcode stuff
+        done
+    - allow shift view to work with tat
+        done
 
