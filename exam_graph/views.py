@@ -123,9 +123,12 @@ def filter_submission_handler(request):
         
         if shift_view:
             graph_base64 = myplot.plot_shift(axes_data, period)
+            axes_data = axes_data.to_html()
+
         else:
             # graph without shift view
             graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
+            axes_data = axes_data.to_frame().to_html()# convert to df for html view
 
         stuff_for_html_render = {
             'graph': graph_base64,
@@ -134,9 +137,10 @@ def filter_submission_handler(request):
             'selected_metric': metric,
             'start_date': datestr[0],
             'end_date': datestr[1],
-            'shift_view': shift_view
+            'shift_view': shift_view,
+            'summary': axes_data
         }
-
+  
         return render(request, 'form.html', stuff_for_html_render)
 
 

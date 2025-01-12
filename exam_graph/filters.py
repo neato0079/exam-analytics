@@ -161,7 +161,6 @@ def tat(df:pd.DataFrame) -> pd.Series:
     # SettingWithCopyWarning: 
     # A value is trying to be set on a copy of a slice from a DataFrame.
     # Try using .loc[row_indexer,col_indexer] = value instead
-    # print(tat_series)
     return tat_series
 
 
@@ -198,7 +197,7 @@ def tat_shift_view(df:pd.DataFrame) -> pd.DataFrame:
 
 
 def totals(df:pd.DataFrame) -> pd.Series:
-    exams_by_period = df.groupby('User_selected_period').size()
+    exams_by_period = df.groupby('User_selected_period').size().rename('Totals')
     return exams_by_period
 
 def mean(df:pd.DataFrame) -> pd.Series:
