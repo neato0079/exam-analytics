@@ -161,7 +161,40 @@ def tat(df:pd.DataFrame) -> pd.Series:
     # SettingWithCopyWarning: 
     # A value is trying to be set on a copy of a slice from a DataFrame.
     # Try using .loc[row_indexer,col_indexer] = value instead
+    # print(tat_series)
     return tat_series
+
+
+def tat_shift_view(df:pd.DataFrame) -> pd.DataFrame:
+
+    # convert date strings to dt objects
+    order_time = pd.to_datetime(df['Exam Order Date\/Time'])
+    final_time = pd.to_datetime(df['Final Date\/Tm'])
+
+    df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+
+
+    # get the dt difference and set a new df column to hold these values
+    df['tat'] = final_time - order_time
+
+    # convert timedelta to total minutes
+    df['tat'] = df['tat'].dt.total_seconds() / 60  
+
+    # create small df of just the relevat data for plotting tat
+    tat_df = df[['tat', 'User_selected_period','Shift']]
+
+    # get the mean of tat
+    tat_series = tat_df.groupby(['User_selected_period', 'Shift'])['tat'].mean()
+
+    # set series to df for stacked bar chart
+    tat_shift = tat_series.unstack(fill_value=0)
+
+        # Reordering columns
+    tat_shift = tat_shift[['AM', 'PM', 'NOC']]
+    tat_shift.index = tat_shift.index.to_timestamp()
+    # print(tat_shift)
+
+    return tat_shift
 
 
 def totals(df:pd.DataFrame) -> pd.Series:
@@ -226,7 +259,8 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'totals': totals,
         'mean': mean,
         'tat': tat,
-        'shift': shift_view
+        'shift': shift_view,
+        'tat_shift': tat_shift_view
     }
     
     # Apply relevant metric function to df
@@ -251,6 +285,11 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filte
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
 
+    # handle shift view on tat
+    if filters['shift_view'] and filters['User_selected_metric'] == 'tat':
+        return metric_filt(df, 'tat_shift') # returns a df not series
+
+    # handle shift view on totals
     if filters['shift_view']:
         return metric_filt(df, 'shift') # returns a df not series
 

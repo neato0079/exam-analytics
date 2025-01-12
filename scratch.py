@@ -92,4 +92,43 @@ def plot_shift(df):
 
     plt.show()
 
-plot_shift(df_with_shift())
+def make_sr():
+
+    data = [
+        ('2024-07', 'AM', 14),
+        ('2024-07', 'NOC', 8),
+        ('2024-07', 'PM', 3),
+        ('2024-08', 'AM', 15),
+        ('2024-08', 'NOC', 5),
+        ('2024-09', 'AM', 12),
+        ('2024-09', 'NOC', 6),
+        ('2024-09', 'PM', 4),
+    ]
+
+    index = pd.MultiIndex.from_tuples([(period, shift) for period, shift, _ in data], names=["User_selected_period", "Shift"])
+    values = [count for _, _, count in data]
+
+    my_ser = pd.Series(values, index=index)
+
+    return my_ser
+
+def plot_sr(df):
+    # Plotting
+    width = 0.5
+    fig, ax = plt.subplots()
+    bottom = np.zeros(len(df))
+
+    # Generate bar positions and labels
+    bar_positions = range(len(df))
+    bar_labels = df.index
+    ax.bar(bar_positions, df, width=0.5,color='steelblue')
+
+    # Format x-axis
+    ax.set_xticks(bar_positions)
+    ax.set_xticklabels(bar_labels, rotation=45, ha='right', fontsize=8) 
+    ax.set_title("Number of Radiolog Exams")
+    ax.legend(loc="upper right")
+
+    plt.show()
+
+# plot_sr(make_sr())
