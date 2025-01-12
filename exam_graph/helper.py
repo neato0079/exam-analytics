@@ -194,3 +194,11 @@ def get_shift(exam_time:datetime):
         else:  # NOC shift (overnight)
             if exam_time_only >= start or exam_time_only < end:
                 return shift
+
+# set any date strings to a dt object  
+def set_dt_columns(df:pd.DataFrame) -> None:
+    for column in df.columns:
+        try:
+            df[column] = pd.to_datetime(df[column])
+        except ValueError:
+            print(f"Column {column} could not be converted to datetime.")
