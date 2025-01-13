@@ -28,7 +28,7 @@ def gen_encoded_graph(axes_data: pd.Series, xlabel: str, ylabel: str, mod:list) 
         # Generate bar positions and labels
         bar_positions = range(len(axes_data))
         bar_labels = axes_data.index
-        print(bar_labels)
+        print(axes_data)
 
         # Create bar chart
         ax.bar(bar_positions, axes_data, width=0.5,color='steelblue')

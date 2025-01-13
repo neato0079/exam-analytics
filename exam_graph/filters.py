@@ -161,7 +161,6 @@ def tat(df:pd.DataFrame) -> pd.Series:
     # SettingWithCopyWarning: 
     # A value is trying to be set on a copy of a slice from a DataFrame.
     # Try using .loc[row_indexer,col_indexer] = value instead
-    # print(tat_series)
     return tat_series
 
 
@@ -189,8 +188,12 @@ def tat_shift_view(df:pd.DataFrame) -> pd.DataFrame:
     # set series to df for stacked bar chart
     tat_shift = tat_series.unstack(fill_value=0)
 
-        # Reordering columns
-    tat_shift = tat_shift[['AM', 'PM', 'NOC']]
+    # Reordering columns if all three shifts are present
+    try:
+        df = df[['AM', 'PM', 'NOC']]
+    except:
+        pass
+    
     tat_shift.index = tat_shift.index.to_timestamp()
     # print(tat_shift)
 
@@ -198,7 +201,7 @@ def tat_shift_view(df:pd.DataFrame) -> pd.DataFrame:
 
 
 def totals(df:pd.DataFrame) -> pd.Series:
-    exams_by_period = df.groupby('User_selected_period').size()
+    exams_by_period = df.groupby('User_selected_period').size().rename('Totals')
     return exams_by_period
 
 def mean(df:pd.DataFrame) -> pd.Series:
@@ -224,11 +227,17 @@ def shift_view(df:pd.DataFrame) -> pd.DataFrame:
     # Ensure 'Exam Order Date/Time' is a datetime object
     df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
     df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+    print(df)
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
     df = df.groupby(['User_selected_period', 'Shift']).size().unstack(fill_value=0)
-    # Reordering columns
-    df = df[['AM', 'PM', 'NOC']]
+
+    # Reordering columns if all three shifts are present
+    try:
+        df = df[['AM', 'PM', 'NOC']]
+    except:
+        pass
+
     df.index = df.index.to_timestamp()
 
     return df
