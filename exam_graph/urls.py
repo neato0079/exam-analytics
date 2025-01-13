@@ -8,4 +8,5 @@ urlpatterns = [
     path('form/', views.form_page, name='formyayay'),
     path('mock_data/', views.display_mock_csv, name='mock'),
     path('test/', views.upload_csv, name='mock'),
+    path('asdf/', views.test, name='mock'),
 ]
