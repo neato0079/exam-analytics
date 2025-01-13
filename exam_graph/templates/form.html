@@ -78,11 +78,13 @@
             <a href="../" target="_top">Home</a>
         </footer>
     </div>
-    <div id="graph-container">
-        {% if graph %}
-        <img src="data:image/png;base64,{{ graph }}" alt="Generated Graph">
-        {% endif %}
-        <div id="summary">
+    <div class="results">
+        <div class="graph-container">
+            {% if graph %}
+            <img src="data:image/png;base64,{{ graph }}" alt="Generated Graph">
+            {% endif %}
+        </div>
+        <div class="summary">
             <h3>Analysis Summary</h3>
             {{ summary|safe }}
         </div>

@@ -1,14 +1,20 @@
+* {
+    box-sizing: border-box;
+  }
+  
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-evenly;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #121212; 
     color: #bfc3ca; 
+    height: auto; 
+    box-sizing: border-box;
 }
 
 .logo {
@@ -60,7 +66,7 @@ body {
 
 /* Footer styles */
 footer {
-    align-self: flex-end;
+    margin-top: auto;
     bottom: 10px;
     text-align: center;
     width: 100%;
@@ -75,37 +81,6 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
-}
-
-#graph-container{
-    display: flex;
-    flex-direction: column;
-    justify-content:space-around;
-    align-items: center;
-    width: 90%;
-    height: 85%;
-
-}
-
-#graph-container img {
-    max-width: 90%; 
-    height: 90%;
-    overflow: hidden;
-    border-radius: 10px;
-}
-
-.side-bar {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    padding: 3%;
-    margin-top: 3%;
-    margin-bottom: 3%;
-    background-color: #2b2a46;
-}
-
-.sidebar-content {
-    flex-grow: .95;  
 }
 
 .main {
@@ -165,20 +140,13 @@ h4 a:hover {
     text-decoration: underline; /* Adds underline on hover */
 }
 
-#summary{
-    padding-right: 30px;
-    align-content: center;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
 
-}
 
 /* General table styling */
 table {
-    width: 50%;
+    max-width: 50%;
+    max-height: 30%;
     border-collapse: collapse;
-    margin: 20px 0;
     font-size: 14px;
     text-align: left;
     background-color: #5d5d71;
@@ -219,4 +187,58 @@ tr:hover {
     th, td {
         padding: 10px 12px;
     }
+}
+
+.results{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    height: auto; 
+    padding: 30px;
+    align-self: stretch
+    
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 80%;
+    padding: 20px; /* Add padding for spacing */
+}
+
+
+.graph-container img {
+    max-width: 90%; 
+    height: 90%;
+    overflow: hidden;
+    border-radius: 10px;
+}
+.summary{
+    padding-right: 30px;
+    align-content: center;
+    text-align: center;
+    max-width: 50%;
+    max-height: 30%;
+    /* overflow: auto; */
+}
+
+.side-bar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 100vh;
+    padding: 30px;
+    background-color: #2b2a46;
+    overflow-y: auto;
+    height: auto; 
+    align-self: stretch
+}
+
+.sidebar-content {
+    flex-grow: 1;  
 }
