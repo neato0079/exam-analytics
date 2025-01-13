@@ -34,67 +34,88 @@ def display_mock_csv(request):
     return render(request, 'test_template.html', {'graph': graph})
 
 
-def upload_csv(request, modality):
-    if request.method == 'POST' and request.FILES['csv_file']:
-        csv_file = request.FILES['csv_file']
+def upload_csv(request):
+    try:
 
-        # Read CSV into a DataFrame
-        df = pd.read_csv(csv_file)
+        if request.method == 'POST' and request.FILES['csv_file']:
+            csv_file = request.FILES['csv_file']
+            file = request.FILES.keys()
+            file_name = next(iter(file)) + ".pickle"
+            print(file_name)
 
-        # for any column with strings, strip white spaces
-        df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+            # Read CSV into a DataFrame
+            df = pd.read_csv(csv_file)
 
-        # Ensure that 'Exam Complete Date/Tm' is in datetime format
-        df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
+            # for any column with strings, strip white spaces
+            df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
-        # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
-        df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
+            # Ensure that 'Exam Complete Date/Tm' is in datetime format
+            df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
 
-        # Store the DataFrame in the session (serialize as needed)
-        # request.session['csv_data'] = df
-        request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session. idk why i needed this conversion. i know why now. you cant store a df in a session. you can store a json. so convert to json to store it
+            # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
+            df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
-
-        # return redirect('test')  # Redirect to the filter/graph generation page
-
-        if debug_mode:
-
-            # make sure the helper functions are returning what then need to
-            df_csv = helper.read_csv_from_session(request.session['csv_data']) # csv in df form
-            filtered_df = helper.apply_filt(df_csv, modality)
-            print('This is the filtered df returned as a series:')
-            print(filtered_df)
-
-            # html_graph = helper.plot_graph(filtered_df) # html friendly graph
-
-            # save graph as png
-            graph_file_name = helper.plot_graph(filtered_df)
-            print(graph_file_name)
-            graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
-
-            return JsonResponse(
-                {
-                    'message': 'File processed and stored successfully',
-                    'original_request': prettify_request(request),
-                    'files': f'{request.FILES}',
-                    'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
-                    'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
-                    'debug_data': f'{prettify_request(request)}',
-                    'session_guts': f'{request.session}',
-                    'reading from session to df': f'{df_csv}',
-                    'filtered df to series': f'{filtered_df}',
-                    'graph_path': f'{graph_file_path}'
-                    }
-                )
-        else:
+            # Store the DataFrame in the session (serialize as needed)
+            # request.session['csv_data'] = df
+            # request.session['csv_data'] = df.to_json(date_format='iso')  # Convert to JSON to store in the session. idk why i needed this conversion. i know why now. you cant store a df in a session. you can store a json. so convert to json to store it
             
+            # Store df on disk
+            from pathlib import Path
+            import pickle
+
+            storage = Path("/Users/mattbot/dev")
+            my_path = storage / file_name
+            with my_path.open('wb') as fp:
+                pickle.dump(df, fp)
+
+            # return redirect('test')  # Redirect to the filter/graph generation page
+
+            if debug_mode:
+
+                # make sure the helper functions are returning what then need to
+                df_csv = helper.read_csv_from_session(request.session['csv_data']) # csv in df form
+                filtered_df = helper.apply_filt(df_csv, modality)
+                print('This is the filtered df returned as a series:')
+                print(filtered_df)
+
+                # html_graph = helper.plot_graph(filtered_df) # html friendly graph
+
+                # save graph as png
+                graph_file_name = helper.plot_graph(filtered_df)
+                print(graph_file_name)
+                graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
+
+                return JsonResponse(
+                    {
+                        'message': 'File processed and stored successfully',
+                        'original_request': prettify_request(request),
+                        'files': f'{request.FILES}',
+                        'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
+                        'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
+                        'debug_data': f'{prettify_request(request)}',
+                        'session_guts': f'{request.session}',
+                        'reading from session to df': f'{df_csv}',
+                        'filtered df to series': f'{filtered_df}',
+                        'graph_path': f'{graph_file_path}'
+                        }
+                    )
             
-            df_csv = helper.read_csv_from_session(request.session['csv_data'])
-            filtered_df = helper.apply_filt(df_csv, modality)
-            graph_file_name = helper.plot_graph(filtered_df, 'Time', '# of exams', 'Cool Graph Title')
-            graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
-            return render(request, 'results.html', {'graph_path': graph_file_path})
-    else:
+            # non debug mode
+            else:
+                # with open(my_path, 'rb') as f:
+                df = pd.read_pickle(my_path)
+                print(my_path)
+                    # pk = pickle.load(f)
+                return JsonResponse({'your file': f'{df}'}, status=200)
+                
+                # df_csv = helper.read_csv_from_session(request.session['csv_data'])
+                # filtered_df = helper.apply_filt(df_csv, modality)
+                # graph_file_name = helper.plot_graph(filtered_df, 'Time', '# of exams', 'Cool Graph Title')
+                # graph_file_path = 'http://localhost:8000/static/graphs/' + str(graph_file_name)
+                # return render(request, 'results.html', {'graph_path': graph_file_path})
+                return JsonResponse({'good': 'asdfasdf'}, status=200)
+        
+    except Exception as e:
 
         return JsonResponse({'error': 'Invalid request gunga bunga'}, status=400)
 
