@@ -27,7 +27,16 @@
                     <input type="file" id="file-input" class="file-input" name="csv_file" style="display: none;">
                 </div>
             </form>
-
+            <form id="file-select-form" action="/exam_graph/asdf/" method="GET">
+                <label for="file-select">Select a File:</label>
+                <select id="file-select" name="file">
+                    {% for file in files %}
+                        <option value="{{ file }}">{{ file }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">View Results</button>
+            </form>
+            
         </div>
     
         <footer>
