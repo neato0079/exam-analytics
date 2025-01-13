@@ -230,6 +230,7 @@ tr:hover {
     flex-direction: column;
     flex-grow: 1;
     min-height: 100vh;
+    max-width: 20%;
     padding: 30px;
     background-color: #2b2a46;
     overflow-y: auto;
