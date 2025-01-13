@@ -86,7 +86,7 @@ footer a:hover {
 .main {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -94,20 +94,18 @@ footer a:hover {
     height: 100vh;
     background-color: #121212; 
     color: #bfc3ca; 
-    margin-bottom: 50px;
 }
 
 .content {
     
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
-    margin-top: 50px;
     
 }
 
