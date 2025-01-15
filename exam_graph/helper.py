@@ -216,19 +216,18 @@ def set_selected_dataset(file_stem, usr_config_fp:Path):
 
     print(f'Set dataset to {file_stem}')
 
-
+# read selected dataset from config the returns the dataset fp
 def selected_pickle_fp(usr_config_fp:Path, dataset_dir:Path) -> Path:
     with usr_config_fp.open('r') as file:
         data = json.load(file)
         
     pickle_fn = Path(data['selected_dataset'])
     pickle_fp = dataset_dir / pickle_fn
-    print('asdfasdfasdfasdfasdfasdfasdfasdfasdf')
     return pickle_fp
 
 
 # Get earliest and latest dates from a given dt column in a df
-def check_date_range(df: pd.DataFrame, date_column: datetime) -> tuple:
+def check_date_range(df: pd.DataFrame, date_column:str = 'Exam Complete Date/Tm') -> tuple:
 
     earliest_date = df[date_column].min().strftime("%Y-%m-%d")
     latest_date = df[date_column].max().strftime("%Y-%m-%d")
