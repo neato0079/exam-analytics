@@ -100,25 +100,36 @@ def upload_csv(request):
             pickle_fp = usr_datasets_dir / pickle_fn
             usr_config_fp = usr_prop_dir / 'user_config.json'
 
+            if pickle_fp.exists():
+                # create copy to avoid overwrite
+                pickle_fp:Path = helper.pickle_copy(pickle_fp)
+                pickle_fn = str(pickle_fp.stem) + '.pickle'
+
             # check to see if user_config.json exists
             if usr_config_fp.exists():
+
                 # update user_config.json with name of newly uploaded dataset
                 helper.update_user_config(pickle_fn, usr_config_fp)
                 print('user_config.json exists yaya')
+
             else:
+
                 if not usr_prop_dir.exists():
                     # create neccessary dir
                     helper.create_directory(usr_prop_dir)
-
-                # create user_config.json and add pickel
-                helper.build_usr_config(pickle_fn, usr_prop_dir)
+                else:
+                    # create user_config.json and add pickel
+                    helper.build_usr_config(pickle_fn, usr_prop_dir)
 
             # check if dataset dir exists for pickle write
             if not usr_datasets_dir.exists():
+
                 helper.create_directory(usr_datasets_dir)
 
             # Store df on disk
-            helper.store_df_as_pickle(pickle_fp, df)
+            with pickle_fp.open('wb') as fp:
+                pickle.dump(df, fp)
+            print(f'File uploaded: "{pickle_fp}')
             messages.info(request, f'{file_str} uploaded!')
             return redirect('/exam_graph')
         

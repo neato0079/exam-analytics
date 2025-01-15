@@ -12,6 +12,7 @@ from decouple import Config
 import pickle
 from django.shortcuts import render, redirect
 import os
+import re
 
 df = pd.read_csv('./mock_exam_data.csv')
 
@@ -233,17 +234,29 @@ def format_df(df:pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def store_df_as_pickle(pickle_fp:Path, df:pd.DataFrame):
-    # check if file already exists to prevent overwrite
-    if pickle_fp.exists():
-        # TODO: handle overwrites
-        print("File name exists! Appended number to end of file")
-        return redirect('/exam_graph')
 
-    # write df as pickle to disk
-    with pickle_fp.open('wb') as fp:
-        pickle.dump(df, fp)
-    print(f'File uploaded: "{pickle_fp}')
+def update_verion_fn(s: str) -> str:
+    # Regular expression to match a suffix in the format "(n)" at the end of the string
+    pattern = r"\((\d+)\)$"
+    match = re.search(pattern, s)
+    
+    if match:
+        # If a match is found, increment the number
+        current_number = int(match.group(1))
+        new_number = current_number + 1
+        # Replace the old number with the new incremented number
+        new_string = re.sub(pattern, f"({new_number})", s)
+    else:
+        # If no match is found, add "(1)" to the string
+        new_string = f"{s}(1)"
+    
+    return new_string
+
+def pickle_copy(pickle_fp:Path) -> Path: 
+    pickle_name = str(pickle_fp.stem)
+    new_pickle_name = update_verion_fn(pickle_name)
+    pickle_fp = pickle_fp.with_stem(new_pickle_name)
+    return pickle_fp
 
 
 def update_user_config(pickle_str:str, config_path:Path):
@@ -269,3 +282,8 @@ def create_directory(path:Path):
     ds_store = path / ".DS_Store"
     if ds_store.exists():
         os.remove(ds_store)
+
+
+def update_server_on_usr_upload():
+    # TODO combine the above functions maybe
+    return 0
