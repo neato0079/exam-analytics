@@ -70,21 +70,12 @@ def upload_csv(request):
         pickle_name = file_str + ".pickle"
         csv_file = request.FILES[file]
 
-
         # Read CSV into a DataFrame
         df = pd.read_csv(csv_file)
 
-        # for any column with strings, strip white spaces
-        df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+        # Format data for filters
+        df = helper.format_df(df)
 
-        # Ensure that 'Exam Complete Date/Tm' is in datetime format
-        df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
-
-        # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
-        df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
-
-
-            # return redirect('test')  # Redirect to the filter/graph generation page
 
         if debug_mode:
 
@@ -109,7 +100,6 @@ def upload_csv(request):
             pickle_fp = usr_datasets_dir / pickle_name
             usr_config_fp = usr_prop_dir / 'user_config.json'
 
-
             # check to see if user_config.json exists
             if usr_config_fp.exists():
                 # update user_config.json with name of newly uploaded dataset
@@ -122,23 +112,12 @@ def upload_csv(request):
                 # create user_config.json and add pickel
                 helper.build_usr_config(pickle_name, usr_prop_dir)
 
-            # Store df on disk
             # check if dataset dir exists for pickle write
             if not usr_datasets_dir.exists():
                 usr_datasets_dir.mkdir(parents=True, exist_ok=True)
 
-            # check if file already exists to prevent overwrite
-            if pickle_fp.exists():
-                print("File name exists! Appended number to end of file")
-                messages.info(request, f'{file_str} uploaded!')
-
-                return redirect('/exam_graph')
-                # TODO: handle overwrites
-
-            # write df as pickle to disk
-            with pickle_fp.open('wb') as fp:
-                pickle.dump(df, fp)
-            print(f'File uploaded: "{pickle_name}')
+            # Store df on disk
+            helper.store_df_as_pickle(pickle_fp, df)
             messages.info(request, f'{file_str} uploaded!')
             return redirect('/exam_graph')
         

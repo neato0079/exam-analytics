@@ -9,7 +9,8 @@ from django.http import JsonResponse
 from datetime import datetime, time
 from pathlib import Path
 from decouple import Config
-
+import pickle
+from django.shortcuts import render, redirect
 
 df = pd.read_csv('./mock_exam_data.csv')
 
@@ -216,3 +217,29 @@ def build_usr_config(file_name, dir):
         json.dump(data, f, indent=4)
     
     print(f'Created "user_config.json" in "{dir}" successfully!')
+
+
+def format_df(df:pd.DataFrame) -> pd.DataFrame:
+
+    # for any column with strings, strip white spaces
+    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+
+    # Ensure that 'Exam Complete Date/Tm' is in datetime format
+    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
+
+    # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
+    df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
+
+    return df
+
+def store_df_as_pickle(pickle_fp:Path, df:pd.DataFrame):
+    # check if file already exists to prevent overwrite
+    if pickle_fp.exists():
+        # TODO: handle overwrites
+        print("File name exists! Appended number to end of file")
+        return redirect('/exam_graph')
+
+    # write df as pickle to disk
+    with pickle_fp.open('wb') as fp:
+        pickle.dump(df, fp)
+    print(f'File uploaded: "{pickle_fp}')
