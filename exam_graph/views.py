@@ -67,7 +67,7 @@ def upload_csv(request):
             return redirect('/exam_graph')
 
         file_str = str(request.FILES[file]).split('.')[0]
-        pickle_name = file_str + ".pickle"
+        pickle_fn = file_str + ".pickle"
         csv_file = request.FILES[file]
 
         # Read CSV into a DataFrame
@@ -97,12 +97,13 @@ def upload_csv(request):
             # set config paths
             usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
             usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
-            pickle_fp = usr_datasets_dir / pickle_name
+            pickle_fp = usr_datasets_dir / pickle_fn
             usr_config_fp = usr_prop_dir / 'user_config.json'
 
             # check to see if user_config.json exists
             if usr_config_fp.exists():
                 # update user_config.json with name of newly uploaded dataset
+                helper.update_user_config(pickle_fn, usr_config_fp)
                 print('user_config.json exists yaya')
             else:
                 if not usr_prop_dir.exists():
@@ -110,7 +111,7 @@ def upload_csv(request):
                     usr_prop_dir.mkdir(parents=True, exist_ok=True)
 
                 # create user_config.json and add pickel
-                helper.build_usr_config(pickle_name, usr_prop_dir)
+                helper.build_usr_config(pickle_fn, usr_prop_dir)
 
             # check if dataset dir exists for pickle write
             if not usr_datasets_dir.exists():

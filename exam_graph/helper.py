@@ -243,3 +243,18 @@ def store_df_as_pickle(pickle_fp:Path, df:pd.DataFrame):
     with pickle_fp.open('wb') as fp:
         pickle.dump(df, fp)
     print(f'File uploaded: "{pickle_fp}')
+
+
+def update_user_config(pickle_str:str, config_path:Path):
+    config_file = Path(config_path)
+
+    # decode to json
+    with config_file.open('r') as file:
+        data = json.load(file)
+
+    # Add the new pickle file name
+    data["user datasets"].append(pickle_str)
+
+    # encode the updated data back to the JSON file
+    with config_file.open('w') as file:
+        json.dump(data, file, indent=4)
