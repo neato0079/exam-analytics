@@ -266,3 +266,30 @@ tr:hover {
     margin: auto;
     padding: 15px;
 }
+
+.file-select-form{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 10px;
+    font-size: x-large;
+    align-items: center;
+}
+
+#file-select{
+    min-width: 60%;
+}
+
+.load-button{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #90abdd;
+    color: #121212;
+}
+
+.load-button:hover {
+    background-color: #738bb7; /* Slightly darker on hover */
+}
