@@ -7,8 +7,6 @@ import pandas as pd
 import pprint
 from . import helper
 from . import filters
-from django.core.files.uploadedfile import InMemoryUploadedFile
-import matplotlib.pyplot as plt
 import traceback
 from . import myplot
 from pathlib import Path

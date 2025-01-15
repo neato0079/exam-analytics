@@ -8,7 +8,6 @@ import json
 from django.http import JsonResponse
 from datetime import datetime, time
 from pathlib import Path
-from django.shortcuts import render, redirect
 import os
 import re
 
