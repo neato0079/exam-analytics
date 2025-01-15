@@ -23,9 +23,14 @@ debug_mode = False
 
 # Create your views here.
 def home(request:HttpRequest):
+
     upload_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-    print(upload_dir)
-    files = [f.stem for f in upload_dir.iterdir() if f.is_file()]  # List only files without suffix
+
+    if upload_dir.exists():
+        files = [f.stem for f in upload_dir.iterdir() if f.is_file()]  # List only files without suffix
+
+    else:
+        files = ['no datasets uploaded']
     return render(request, 'index.html', {'files': files})
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
@@ -62,7 +67,7 @@ def upload_csv(request):
             return redirect('/exam_graph')
 
         file_str = str(request.FILES[file]).split('.')[0]
-        full_file_name = file_str + ".pickle"
+        pickle_name = file_str + ".pickle"
         csv_file = request.FILES[file]
 
 
@@ -97,42 +102,45 @@ def upload_csv(request):
             
         # non debug mode
         else:
-        
+            
+            # set config paths
             usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
             usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
-            full_path = usr_datasets_dir / full_file_name
-            df = pd.read_pickle(full_path)
+            pickle_fp = usr_datasets_dir / pickle_name
             usr_config_fp = usr_prop_dir / 'user_config.json'
 
-            # check storage to see if uploads folder exists
+
+            # check to see if user_config.json exists
             if usr_config_fp.exists():
                 # update user_config.json with name of newly uploaded dataset
                 print('user_config.json exists yaya')
             else:
-                # create urs data set dir
+                if not usr_prop_dir.exists():
+                    # create neccessary dir
+                    usr_prop_dir.mkdir(parents=True, exist_ok=True)
+
                 # create user_config.json and add pickel
-                helper.build_usr_config(full_file_name, usr_prop_dir)
+                helper.build_usr_config(pickle_name, usr_prop_dir)
 
             # Store df on disk
+            # check if dataset dir exists for pickle write
+            if not usr_datasets_dir.exists():
+                usr_datasets_dir.mkdir(parents=True, exist_ok=True)
 
             # check if file already exists to prevent overwrite
-            if full_path.exists():
+            if pickle_fp.exists():
                 print("File name exists! Appended number to end of file")
                 messages.info(request, f'{file_str} uploaded!')
 
                 return redirect('/exam_graph')
                 # TODO: handle overwrites
-            else:
-                print("File does not exist.")
-                print(f'File uploaded: "{full_file_name}')
 
-            with full_path.open('wb') as fp:
+            # write df as pickle to disk
+            with pickle_fp.open('wb') as fp:
                 pickle.dump(df, fp)
-            helper.build_usr_config(full_file_name, Path(config('CONFIG_ROOT') + config('USER_PROP')))
+            print(f'File uploaded: "{pickle_name}')
             messages.info(request, f'{file_str} uploaded!')
             return redirect('/exam_graph')
-            
-            return JsonResponse({'Upload Successful': f'File: {full_file_name}'}, status=200)
         
     except Exception as e:
         error_message = f"An error occurred: {e}"
