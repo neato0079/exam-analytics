@@ -287,3 +287,27 @@ def create_directory(path:Path):
 def update_server_on_usr_upload():
     # TODO combine the above functions maybe
     return 0
+
+def pickle_to_df(pickle_fp:Path) -> pd.DataFrame:
+    return pd.read_pickle(pickle_fp)
+
+def set_selected_dataset(file_stem, usr_config_fp:Path):
+    with usr_config_fp.open('r') as file:
+        data = json.load(file)
+    data['selected_dataset'] = file_stem + '.pickle'
+
+    # encode the updated data back to the JSON file
+    with usr_config_fp.open('w') as file:
+        json.dump(data, file, indent=4)
+
+    print(f'Set dataset to {file_stem}')
+
+
+def selected_df(usr_config_fp:Path):
+    with usr_config_fp.open('r') as file:
+        data = json.load(file)
+        return data
+    #     pickle_fn = Path(data['selected_data'] + '.pickle')
+    # usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    # pickle_fp = usr_datasets_dir / pickle_fn
+    # return pickle_fp

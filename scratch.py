@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime, time
 from decouple import config
 from pathlib import Path
+import json
 # # Data
 # data = {
 #     'Exam Complete Date': ['2024-07-10T00:00:00.000', '2024-07-14T00:00:00.000', '2024-09-10T00:00:00.000'],
@@ -134,4 +135,25 @@ def plot_sr(df):
 
 # plot_sr(make_sr())
 
-print(type(Path(config('CONFIG_ROOT') + config('USER_PROP')) ))
+def selected_df(usr_config_fp:Path):
+    with usr_config_fp.open('r') as file:
+        data = json.load(file)
+        return data
+    #     pickle_fn = Path(data['selected_data'] + '.pickle')
+    # usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    # pickle_fp = usr_datasets_dir / pickle_fn
+    # return pickle_fp
+
+def set_selected_df(file_stem):
+    usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
+    usr_config_fp = usr_prop_dir / 'user_config.json'
+    with usr_config_fp.open('r') as file:
+        data = json.load(file)
+    data['selected_dataset'] = file_stem + '.pickle'
+
+    # encode the updated data back to the JSON file
+    with usr_config_fp.open('w') as file:
+        json.dump(data, file, indent=4)
+
+    print(f'Set dataset to {file_stem}')
+print(set_selected_df())

@@ -210,3 +210,24 @@ def prettify_request(request):
         "content_type": request.content_type,
         "session_keys": list(request.session.keys()),
     }
+
+## TODO on load button, update user config to SELECTED_DATASET = 'mock_exam_data.pickle'
+
+def load_data(request:HttpRequest):
+    # get file name from form
+    # set file name in user config
+    file_name = request.GET.get('file')
+    usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
+    usr_config_fp = usr_prop_dir / 'user_config.json'
+    usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    if usr_config_fp.exists():
+        helper.set_selected_dataset(file_name, usr_config_fp)
+
+    # pickle_fn = Path(helper.selected_df(usr_config_fp))
+
+    pickle_fp = Path(str(usr_datasets_dir) + '/' + file_name + '.pickle')
+    # df = helper.pickle_to_df(pickle_fp)
+    print(f'data set selected: {pickle_fp}')
+
+
+    return redirect('/exam_graph/form/')
