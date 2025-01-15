@@ -8,8 +8,6 @@ import json
 from django.http import JsonResponse
 from datetime import datetime, time
 from pathlib import Path
-from decouple import config
-import pickle
 from django.shortcuts import render, redirect
 import os
 import re
@@ -312,20 +310,9 @@ def selected_pickle_fp(usr_config_fp:Path, dataset_dir:Path) -> Path:
     return pickle_fp
 
 
-def check_date_range(df: pd.DataFrame, date_column: str = 'Exam Complete Date/Tm'):
-    """
-    Checks the earliest and latest dates in the specified column of a DataFrame.
+# Get earliest and latest dates from a given dt column in a df
+def check_date_range(df: pd.DataFrame, date_column: datetime) -> tuple:
 
-    Parameters:
-    - df: pd.DataFrame - The DataFrame containing the date column.
-    - date_column: str - The name of the column containing date values (default is 'Exam Complete Date/Tm').
-
-    Returns:
-    - A tuple containing the earliest and latest dates.
-    """
-    # Ensure the column is in datetime format
-    
-    # Get the earliest and latest dates
     earliest_date = df[date_column].min().strftime("%Y-%m-%d")
     latest_date = df[date_column].max().strftime("%Y-%m-%d")
     
