@@ -17,11 +17,6 @@ def build_test_master_json_df() -> pd.DataFrame:
     return mock_json
 
 
-# for any column with strings, strip white spaces
-def df_strip(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
-
-
 filters = {
     'date_range': {
         # make this ISO. edit later. sample data set is small enough for this not to matter yet
