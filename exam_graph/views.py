@@ -82,7 +82,10 @@ def upload_csv(request):
 
         # check if file already exists to prevent overwrite
         if my_path.exists():
-            print("File exists!")
+            print("File name exists! Appended number to end of file")
+            messages.info(request, f'{file_str} uploaded!')
+
+            return redirect('/exam_graph')
             # TODO: handle overwrites
         else:
             print("File does not exist.")
@@ -111,6 +114,8 @@ def upload_csv(request):
         else:
         
             df = pd.read_pickle(my_path)
+            messages.info(request, f'{file_str} uploaded!')
+            return redirect('/exam_graph')
             
             return JsonResponse({'Upload Successful': f'File: {full_file_name}'}, status=200)
         

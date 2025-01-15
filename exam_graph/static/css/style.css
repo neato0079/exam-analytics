@@ -253,7 +253,7 @@ tr:hover {
     border-color: transparent;
 }
 
-/* Specific styling for error messages */
+/* Specific styling for tagged messages */
 .messages .error {
     height: auto;
     width: auto;
@@ -263,6 +263,19 @@ tr:hover {
     background-clip: padding-box;
     border-color: #8e2727; /* Darker red border */
     color: #8e2727; /* Dark red text for better contrast */
+    margin: auto;
+    padding: 15px;
+}
+
+.messages .info {
+    height: auto;
+    width: auto;
+    border: 2px solid;
+    border-radius: 12px;
+    background-color: #6fbd95; /* Light red background */
+    background-clip: padding-box;
+    border-color: #448546; /* Darker red border */
+    color: #263f27; /* Dark red text for better contrast */
     margin: auto;
     padding: 15px;
 }
