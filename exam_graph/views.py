@@ -155,7 +155,7 @@ def filter_submission_handler(request):
 
     # parsed_mocked_data = helper.build_test_master_json_df()
     pickle_fp:Path = helper.selected_pickle_fp(USER_CONFIG_FP, DATASET_DIR)
-    parsed_mocked_data = helper.pickle_to_df(pickle_fp)
+    df = helper.pickle_to_df(pickle_fp)
     print('Filtered from source:')
     print(pickle_fp)
     
@@ -175,7 +175,7 @@ def filter_submission_handler(request):
 
         # TESTING SHIFT PLOT. TOTALS ONLY
 
-        axes_data = filters.master_filter(parsed_mocked_data, filter_params['xfilt'], metric ,daterange, filter_params)
+        axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
         
         if shift_view:
             graph_base64 = myplot.plot_shift(axes_data, period)
@@ -239,8 +239,12 @@ def load_data(request:HttpRequest):
     # pickle_fn = Path(helper.selected_df(usr_config_fp))
 
     pickle_fp = Path(str(DATASET_DIR) + '/' + file_name + '.pickle')
-    # df = helper.pickle_to_df(pickle_fp)
-    print(f'data set selected: {pickle_fp}')
+    df = helper.pickle_to_df(pickle_fp)
+    earliest, latest = helper.check_date_range(df)
 
-
-    return redirect('/exam_graph/form/')
+    stuff_for_html_render = {
+        'start_date': earliest,
+        'end_date': latest,
+        'dataset_name': pickle_fp.stem
+    }
+    return render(request, 'form.html', stuff_for_html_render)

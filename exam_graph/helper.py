@@ -310,3 +310,23 @@ def selected_pickle_fp(usr_config_fp:Path, dataset_dir:Path) -> Path:
     pickle_fp = dataset_dir / pickle_fn
     print('asdfasdfasdfasdfasdfasdfasdfasdfasdf')
     return pickle_fp
+
+
+def check_date_range(df: pd.DataFrame, date_column: str = 'Exam Complete Date/Tm'):
+    """
+    Checks the earliest and latest dates in the specified column of a DataFrame.
+
+    Parameters:
+    - df: pd.DataFrame - The DataFrame containing the date column.
+    - date_column: str - The name of the column containing date values (default is 'Exam Complete Date/Tm').
+
+    Returns:
+    - A tuple containing the earliest and latest dates.
+    """
+    # Ensure the column is in datetime format
+    
+    # Get the earliest and latest dates
+    earliest_date = df[date_column].min().strftime("%Y-%m-%d")
+    latest_date = df[date_column].max().strftime("%Y-%m-%d")
+    
+    return earliest_date, latest_date
