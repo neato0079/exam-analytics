@@ -147,11 +147,8 @@ def upload_csv(request):
 
 def filter_submission_handler(request):
 
-    USER_PROP_DIR
-    usr_config_fp = USER_PROP_DIR / 'user_config.json'
-
     # parsed_mocked_data = helper.build_test_master_json_df()
-    pickle_fp = helper.selected_pickle_fp(usr_config_fp)
+    pickle_fp = helper.selected_pickle_fp(USER_CONFIG_FP)
     parsed_mocked_data = helper.pickle_to_df(pickle_fp)
     print('Filtered from source:')
     print(pickle_fp)
