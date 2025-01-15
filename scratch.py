@@ -134,4 +134,4 @@ def plot_sr(df):
 
 # plot_sr(make_sr())
 
-print(Path(config('CONFIG_ROOT') + config('USER_PROP') ))
+print(type(Path(config('CONFIG_ROOT') + config('USER_PROP')) ))

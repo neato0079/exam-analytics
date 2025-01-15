@@ -78,23 +78,6 @@ def upload_csv(request):
         # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
         df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
-        # Store df on disk
-        storage = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-        full_path = storage / full_file_name
-
-        # check if file already exists to prevent overwrite
-        if full_path.exists():
-            print("File name exists! Appended number to end of file")
-            messages.info(request, f'{file_str} uploaded!')
-
-            return redirect('/exam_graph')
-            # TODO: handle overwrites
-        else:
-            print("File does not exist.")
-            print(f'File uploaded: "{full_file_name}')
-
-        with full_path.open('wb') as fp:
-            pickle.dump(df, fp)
 
             # return redirect('test')  # Redirect to the filter/graph generation page
 
@@ -115,7 +98,37 @@ def upload_csv(request):
         # non debug mode
         else:
         
+            usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+            usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
+            full_path = usr_datasets_dir / full_file_name
             df = pd.read_pickle(full_path)
+            usr_config_fp = usr_prop_dir / 'user_config.json'
+
+            # check storage to see if uploads folder exists
+            if usr_config_fp.exists():
+                # update user_config.json with name of newly uploaded dataset
+                print('user_config.json exists yaya')
+            else:
+                # create urs data set dir
+                # create user_config.json and add pickel
+                helper.build_usr_config(full_file_name, usr_prop_dir)
+
+            # Store df on disk
+
+            # check if file already exists to prevent overwrite
+            if full_path.exists():
+                print("File name exists! Appended number to end of file")
+                messages.info(request, f'{file_str} uploaded!')
+
+                return redirect('/exam_graph')
+                # TODO: handle overwrites
+            else:
+                print("File does not exist.")
+                print(f'File uploaded: "{full_file_name}')
+
+            with full_path.open('wb') as fp:
+                pickle.dump(df, fp)
+            helper.build_usr_config(full_file_name, Path(config('CONFIG_ROOT') + config('USER_PROP')))
             messages.info(request, f'{file_str} uploaded!')
             return redirect('/exam_graph')
             
