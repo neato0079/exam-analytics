@@ -7,6 +7,8 @@ from django.conf import settings
 import json
 from django.http import JsonResponse
 from datetime import datetime, time
+from pathlib import Path
+from decouple import config
 
 
 df = pd.read_csv('./mock_exam_data.csv')
@@ -202,3 +204,13 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             df[column] = pd.to_datetime(df[column])
         except ValueError:
             print(f"Column {column} could not be converted to datetime.")
+
+
+def build_usr_config(file_name):
+    data = {}
+    data['user datasets'] = [file_name]
+    storage = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    full_path = storage / file_name
+    with full_path.open('wb') as new_file:
+        json.dumps(data, new_file)
+        
