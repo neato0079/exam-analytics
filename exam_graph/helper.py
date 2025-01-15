@@ -2,17 +2,14 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')  # Use a non-GUI backend for server use
 import re
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.conf import settings
 import json
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 from datetime import datetime, time
 from pathlib import Path
 import os
 import re
 
-# df = pd.read_csv('./mock_exam_data.csv')
-
+# used for testing filters
 def build_test_master_json_df() -> pd.DataFrame:
 
     mock_json = pd.read_json('./mock_datav2.json')
@@ -60,98 +57,21 @@ filters = {
 }
 
 
-"""
-You declare panda data types with type hints as follows
-Also read up on mypy: https://mypy-lang.org/
-This allows for datatype testing within functions i think
-
-import pandas as pd
-
-def filter1(df: pd.DataFrame) -> pd.Series: 
-    filtered_df = df[df['col1'] == 'value']
-    
-    return filtered_df
-"""
-# pull csv from session
-def read_csv_from_session(file: str) -> pd.DataFrame: 
-    df = pd.read_json(file)
-    
-    return df
-
-def get_next_graph_filename() -> str:
-    # Path to the static/img directory
-    img_dir = settings.STATICFILES_DIRS[0] / 'graphs'
-
-    # Ensure the directory exists
-    img_dir.mkdir(parents=True, exist_ok=True)
-
-    # Regex pattern to match files like 'test_graphX.png'
-    filename_pattern = re.compile(r'^test_graph(\d+)\.png$')
-
-    # List all files in the directory and filter those matching the pattern
-    existing_files = [f.name for f in img_dir.iterdir() if filename_pattern.match(f.name)]
-
-    # Extract numbers from matching filenames
-    numbers = [
-        int(filename_pattern.match(f).group(1))
-        for f in existing_files
-    ]
-
-    # Find the highest number, default to 0 if no files exist
-    next_number = max(numbers, default=0) + 1
-
-    # Construct the next filename
-    next_filename = f'test_graph{next_number}.png'
-    return next_filename  # Return only file name as a Path object
-     
-
-
 # take user's filter request and convert it into a dictionary compliant with our graphing function
-def parse_filter_request(request) -> dict: 
-
-    mock_json = build_test_master_json_df
+def parse_filter_request(request:HttpRequest) -> dict: 
 
     if request.method == 'POST':
+
         try:
-            # Decode and parse the JSON body
-            # "<class 'django.core.handlers.wsgi.WSGIRequest'>"
-            # the file uploaded by postman is a django.core.files.uploadedfile object
-            # we need to convert this object to bytes before we can json read it
-            if len(request.FILES) > 0:
-                # create InMemoryUploadedFile object from our mock_data.json stored in the 'test_file' key of our postman POST request 
-                in_memory_file:InMemoryUploadedFile = request.FILES['test_file']
-
-                # stackoverflow says to do this but idk what seek() does
-                in_memory_file.seek(0)
-
-                # read our object as bytes
-                file_bytes = in_memory_file.read()
-
-                # decode bytes to JSON string
-                file_string = file_bytes.decode('utf-8')
-
-                # convert from bytes to JSON file
-                file_json = json.loads(file_string)
-
-                # convert from JSON to pandas DataFrame
-                mock_json = pd.DataFrame.from_dict(file_json)
-
-
             # parse form request
-
-            start_str = request.POST.get('start_date')
-            end_str = request.POST.get('end_date')
+            client_form: dict = request.POST
+            start_str = client_form.get('start_date')
+            end_str = client_form.get('end_date')
             start_date = datetime.strptime(start_str, '%Y-%m-%d') if start_str else None
             end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
-
-
-            client_form: dict = request.POST
-
             metric = client_form['User_selected_metric']
-            # modality = [mod.strip() for mod in client_form['User_selected_modality'].split(',')] # this is for postman
             modality = client_form.getlist('User_selected_modality')
             period = client_form['period']
-            df = mock_json
             shift_view = None
 
             if 'shift_view' in client_form:
@@ -160,7 +80,6 @@ def parse_filter_request(request) -> dict:
 
 
             post_req = {
-                'source_dataframe': df,
                 'date_range': [start_date, end_date], 
                 'date_str': [start_str, end_str],
                 'xfilt': {
@@ -169,8 +88,9 @@ def parse_filter_request(request) -> dict:
                 },
                 'User_selected_metric': metric,
                 'shift_view': shift_view
-
             }
+
+            print(f'Parsed filter form request{client_form}')
 
             return post_req
         
@@ -181,14 +101,17 @@ def parse_filter_request(request) -> dict:
         return JsonResponse({"Your GET": request.method})
     
 
-def get_shift(exam_time:datetime):
-
+# returns shift str for a given dt
+def get_shift(exam_time:datetime) -> str:
     shifts = {
-    'AM': [time(7, 0), time(15, 0)],
-    'PM': [time(15, 0), time(23, 0)],
-    'NOC': [time(23, 0), time(7, 0)]
-}
+        'AM': [time(7, 0), time(15, 0)],
+        'PM': [time(15, 0), time(23, 0)],
+        'NOC': [time(23, 0), time(7, 0)]
+    }
+
+    # ignore date
     exam_time_only = exam_time.time()
+
     for shift, (start, end) in shifts.items():
         if start <= end:  # AM and PM shifts
             if start <= exam_time_only < end:
