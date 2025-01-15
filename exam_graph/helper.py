@@ -8,13 +8,13 @@ import json
 from django.http import JsonResponse
 from datetime import datetime, time
 from pathlib import Path
-from decouple import Config
+from decouple import config
 import pickle
 from django.shortcuts import render, redirect
 import os
 import re
 
-df = pd.read_csv('./mock_exam_data.csv')
+# df = pd.read_csv('./mock_exam_data.csv')
 
 def build_test_master_json_df() -> pd.DataFrame:
 
@@ -227,7 +227,7 @@ def format_df(df:pd.DataFrame) -> pd.DataFrame:
     df = df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
 
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
-    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='%m/%d/%Y')
+    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='ISO8601')
 
     # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
     df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
@@ -303,11 +303,12 @@ def set_selected_dataset(file_stem, usr_config_fp:Path):
     print(f'Set dataset to {file_stem}')
 
 
-def selected_df(usr_config_fp:Path):
+def selected_pickle_fp(usr_config_fp:Path) -> Path:
     with usr_config_fp.open('r') as file:
         data = json.load(file)
-        return data
-    #     pickle_fn = Path(data['selected_data'] + '.pickle')
-    # usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-    # pickle_fp = usr_datasets_dir / pickle_fn
-    # return pickle_fp
+        
+    pickle_fn = Path(data['selected_dataset'])
+    usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    pickle_fp = usr_datasets_dir / pickle_fn
+    print('asdfasdfasdfasdfasdfasdfasdfasdfasdf')
+    return pickle_fp

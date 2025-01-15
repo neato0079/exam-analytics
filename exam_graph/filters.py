@@ -59,14 +59,14 @@ week_view_options = [
 # cut df down to a date range
 def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
     # Ensure 'Exam Order Date/Time' is a datetime object
-    df['Exam Order Date\/Time'] = pd.to_datetime(df['Exam Order Date\/Time'])
+    df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'])
 
     
     # Define the start and end date range
 
     
     # Filter rows where 'Exam Order Date/Time' is between start and end
-    filtered_df = df[(df['Exam Order Date\/Time'] >= start) & (df['Exam Order Date\/Time'] <= end)]
+    filtered_df = df[(df['Exam Order Date/Time'] >= start) & (df['Exam Order Date/Time'] <= end)]
     
     return filtered_df
 
@@ -91,7 +91,7 @@ def get_shifts(df):
     
 
     # convert to dt
-    comp_time = pd.to_datetime(df['Exam Order Date\/Time'])
+    comp_time = pd.to_datetime(df['Exam Order Date/Time'])
 
     # check to see if shifts are formatted right
 
@@ -122,10 +122,10 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     period_selection = alias[period_selection]
 
     # set time stamps to datetime object
-    df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
 
     # create new column to we can group by the user's selected period
-    df['User_selected_period'] = df['Exam Complete Date\/Tm'].dt.to_period(period_selection)
+    df['User_selected_period'] = df['Exam Complete Date/Tm'].dt.to_period(period_selection)
 
     return df
 
@@ -142,8 +142,8 @@ def mod_filt(df:pd.DataFrame, selected_modalities:list) -> pd.DataFrame:
 def tat(df:pd.DataFrame) -> pd.Series:
 
     # convert date strings to dt objects
-    order_time = pd.to_datetime(df['Exam Order Date\/Time'])
-    final_time = pd.to_datetime(df['Final Date\/Tm'])
+    order_time = pd.to_datetime(df['Exam Order Date/Time'])
+    final_time = pd.to_datetime(df['Final Date/Tm'])
 
     # get the dt difference and set a new df column to hold these values
     df['tat'] = final_time - order_time
@@ -167,10 +167,10 @@ def tat(df:pd.DataFrame) -> pd.Series:
 def tat_shift_view(df:pd.DataFrame) -> pd.DataFrame:
 
     # convert date strings to dt objects
-    order_time = pd.to_datetime(df['Exam Order Date\/Time'])
-    final_time = pd.to_datetime(df['Final Date\/Tm'])
+    order_time = pd.to_datetime(df['Exam Order Date/Time'])
+    final_time = pd.to_datetime(df['Final Date/Tm'])
 
-    df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+    df['Shift'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
 
 
     # get the dt difference and set a new df column to hold these values
@@ -207,10 +207,10 @@ def totals(df:pd.DataFrame) -> pd.Series:
 def mean(df:pd.DataFrame) -> pd.Series:
     
     # Convert the date column to datetime
-    df['Exam Complete Date\/Tm'] = pd.to_datetime(df['Exam Complete Date\/Tm'])
+    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
 
     # Group by modality and date to count daily exams
-    daily_counts = df.groupby(["Modality", df["Exam Complete Date\/Tm"].dt.date]).size()
+    daily_counts = df.groupby(["Modality", df["Exam Complete Date/Tm"].dt.date]).size()
     # print(daily_counts)
 
     # Reset the index to make the series easier to process
@@ -225,8 +225,8 @@ def mean(df:pd.DataFrame) -> pd.Series:
 def shift_view(df:pd.DataFrame) -> pd.DataFrame:
  
     # Ensure 'Exam Order Date/Time' is a datetime object
-    df['Exam Complete Date\\/Tm'] = pd.to_datetime(df['Exam Complete Date\\/Tm'])
-    df['Shift'] = df['Exam Complete Date\\/Tm'].apply(helper.get_shift)
+    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
+    df['Shift'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
     print(df)
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift

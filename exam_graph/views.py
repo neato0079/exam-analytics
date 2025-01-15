@@ -117,9 +117,9 @@ def upload_csv(request):
                 if not usr_prop_dir.exists():
                     # create neccessary dir
                     helper.create_directory(usr_prop_dir)
-                else:
-                    # create user_config.json and add pickel
-                    helper.build_usr_config(pickle_fn, usr_prop_dir)
+                
+                # create user_config.json and add pickel
+                helper.build_usr_config(pickle_fn, usr_prop_dir)
 
             # check if dataset dir exists for pickle write
             if not usr_datasets_dir.exists():
@@ -142,7 +142,14 @@ def upload_csv(request):
 
 def filter_submission_handler(request):
 
-    parsed_mocked_data = helper.build_test_master_json_df()
+    usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
+    usr_config_fp = usr_prop_dir / 'user_config.json'
+
+    # parsed_mocked_data = helper.build_test_master_json_df()
+    pickle_fp = helper.selected_pickle_fp(usr_config_fp)
+    parsed_mocked_data = helper.pickle_to_df(pickle_fp)
+    print('Filtered from source:')
+    print(pickle_fp)
     
 
     try:

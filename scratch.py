@@ -5,6 +5,8 @@ from datetime import datetime, time
 from decouple import config
 from pathlib import Path
 import json
+import random
+import csv
 # # Data
 # data = {
 #     'Exam Complete Date': ['2024-07-10T00:00:00.000', '2024-07-14T00:00:00.000', '2024-09-10T00:00:00.000'],
@@ -156,4 +158,23 @@ def set_selected_df(file_stem):
         json.dump(data, file, indent=4)
 
     print(f'Set dataset to {file_stem}')
-print(set_selected_df())
+
+
+
+def rand_delay():
+    # Initialize mock data
+    df = pd.read_csv('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv')
+
+    # Convert to datetime
+    comp_time = pd.to_datetime(df['Exam Order Date/Time'])
+
+    # Add delay in minutes from 15-45 min
+    df['Exam Complete Date/Tm'] = comp_time + pd.to_timedelta(pd.Series(random.choices(range(15, 46), k=len(df))), unit='m')
+
+    # Save DataFrame to CSV
+    df.to_csv('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv', index=False)
+
+
+    print("CSV file saved successfully.")
+
+rand_delay()
