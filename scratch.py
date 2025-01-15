@@ -2,7 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, time
-
+from decouple import config
+from pathlib import Path
 # # Data
 # data = {
 #     'Exam Complete Date': ['2024-07-10T00:00:00.000', '2024-07-14T00:00:00.000', '2024-09-10T00:00:00.000'],
@@ -132,3 +133,5 @@ def plot_sr(df):
     plt.show()
 
 # plot_sr(make_sr())
+
+print(Path(config('CONFIG_ROOT') + config('USER_PROP') ))

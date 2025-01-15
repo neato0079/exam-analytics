@@ -14,6 +14,7 @@ from . import myplot
 from pathlib import Path
 import pickle
 from django.contrib import messages
+from decouple import config
 
 ################
 #  DEBUG MODE  #
@@ -22,7 +23,8 @@ debug_mode = False
 
 # Create your views here.
 def home(request:HttpRequest):
-    upload_dir = Path('/Users/mattbot/dev/user_uploads')  # Create a Path object for the directory
+    upload_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    print(upload_dir)
     files = [f.stem for f in upload_dir.iterdir() if f.is_file()]  # List only files without suffix
     return render(request, 'index.html', {'files': files})
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
@@ -77,11 +79,11 @@ def upload_csv(request):
         df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
         # Store df on disk
-        storage = Path("/Users/mattbot/dev/user_uploads")
-        my_path = storage / full_file_name
+        storage = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+        full_path = storage / full_file_name
 
         # check if file already exists to prevent overwrite
-        if my_path.exists():
+        if full_path.exists():
             print("File name exists! Appended number to end of file")
             messages.info(request, f'{file_str} uploaded!')
 
@@ -91,7 +93,7 @@ def upload_csv(request):
             print("File does not exist.")
             print(f'File uploaded: "{full_file_name}')
 
-        with my_path.open('wb') as fp:
+        with full_path.open('wb') as fp:
             pickle.dump(df, fp)
 
             # return redirect('test')  # Redirect to the filter/graph generation page
@@ -113,7 +115,7 @@ def upload_csv(request):
         # non debug mode
         else:
         
-            df = pd.read_pickle(my_path)
+            df = pd.read_pickle(full_path)
             messages.info(request, f'{file_str} uploaded!')
             return redirect('/exam_graph')
             
