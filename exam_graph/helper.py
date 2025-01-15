@@ -11,6 +11,7 @@ from pathlib import Path
 from decouple import Config
 import pickle
 from django.shortcuts import render, redirect
+import os
 
 df = pd.read_csv('./mock_exam_data.csv')
 
@@ -258,3 +259,13 @@ def update_user_config(pickle_str:str, config_path:Path):
     # encode the updated data back to the JSON file
     with config_file.open('w') as file:
         json.dump(data, file, indent=4)
+
+
+def create_directory(path:Path):
+    # Create the directory
+    path.mkdir(parents=True, exist_ok=True)
+    
+    # Remove .DS_Store if it exists
+    ds_store = path / ".DS_Store"
+    if ds_store.exists():
+        os.remove(ds_store)

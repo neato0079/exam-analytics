@@ -108,14 +108,14 @@ def upload_csv(request):
             else:
                 if not usr_prop_dir.exists():
                     # create neccessary dir
-                    usr_prop_dir.mkdir(parents=True, exist_ok=True)
+                    helper.create_directory(usr_prop_dir)
 
                 # create user_config.json and add pickel
                 helper.build_usr_config(pickle_fn, usr_prop_dir)
 
             # check if dataset dir exists for pickle write
             if not usr_datasets_dir.exists():
-                usr_datasets_dir.mkdir(parents=True, exist_ok=True)
+                helper.create_directory(usr_datasets_dir)
 
             # Store df on disk
             helper.store_df_as_pickle(pickle_fp, df)
