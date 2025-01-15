@@ -2,7 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, time
-
+from decouple import config, Config
+from pathlib import Path
+import json
+import random
+import csv
 # # Data
 # data = {
 #     'Exam Complete Date': ['2024-07-10T00:00:00.000', '2024-07-14T00:00:00.000', '2024-09-10T00:00:00.000'],
@@ -132,3 +136,57 @@ def plot_sr(df):
     plt.show()
 
 # plot_sr(make_sr())
+
+def selected_df(usr_config_fp:Path):
+    with usr_config_fp.open('r') as file:
+        data = json.load(file)
+        return data
+    #     pickle_fn = Path(data['selected_data'] + '.pickle')
+    # usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
+    # pickle_fp = usr_datasets_dir / pickle_fn
+    # return pickle_fp
+
+def set_selected_df(file_stem):
+    usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
+    usr_config_fp = usr_prop_dir / 'user_config.json'
+    with usr_config_fp.open('r') as file:
+        data = json.load(file)
+    data['selected_dataset'] = file_stem + '.pickle'
+
+    # encode the updated data back to the JSON file
+    with usr_config_fp.open('w') as file:
+        json.dump(data, file, indent=4)
+
+    print(f'Set dataset to {file_stem}')
+
+
+
+def rand_delay():
+    # Initialize mock data
+    df = pd.read_csv('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv')
+
+    # Convert to datetime
+    comp_time = pd.to_datetime(df['Exam Order Date/Time'])
+
+    # Add delay in minutes from 15-45 min
+    df['Exam Complete Date/Tm'] = comp_time + pd.to_timedelta(pd.Series(random.choices(range(15, 46), k=len(df))), unit='m')
+
+    # Save DataFrame to CSV
+    df.to_csv('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv', index=False)
+
+
+    print("CSV file saved successfully.")
+
+print(Path(config('DATASETS'))) # /user_uploads
+print(Path(str(Config('DATASETS')))) # <decouple.Config object at 0x105523880>
+CONFIG_ROOT = Path(config('CONFIG_ROOT'))
+USER_PROP = Path(config('USER_PROP'))
+DATASETS = Path(config('DATASETS'))
+
+big_directory = Path(CONFIG_ROOT / USER_PROP / DATASETS)
+print(f"CONFIG_ROOT: {CONFIG_ROOT}")
+print(f"USER_PROP: {USER_PROP}")
+print(f"DATASETS: {DATASETS}")
+print(f"big_directory: {big_directory}")
+
+# The config object is an instance of AutoConfig that instantiates a Config with the proper Repository on the first time it is used.

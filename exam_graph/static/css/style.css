@@ -241,3 +241,68 @@ tr:hover {
 .sidebar-content {
     flex-grow: 1;  
 }
+
+/* General styling for the messages container */
+.messages {
+    display: flex;
+    padding: 20px;
+    
+     /* Border color will be specified per message type */
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    border-color: transparent;
+}
+
+/* Specific styling for tagged messages */
+.messages .error {
+    height: auto;
+    width: auto;
+    border: 2px solid;
+    border-radius: 12px;
+    background-color: #f8d7da; /* Light red background */
+    background-clip: padding-box;
+    border-color: #8e2727; /* Darker red border */
+    color: #8e2727; /* Dark red text for better contrast */
+    margin: auto;
+    padding: 15px;
+}
+
+.messages .info {
+    height: auto;
+    width: auto;
+    border: 2px solid;
+    border-radius: 12px;
+    background-color: #6fbd95; /* Light red background */
+    background-clip: padding-box;
+    border-color: #448546; /* Darker red border */
+    color: #263f27; /* Dark red text for better contrast */
+    margin: auto;
+    padding: 15px;
+}
+
+.file-select-form{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 10px;
+    font-size: x-large;
+    align-items: center;
+}
+
+#file-select{
+    min-width: 60%;
+}
+
+.load-button{
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #90abdd;
+    color: #121212;
+}
+
+.load-button:hover {
+    background-color: #738bb7; /* Slightly darker on hover */
+}

@@ -15,19 +15,37 @@
             <div class="logo">
                 <a href="#">Matt's Cool Radiology Exam Analytics</a>
                 <h2>*SITE UNDER CONSTRUCTION*</h2>
-                <h3>Click <a href="/exam_graph/form/">here</a> to analyze mock data</h3>
-                <h4>The current build only has access to hardcoded <a href="/exam_graph/mock_data/">mock data</a>. Next update to include file upload functionality</4h>
             </div>
         
-            <form id="upload-form" action="/exam_graph/form/" method="post" enctype="multipart/form-data">
+            
+            <form class="file-select-form" action="/exam_graph/load_data/" method="GET">
+                <label for="file-select">Select a Dataset for Analysis:</label>
+                <select id="file-select" name="file">
+                    {% for file in files %}
+                    <option value="{{ file }}">{{ file }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="load-button">Load Data</button>
+            </form>
+
+            <form id="upload-form" action="/exam_graph/upload/" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="upload-container" id="upload-container">
-                    <p>Drag and drop a .csv file here, or</p>
+                    <p>To add a new Dataset, drag and drop a .csv file here, or</p>
                     <button type="button" class="upload-button" onclick="document.getElementById('file-input').click()">Browse Files</button>
                     <input type="file" id="file-input" class="file-input" name="csv_file" style="display: none;">
                 </div>
             </form>
-
+            
+            <!-- Alert user of upload restrictions-->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <h4 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
+                     {% endfor %}
+                </div>
+            {% endif %}
+            
         </div>
     
         <footer>
