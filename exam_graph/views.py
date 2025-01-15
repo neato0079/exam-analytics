@@ -45,7 +45,7 @@ def form_page(request):
     return render(request, 'form.html', {'graph': 'graph_file_path'})
 
 def help(request):
-    return HttpResponse('<h1>TODO: Add helpful tips for user!</h1>')
+    return render(request, 'help.html')
 
 def display_mock_csv(request):
     df = helper.build_test_master_json_df()
@@ -65,7 +65,7 @@ def upload_csv(request):
         file = next(iter(files))
 
         # check if its a cvs file
-        file_prefx = str(request.FILES[file]).split('.')[1]
+        file_prefx = str(request.FILES[file]).split('.')[-1]
         print(f'requested file upload type: .{file_prefx}')
         if file_prefx != 'csv':
             print('not a csv')
@@ -80,9 +80,15 @@ def upload_csv(request):
         # Read CSV into a DataFrame
         df = pd.read_csv(csv_file)
 
-        # Format data for filters
-        df = helper.format_df(df)
+        # Check if the data is formatted correctly
+        try:
+            # Format data for filters
+            df = helper.format_df(df)
+        except:
+            print('data formatting is incorrect')
+            messages.error(request, "Cannot parse file. Check the help page to make sure your .csv file is in the correct format.")
 
+            return redirect('/exam_graph')
 
         if debug_mode:
 
@@ -139,7 +145,7 @@ def upload_csv(request):
             return redirect('/exam_graph')
         
     except Exception as e:
-        error_message = f"An error occurred: {e}"
+        error_message = f"An error occurred! Try checking the help section! Here is your error!: {e}"
         stack_trace = traceback.format_exc()  # Capture the full traceback
         print(stack_trace)  # Log the detailed error in the console
         return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
@@ -148,7 +154,7 @@ def upload_csv(request):
 def filter_submission_handler(request):
 
     # parsed_mocked_data = helper.build_test_master_json_df()
-    pickle_fp = helper.selected_pickle_fp(USER_CONFIG_FP)
+    pickle_fp:Path = helper.selected_pickle_fp(USER_CONFIG_FP, DATASET_DIR)
     parsed_mocked_data = helper.pickle_to_df(pickle_fp)
     print('Filtered from source:')
     print(pickle_fp)
@@ -188,7 +194,8 @@ def filter_submission_handler(request):
             'start_date': datestr[0],
             'end_date': datestr[1],
             'shift_view': shift_view,
-            'summary': axes_data
+            'summary': axes_data,
+            'dataset_name': pickle_fp.stem
         }
   
         return render(request, 'form.html', stuff_for_html_render)

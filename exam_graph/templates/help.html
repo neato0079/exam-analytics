@@ -1,0 +1,26 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div>
+        <h1>File Upload Constraints:</h1>
+        <h3>- Only '.csv' files are accepted</h3>
+        <h3>- Any columns with date/time values should be in ISO8601 format</h3>
+        <h3>- Your column names should be formatted as such:</h3>
+        <div>
+            <img src="{% static 'graphs/Screenshot.png' %}" alt="example_csv" />
+        </div>
+
+    </div>
+
+
+</body>
+</html>
