@@ -13,6 +13,7 @@ import traceback
 from . import myplot
 from pathlib import Path
 import pickle
+from django.contrib import messages
 
 ################
 #  DEBUG MODE  #
@@ -48,6 +49,16 @@ def upload_csv(request):
 
         files = request.FILES.keys()
         file = next(iter(files))
+
+        # check if its a cvs file
+        file_prefx = str(request.FILES[file]).split('.')[1]
+        print(f'requested file upload type: .{file_prefx}')
+        if file_prefx != 'csv':
+            print('not a csv')
+            messages.error(request, 'Upload ".csv" files only please! I am still just a baby app!')
+
+            return redirect('/exam_graph')
+
         file_str = str(request.FILES[file]).split('.')[0]
         full_file_name = file_str + ".pickle"
         csv_file = request.FILES[file]

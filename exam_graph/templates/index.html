@@ -19,7 +19,7 @@
                 <h4>The current build only has access to hardcoded <a href="/exam_graph/mock_data/">mock data</a>. Next update to include file upload functionality</4h>
             </div>
         
-            <form id="upload-form" action="/exam_graph/form/" method="post" enctype="multipart/form-data">
+            <form id="upload-form" action="/exam_graph/test/" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="upload-container" id="upload-container">
                     <p>Drag and drop a .csv file here, or</p>
@@ -34,8 +34,15 @@
                         <option value="{{ file }}">{{ file }}</option>
                     {% endfor %}
                 </select>
-                <button type="submit">View Results</button>
+                <button type="submit">Load Data</button>
             </form>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <h4 {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</h4>
+                     {% endfor %}
+                </div>
+            {% endif %}
             
         </div>
     

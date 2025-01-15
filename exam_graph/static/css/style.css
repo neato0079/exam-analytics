@@ -241,3 +241,28 @@ tr:hover {
 .sidebar-content {
     flex-grow: 1;  
 }
+
+/* General styling for the messages container */
+.messages {
+    display: flex;
+    padding: 20px;
+    
+     /* Border color will be specified per message type */
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    border-color: transparent;
+}
+
+/* Specific styling for error messages */
+.messages .error {
+    height: auto;
+    width: auto;
+    border: 2px solid;
+    border-radius: 12px;
+    background-color: #f8d7da; /* Light red background */
+    background-clip: padding-box;
+    border-color: #8e2727; /* Darker red border */
+    color: #8e2727; /* Dark red text for better contrast */
+    margin: auto;
+    padding: 15px;
+}
