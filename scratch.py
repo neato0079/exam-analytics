@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime, time
-from decouple import config
+from decouple import config, Config
 from pathlib import Path
 import json
 import random
@@ -177,4 +177,7 @@ def rand_delay():
 
     print("CSV file saved successfully.")
 
-rand_delay()
+print(Path(config('DATASETS'))) # /user_uploads
+print(Path(str(Config('DATASETS')))) # <decouple.Config object at 0x105523880>
+
+# The config object is an instance of AutoConfig that instantiates a Config with the proper Repository on the first time it is used.
