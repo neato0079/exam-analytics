@@ -21,13 +21,20 @@ from decouple import config
 debug_mode = False
 ################
 
+# Paths
+CONFIG_ROOT = Path(config('CONFIG_ROOT'))
+USER_PROP = Path(config('USER_PROP'))
+DATASETS = Path(config('DATASETS'))
+USER_CONFIG_FN = Path(config('USER_CONFIG_FP'))
+USER_PROP_DIR = CONFIG_ROOT / USER_PROP
+DATASET_DIR = CONFIG_ROOT / USER_PROP / DATASETS
+USER_CONFIG_FP = USER_PROP_DIR / USER_CONFIG_FN
+
 # Create your views here.
 def home(request:HttpRequest):
 
-    upload_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-
-    if upload_dir.exists():
-        files = [f.stem for f in upload_dir.iterdir() if f.is_file()]  # List only files without suffix
+    if DATASET_DIR.exists():
+        files = [f.stem for f in DATASET_DIR.iterdir() if f.is_file()]  # List only files without suffix
 
     else:
         files = ['no datasets uploaded']
@@ -95,10 +102,8 @@ def upload_csv(request):
         else:
             
             # set config paths
-            usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-            usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
-            pickle_fp = usr_datasets_dir / pickle_fn
-            usr_config_fp = usr_prop_dir / 'user_config.json'
+            pickle_fp = DATASET_DIR / pickle_fn
+            USER_CONFIG_FP = USER_PROP_DIR / 'user_config.json'
 
             if pickle_fp.exists():
                 # create copy to avoid overwrite
@@ -106,25 +111,25 @@ def upload_csv(request):
                 pickle_fn = str(pickle_fp.stem) + '.pickle'
 
             # check to see if user_config.json exists
-            if usr_config_fp.exists():
+            if USER_CONFIG_FP.exists():
 
                 # update user_config.json with name of newly uploaded dataset
-                helper.update_user_config(pickle_fn, usr_config_fp)
+                helper.update_user_config(pickle_fn, USER_CONFIG_FP)
                 print('user_config.json exists yaya')
 
             else:
 
-                if not usr_prop_dir.exists():
+                if not USER_PROP_DIR.exists():
                     # create neccessary dir
-                    helper.create_directory(usr_prop_dir)
+                    helper.create_directory(USER_PROP_DIR)
                 
                 # create user_config.json and add pickel
-                helper.build_usr_config(pickle_fn, usr_prop_dir)
+                helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
 
             # check if dataset dir exists for pickle write
-            if not usr_datasets_dir.exists():
+            if not DATASET_DIR.exists():
 
-                helper.create_directory(usr_datasets_dir)
+                helper.create_directory(DATASET_DIR)
 
             # Store df on disk
             with pickle_fp.open('wb') as fp:
@@ -142,8 +147,8 @@ def upload_csv(request):
 
 def filter_submission_handler(request):
 
-    usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
-    usr_config_fp = usr_prop_dir / 'user_config.json'
+    USER_PROP_DIR
+    usr_config_fp = USER_PROP_DIR / 'user_config.json'
 
     # parsed_mocked_data = helper.build_test_master_json_df()
     pickle_fp = helper.selected_pickle_fp(usr_config_fp)
@@ -224,15 +229,12 @@ def load_data(request:HttpRequest):
     # get file name from form
     # set file name in user config
     file_name = request.GET.get('file')
-    usr_prop_dir = Path(config('CONFIG_ROOT') + config('USER_PROP'))
-    usr_config_fp = usr_prop_dir / 'user_config.json'
-    usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-    if usr_config_fp.exists():
-        helper.set_selected_dataset(file_name, usr_config_fp)
+    if USER_CONFIG_FP.exists():
+        helper.set_selected_dataset(file_name, USER_CONFIG_FP)
 
     # pickle_fn = Path(helper.selected_df(usr_config_fp))
 
-    pickle_fp = Path(str(usr_datasets_dir) + '/' + file_name + '.pickle')
+    pickle_fp = Path(str(DATASET_DIR) + '/' + file_name + '.pickle')
     # df = helper.pickle_to_df(pickle_fp)
     print(f'data set selected: {pickle_fp}')
 

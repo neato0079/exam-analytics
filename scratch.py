@@ -179,5 +179,14 @@ def rand_delay():
 
 print(Path(config('DATASETS'))) # /user_uploads
 print(Path(str(Config('DATASETS')))) # <decouple.Config object at 0x105523880>
+CONFIG_ROOT = Path(config('CONFIG_ROOT'))
+USER_PROP = Path(config('USER_PROP'))
+DATASETS = Path(config('DATASETS'))
+
+big_directory = Path(CONFIG_ROOT / USER_PROP / DATASETS)
+print(f"CONFIG_ROOT: {CONFIG_ROOT}")
+print(f"USER_PROP: {USER_PROP}")
+print(f"DATASETS: {DATASETS}")
+print(f"big_directory: {big_directory}")
 
 # The config object is an instance of AutoConfig that instantiates a Config with the proper Repository on the first time it is used.

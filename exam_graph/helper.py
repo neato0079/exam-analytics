@@ -209,10 +209,9 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             print(f"Column {column} could not be converted to datetime.")
 
 
-def build_usr_config(file_name, dir):
+def build_usr_config(file_name, config_fp):
     data = {}
     data['user datasets'] = [file_name]
-    config_fp:Path = dir / 'user_config.json'
     print(type(config_fp)) #<class 'pathlib.PosixPath'>
     print(config_fp)
     with config_fp.open("w") as f:
@@ -303,12 +302,11 @@ def set_selected_dataset(file_stem, usr_config_fp:Path):
     print(f'Set dataset to {file_stem}')
 
 
-def selected_pickle_fp(usr_config_fp:Path) -> Path:
+def selected_pickle_fp(usr_config_fp:Path, dataset_dir:Path) -> Path:
     with usr_config_fp.open('r') as file:
         data = json.load(file)
         
     pickle_fn = Path(data['selected_dataset'])
-    usr_datasets_dir = Path(config('CONFIG_ROOT') + config('USER_PROP') + config('DATASETS'))
-    pickle_fp = usr_datasets_dir / pickle_fn
+    pickle_fp = dataset_dir / pickle_fn
     print('asdfasdfasdfasdfasdfasdfasdfasdfasdf')
     return pickle_fp
