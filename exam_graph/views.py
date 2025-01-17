@@ -4,11 +4,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpRequest
 import pandas as pd
-import pprint
 from . import helper
 from . import filters
-from django.core.files.uploadedfile import InMemoryUploadedFile
-import matplotlib.pyplot as plt
 import traceback
 from . import myplot
 from pathlib import Path
@@ -16,10 +13,6 @@ import pickle
 from django.contrib import messages
 from decouple import config
 
-################
-#  DEBUG MODE  #
-debug_mode = False
-################
 
 # Paths
 CONFIG_ROOT = Path(config('CONFIG_ROOT'))
@@ -60,7 +53,7 @@ def test(request):
 def upload_csv(request):
 
     try:
-
+        # get user uploaded file form http request
         files = request.FILES.keys()
         file = next(iter(files))
 
@@ -90,59 +83,22 @@ def upload_csv(request):
 
             return redirect('/exam_graph')
 
-        if debug_mode:
+        # set full config path user's new pickle
+        pickle_fp = DATASET_DIR / pickle_fn
 
-            return JsonResponse(
-                {
-                    'message': 'File processed and stored successfully',
-                    'original_request': prettify_request(request),
-                    'files': f'{request.FILES}',
-                    'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
-                    'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
-                    'debug_data': f'{prettify_request(request)}',
-                    'session_guts': f'{request.session}',
-                    }
-                )
-            
-        # non debug mode
-        else:
-            
-            # set config paths
-            pickle_fp = DATASET_DIR / pickle_fn
-            USER_CONFIG_FP = USER_PROP_DIR / 'user_config.json'
+        # handle existing file
+        if pickle_fp.exists():
+            # create copy to avoid overwrite
+            pickle_fp:Path = helper.pickle_copy(pickle_fp)
+            pickle_fn = str(pickle_fp.stem) + '.pickle'
 
-            if pickle_fp.exists():
-                # create copy to avoid overwrite
-                pickle_fp:Path = helper.pickle_copy(pickle_fp)
-                pickle_fn = str(pickle_fp.stem) + '.pickle'
+        # update user_config.json with name of newly uploaded dataset
+        helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
 
-            # check to see if user_config.json exists
-            if USER_CONFIG_FP.exists():
-
-                # update user_config.json with name of newly uploaded dataset
-                helper.update_user_config(pickle_fn, USER_CONFIG_FP)
-                print('user_config.json exists yaya')
-
-            else:
-
-                if not USER_PROP_DIR.exists():
-                    # create neccessary dir
-                    helper.create_directory(USER_PROP_DIR)
-                
-                # create user_config.json and add pickel
-                helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
-
-            # check if dataset dir exists for pickle write
-            if not DATASET_DIR.exists():
-
-                helper.create_directory(DATASET_DIR)
-
-            # Store df on disk
-            with pickle_fp.open('wb') as fp:
-                pickle.dump(df, fp)
-            print(f'File uploaded: "{pickle_fp}')
-            messages.info(request, f'{file_str} uploaded!')
-            return redirect('/exam_graph')
+        # Store df as pickle on disk
+        helper.save_pickle(df, pickle_fp)
+        messages.info(request, f'{file_str} uploaded!')
+        return redirect('/exam_graph')
         
     except Exception as e:
         error_message = f"An error occurred! Try checking the help section! Here is your error!: {e}"
@@ -208,37 +164,19 @@ def filter_submission_handler(request):
             return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
 
 
-
-# Debugging functions:
-def debug_request(request):
-    request_data = dir(request)  # Lists all attributes and methods of the request object
-    return pprint.pformat(request_data, indent=2)
-
-
-def prettify_request(request):
-    return {
-        "method": request.method,
-        "headers": dict(request.headers),
-        "GET_params": dict(request.GET) if request.GET else None,
-        "POST_params": dict(request.POST),
-        "FILES": {k: str(v) for k, v in request.FILES.items()},
-        "path": request.path,
-        "content_type": request.content_type,
-        "session_keys": list(request.session.keys()),
-    }
-
-## TODO on load button, update user config to SELECTED_DATASET = 'mock_exam_data.pickle'
-
 def load_data(request:HttpRequest):
+
     # get file name from form
+    file_str = request.GET.get('file')
+
     # set file name in user config
-    file_name = request.GET.get('file')
+    pickle_fn = file_str + ".pickle"
     if USER_CONFIG_FP.exists():
-        helper.set_selected_dataset(file_name, USER_CONFIG_FP)
+        helper.set_selected_dataset(pickle_fn, USER_CONFIG_FP)
 
-    # pickle_fn = Path(helper.selected_df(usr_config_fp))
+    pickle_fp = Path(str(DATASET_DIR) + '/' + pickle_fn)
 
-    pickle_fp = Path(str(DATASET_DIR) + '/' + file_name + '.pickle')
+    # read df to provide form.html with base info about the dataset like daterange
     df = helper.pickle_to_df(pickle_fp)
     earliest, latest = helper.check_date_range(df)
 
