@@ -147,7 +147,7 @@ def build_usr_config(config_fn: str, config_fp:Path):
     print(f'Created "user_config.json" in "{dir}" successfully!')
 
 
-def save_pickle(pickle_fp:Path):
+def save_pickle(df:pd.DataFrame, pickle_fp:Path):
 
     #check if parent directory exists
     dataset_dir = pickle_fp.parent

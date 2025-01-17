@@ -96,8 +96,8 @@ def upload_csv(request):
         # update user_config.json with name of newly uploaded dataset
         helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
 
-        # Store df on disk
-        helper.save_pickle(pickle_fp)
+        # Store df as pickle on disk
+        helper.save_pickle(df, pickle_fp)
         messages.info(request, f'{file_str} uploaded!')
         return redirect('/exam_graph')
         
