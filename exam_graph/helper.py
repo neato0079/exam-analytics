@@ -125,7 +125,7 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             print(f"Column {column} could not be converted to datetime.")
 
 
-def build_usr_config(config_fn: str, config_fp:Path):
+def build_usr_config(pickle_fn: str, config_fp:Path):
 
     # create parent dir if not present already
     user_conf_dir = config_fp.parent
@@ -134,11 +134,11 @@ def build_usr_config(config_fn: str, config_fp:Path):
 
     # check if config file already exists and update if so
     if config_fp.exists():
-        update_user_config(config_fn,config_fp)
+        update_user_config(pickle_fn,config_fp)
 
     # create user_config.json contents and fn
     data = {}
-    data['user datasets'] = [config_fn]
+    data['user datasets'] = [pickle_fn]
     print(type(config_fp)) #<class 'pathlib.PosixPath'>
     print(config_fp)
     with config_fp.open("w") as f:
@@ -151,7 +151,7 @@ def save_pickle(df:pd.DataFrame, pickle_fp:Path):
 
     #check if parent directory exists
     dataset_dir = pickle_fp.parent
-    if not dataset_dir.exists():
+    if not dataset_dir.exists(): # can probably just put this conditional in create_directory at this point. write tests first
         create_directory(dataset_dir)
 
     # Store df on disk
@@ -231,18 +231,18 @@ def pickle_to_df(pickle_fp:Path) -> pd.DataFrame:
     return pd.read_pickle(pickle_fp)
 
 # update user_config.json with newly selected dataset
-def set_selected_dataset(file_stem, usr_config_fp:Path):
+def set_selected_dataset(pickle_fn, usr_config_fp:Path):
 
-    # decode file and update it
+    # decode config file and update it
     with usr_config_fp.open('r') as file:
         data = json.load(file)
-    data['selected_dataset'] = file_stem + '.pickle'
+    data['selected_dataset'] = pickle_fn
 
     # encode the updated data back to the JSON file
     with usr_config_fp.open('w') as file:
         json.dump(data, file, indent=4)
 
-    print(f'Set dataset to {file_stem}')
+    print(f'Set dataset to {pickle_fn}')
 
 
 # read selected dataset from config the returns the dataset fp

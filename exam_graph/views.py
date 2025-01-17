@@ -189,13 +189,14 @@ def prettify_request(request):
 def load_data(request:HttpRequest):
     # get file name from form
     # set file name in user config
-    file_name = request.GET.get('file')
+    file_str = request.GET.get('file')
+    pickle_fn = file_str + ".pickle"
     if USER_CONFIG_FP.exists():
-        helper.set_selected_dataset(file_name, USER_CONFIG_FP)
+        helper.set_selected_dataset(pickle_fn, USER_CONFIG_FP)
 
     # pickle_fn = Path(helper.selected_df(usr_config_fp))
 
-    pickle_fp = Path(str(DATASET_DIR) + '/' + file_name + '.pickle')
+    pickle_fp = Path(str(DATASET_DIR) + '/' + pickle_fn)
     df = helper.pickle_to_df(pickle_fp)
     earliest, latest = helper.check_date_range(df)
 
