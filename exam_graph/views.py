@@ -58,7 +58,7 @@ def test(request):
 def upload_csv(request):
 
     try:
-
+        # get user uploaded file form http request
         files = request.FILES.keys()
         file = next(iter(files))
 
@@ -88,59 +88,42 @@ def upload_csv(request):
 
             return redirect('/exam_graph')
 
-        if debug_mode:
+        # set full config path user's new pickle
+        pickle_fp = DATASET_DIR / pickle_fn
 
-            return JsonResponse(
-                {
-                    'message': 'File processed and stored successfully',
-                    'original_request': prettify_request(request),
-                    'files': f'{request.FILES}',
-                    'session': f'{request.session.keys()}', # output: session	"dict_keys(['csv_data'])"
-                    'session_key': f'{request.session["csv_data"]}', # this gives us the exam data from the csv yay. also remember we tojson'd this shit
-                    'debug_data': f'{prettify_request(request)}',
-                    'session_guts': f'{request.session}',
-                    }
-                )
-            
-        # non debug mode
+        # handle existing file
+        if pickle_fp.exists():
+            # create copy to avoid overwrite
+            pickle_fp:Path = helper.pickle_copy(pickle_fp)
+            pickle_fn = str(pickle_fp.stem) + '.pickle'
+
+        # check to see if user_config.json exists
+        if USER_CONFIG_FP.exists():
+
+            # update user_config.json with name of newly uploaded dataset
+            helper.update_user_config(pickle_fn, USER_CONFIG_FP)
+            print('user_config.json exists yaya')
+
         else:
-            
-            # set config paths
-            pickle_fp = DATASET_DIR / pickle_fn
-            USER_CONFIG_FP = USER_PROP_DIR / 'user_config.json'
 
-            if pickle_fp.exists():
-                # create copy to avoid overwrite
-                pickle_fp:Path = helper.pickle_copy(pickle_fp)
-                pickle_fn = str(pickle_fp.stem) + '.pickle'
-
-            # check to see if user_config.json exists
-            if USER_CONFIG_FP.exists():
-
-                # update user_config.json with name of newly uploaded dataset
-                helper.update_user_config(pickle_fn, USER_CONFIG_FP)
-                print('user_config.json exists yaya')
-
-            else:
-
-                if not USER_PROP_DIR.exists():
-                    # create neccessary dir
-                    helper.create_directory(USER_PROP_DIR)
+            if not USER_PROP_DIR.exists():
+                # create neccessary dir
+                helper.create_directory(USER_PROP_DIR)
                 
-                # create user_config.json and add pickel
-                helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
+            # create user_config.json and add pickel
+            helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
 
-            # check if dataset dir exists for pickle write
-            if not DATASET_DIR.exists():
+        # check if dataset dir exists for pickle write
+        if not DATASET_DIR.exists():
 
-                helper.create_directory(DATASET_DIR)
+            helper.create_directory(DATASET_DIR)
 
-            # Store df on disk
-            with pickle_fp.open('wb') as fp:
-                pickle.dump(df, fp)
-            print(f'File uploaded: "{pickle_fp}')
-            messages.info(request, f'{file_str} uploaded!')
-            return redirect('/exam_graph')
+        # Store df on disk
+        with pickle_fp.open('wb') as fp:
+            pickle.dump(df, fp)
+        print(f'File uploaded: "{pickle_fp}')
+        messages.info(request, f'{file_str} uploaded!')
+        return redirect('/exam_graph')
         
     except Exception as e:
         error_message = f"An error occurred! Try checking the help section! Here is your error!: {e}"
