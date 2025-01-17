@@ -124,7 +124,24 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             print(f"Column {column} could not be converted to datetime.")
 
 
-def build_usr_config(file_name, config_fp):
+# def build_usr_config(file_name, config_fp):
+#     data = {}
+#     data['user datasets'] = [file_name]
+#     print(type(config_fp)) #<class 'pathlib.PosixPath'>
+#     print(config_fp)
+#     with config_fp.open("w") as f:
+#         json.dump(data, f, indent=4)
+    
+#     print(f'Created "user_config.json" in "{dir}" successfully!')
+
+def build_usr_config(file_name, config_fp:Path):
+
+    #check if parent directory exists
+    parent_dir = config_fp.parent
+    if not parent_dir.exists():
+        create_directory(parent_dir)
+
+    # create user_config.json contents and fn
     data = {}
     data['user datasets'] = [file_name]
     print(type(config_fp)) #<class 'pathlib.PosixPath'>
@@ -205,7 +222,10 @@ def update_server_on_usr_upload():
 def pickle_to_df(pickle_fp:Path) -> pd.DataFrame:
     return pd.read_pickle(pickle_fp)
 
+# update user_config.json with newly selected dataset
 def set_selected_dataset(file_stem, usr_config_fp:Path):
+
+    # decode file and update it
     with usr_config_fp.open('r') as file:
         data = json.load(file)
     data['selected_dataset'] = file_stem + '.pickle'
@@ -215,6 +235,7 @@ def set_selected_dataset(file_stem, usr_config_fp:Path):
         json.dump(data, file, indent=4)
 
     print(f'Set dataset to {file_stem}')
+
 
 # read selected dataset from config the returns the dataset fp
 def selected_pickle_fp(usr_config_fp:Path, dataset_dir:Path) -> Path:

@@ -14,10 +14,6 @@ import pickle
 from django.contrib import messages
 from decouple import config
 
-################
-#  DEBUG MODE  #
-debug_mode = False
-################
 
 # Paths
 CONFIG_ROOT = Path(config('CONFIG_ROOT'))
@@ -105,12 +101,6 @@ def upload_csv(request):
             print('user_config.json exists yaya')
 
         else:
-
-            if not USER_PROP_DIR.exists():
-                # create neccessary dir
-                helper.create_directory(USER_PROP_DIR)
-                
-            # create user_config.json and add pickel
             helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
 
         # check if dataset dir exists for pickle write
