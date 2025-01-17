@@ -8,6 +8,7 @@ from datetime import datetime, time
 from pathlib import Path
 import os
 import re
+import pickle
 
 # used for testing filters
 def build_test_master_json_df() -> pd.DataFrame:
@@ -124,32 +125,39 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             print(f"Column {column} could not be converted to datetime.")
 
 
-# def build_usr_config(file_name, config_fp):
-#     data = {}
-#     data['user datasets'] = [file_name]
-#     print(type(config_fp)) #<class 'pathlib.PosixPath'>
-#     print(config_fp)
-#     with config_fp.open("w") as f:
-#         json.dump(data, f, indent=4)
-    
-#     print(f'Created "user_config.json" in "{dir}" successfully!')
+def build_usr_config(config_fn: str, config_fp:Path):
 
-def build_usr_config(file_name, config_fp:Path):
+    # create parent dir if not present already
+    user_conf_dir = config_fp.parent
+    if not user_conf_dir.exists():
+        create_directory(user_conf_dir)
 
-    #check if parent directory exists
-    parent_dir = config_fp.parent
-    if not parent_dir.exists():
-        create_directory(parent_dir)
+    # check if config file already exists and update if so
+    if config_fp.exists():
+        update_user_config(config_fn,config_fp)
 
     # create user_config.json contents and fn
     data = {}
-    data['user datasets'] = [file_name]
+    data['user datasets'] = [config_fn]
     print(type(config_fp)) #<class 'pathlib.PosixPath'>
     print(config_fp)
     with config_fp.open("w") as f:
         json.dump(data, f, indent=4)
     
     print(f'Created "user_config.json" in "{dir}" successfully!')
+
+
+def save_pickle(pickle_fp:Path):
+
+    #check if parent directory exists
+    dataset_dir = pickle_fp.parent
+    if not dataset_dir.exists():
+        create_directory(dataset_dir)
+
+    # Store df on disk
+    with pickle_fp.open('wb') as fp:
+        pickle.dump(df, fp)
+    print(f'File uploaded: "{pickle_fp}')
 
 
 def format_df(df:pd.DataFrame) -> pd.DataFrame:
