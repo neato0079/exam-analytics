@@ -28,3 +28,12 @@ def test_get_shift():
     assert helper.get_shift(nc_sample) == 'NOC'
     assert helper.get_shift(nc_sample2) == 'NOC'
 
+
+def mock_config_fp(tmp_path_factory):
+    pass
+    # fp = 
+
+
+
+def test_build_usr():
+    pass
