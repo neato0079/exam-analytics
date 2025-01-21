@@ -1,9 +1,9 @@
 # Exam-Analytics
 Analyzes a radiology exam dataset and generates graphs on user-set filters.
 
-- Runs on the `Django` frame work.
-- Utilizes `Pandas` library for dataset analysis.
-- Utilizes `Matplotlib` for data visualization.
+- Runs on the `Django` frame work
+- Utilizes `Pandas` library for dataset analysis
+- Utilizes `Matplotlib` for data visualization
 - Unit testing done with `pytest`
 - Currently running on `Render` cloud service
 
