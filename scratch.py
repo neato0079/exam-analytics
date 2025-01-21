@@ -1,11 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from decouple import config, Config
 from pathlib import Path
 import json
-import random
+from random import random, randrange, choices
 import csv
 # # Data
 # data = {
@@ -169,7 +169,7 @@ def rand_delay():
     comp_time = pd.to_datetime(df['Exam Order Date/Time'])
 
     # Add delay in minutes from 15-45 min
-    df['Exam Complete Date/Tm'] = comp_time + pd.to_timedelta(pd.Series(random.choices(range(15, 46), k=len(df))), unit='m')
+    df['Exam Complete Date/Tm'] = comp_time + pd.to_timedelta(pd.Series(choices(range(15, 46), k=len(df))), unit='m')
 
     # Save DataFrame to CSV
     df.to_csv('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv', index=False)
@@ -177,16 +177,123 @@ def rand_delay():
 
     print("CSV file saved successfully.")
 
-print(Path(config('DATASETS'))) # /user_uploads
-print(Path(str(Config('DATASETS')))) # <decouple.Config object at 0x105523880>
-CONFIG_ROOT = Path(config('CONFIG_ROOT'))
-USER_PROP = Path(config('USER_PROP'))
-DATASETS = Path(config('DATASETS'))
+# print(Path(config('DATASETS'))) # /user_uploads
+# print(Path(str(Config('DATASETS')))) # <decouple.Config object at 0x105523880>
+# CONFIG_ROOT = Path(config('CONFIG_ROOT'))
+# USER_PROP = Path(config('USER_PROP'))
+# DATASETS = Path(config('DATASETS'))
 
-big_directory = Path(CONFIG_ROOT / USER_PROP / DATASETS)
-print(f"CONFIG_ROOT: {CONFIG_ROOT}")
-print(f"USER_PROP: {USER_PROP}")
-print(f"DATASETS: {DATASETS}")
-print(f"big_directory: {big_directory}")
+# big_directory = Path(CONFIG_ROOT / USER_PROP / DATASETS)
+# print(f"CONFIG_ROOT: {CONFIG_ROOT}")
+# print(f"USER_PROP: {USER_PROP}")
+# print(f"DATASETS: {DATASETS}")
+# print(f"big_directory: {big_directory}")
 
 # The config object is an instance of AutoConfig that instantiates a Config with the proper Repository on the first time it is used.
+
+def gen_rand_dt(daterange:list[str]):
+
+    if len(daterange) != 2:
+        raise ValueError("daterange must be a list with exactly two elements: [start, end].")
+    
+
+    start, end = [daterange[0], daterange[1]]
+    start_dt, end_dt = [datetime.strptime(start, '%m/%d/%Y'), datetime.strptime(end, '%m/%d/%Y')]
+
+
+    # set date diff range in min
+    delta =  end_dt - start_dt
+    min_delta = delta.days * 24 * 60
+    # print((min_delta))
+
+    # grab a random n min form that range
+    rand_min = timedelta(minutes=randrange(min_delta))
+
+    # add min to start date
+    rand_date = start_dt + rand_min
+    
+    # return dt_obj
+    return rand_date
+
+
+start = '07/28/2024'
+
+end = '08/28/2024'
+
+import random
+from datetime import datetime
+
+def gen_mod():
+    modality = ['CT', 'MR', 'XR', 'US', 'NM']
+    weights = [7, 3, 10, 3, 1] 
+    cc = random.choices(modality, weights=weights, k=1)[0]
+    return cc
+
+
+def generate_identifier(date_obj: datetime) -> str:
+    # set modalities and their freq
+    modality = ['CT', 'MR', 'XR', 'US', 'NM']
+    weights = [7, 3, 10, 3, 1] 
+
+    # Extract the last two digits of the year
+    year = date_obj.strftime('%y')
+    
+    # Select a random two-character string from the modality list
+    cc = random.choices(modality, weights=weights, k=1)[0]
+    
+    # Generate a random seven-digit number
+    nnnnnnn = f"{random.randint(0, 9999999):07d}"
+    
+    # Combine the parts into the desired format
+    identifier = f"{year}-{cc}-{nnnnnnn}"
+    
+    return identifier
+
+# # Example usage:
+# date_obj = datetime.now()
+# modality = ['CT', 'MR', 'XR', 'US', 'NM']
+# for i in range(30):
+#     print(generate_identifier(date_obj))
+
+def mk_df(len, date):
+    data = []
+    for i in range(30):
+        data.append(generate_identifier(date))
+    df = pd.DataFrame(data, columns=['acc'])
+    return df
+
+
+# def init_df(len, date_rn):
+#     data = []
+#     for i in range(len):
+#         dates=[]
+#         dates.append(gen_rand_dt(date_rn))
+#         dates.append('')
+#         data.append(dates)
+
+#     print((data))
+#     df = pd.DataFrame(data, columns=['ORC.15','empoty'])
+#     return df
+
+def gen_start_times(len, date_rn):
+    data = []
+    for i in range(len):
+        data.append(gen_rand_dt(date_rn))
+    df = pd.Series(data)
+    return df
+
+def mkdf():
+    columns = [
+        'Exam Complete Date/Tm', # this is our ORM.ORC.5 (order status is complete)
+        'Order Procedure Accession', # ORM.ORC.2
+        'Exam Order Date/Time', # ex:'2024-07-10T01:15:00'; this is our HL7:ORM.ORC.15 (NW order time)
+        'Final Date/Tm', # this is our ORM.OBR.22.1 (time of report)
+        'Exam Order Name' # ORM.OBR.4
+    ]
+    df = pd.DataFrame(columns=columns)
+    return df
+
+df = mkdf()
+dates= gen_start_times(3, [start, end])
+df['Exam Order Date/Time'] = dates
+print(df)
