@@ -11,6 +11,22 @@ Analyzes a radiology exam dataset and generates graphs on user-set filters.
 - Allow user to upload and store `.csv` to app
 - Various filters are now functional for graph generation
 
+## Breakdown
+- Compatible datasets(just `.csv` files for now) is essentially HL7 data organized by the following columns:
+
+```
+        COLUMN NAME                      HL7 ORM Segment
+        ______________________________________________________________________
+        'Exam Complete Date/Tm' . . . . . ORC.5 (order status is complete)
+        'Order Procedure Accession' . . . ORC.2
+        'Exam Order Date/Time'. . . . . . ORC.15 ex:'YYYY-mm-ddTHH:MM:SS'
+        'Final Date/Tm' . . . . . . . . . OBR.22.1 (time of final report)
+        'Exam Order Name' . . . . . . . . OBR.4
+        'Modality'. . . . . . . . . . . . OBR.24
+```
+- Modality can be inferred if the accession number or order name implies a modality
+- This data is then formatted and analyzed
+
 wip.....
 
 ### XR and CT by day
