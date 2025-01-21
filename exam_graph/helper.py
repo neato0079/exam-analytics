@@ -139,9 +139,7 @@ def build_usr_config(pickle_fp: Path, config_fp:Path):
 
     # create parent dir if not present already
     user_conf_dir = config_fp.parent
-    if not user_conf_dir.exists():
-        print(f'{config_fp} Does not exist! Will create {config_fp}')
-        create_directory(user_conf_dir)
+    create_directory_or_nah(user_conf_dir)
 
     # check if config file already exists and update if so
     if config_fp.exists():
@@ -163,10 +161,9 @@ def build_usr_config(pickle_fp: Path, config_fp:Path):
 
 def save_pickle(df:pd.DataFrame, pickle_fp:Path):
 
-    #check if parent directory exists
+    # check if parent directory exists
     dataset_dir = pickle_fp.parent
-    if not dataset_dir.exists(): # can probably just put this conditional in create_directory at this point. write tests first
-        create_directory(dataset_dir)
+    create_directory_or_nah(dataset_dir)
 
     # new pickle fp if it exists already
     if pickle_fp.exists():
@@ -236,7 +233,12 @@ def update_user_config(pickle_str:str, config_path:Path):
         json.dump(data, file, indent=4)
 
 
-def create_directory(path:Path):
+def create_directory_or_nah(path:Path):
+    if path.exists():
+        print(f'{path} already exists!')
+        return
+    
+    print(f'{path} Does not exist! Will create {path} ...')
     # Create the directory
     path.mkdir(parents=True, exist_ok=True)
     
