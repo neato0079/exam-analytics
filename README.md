@@ -1,23 +1,47 @@
-# exam-analytics
-Generate graphs displaying exam volume. Allows for filtering by modality, date, shift, ect...
+# Exam-Analytics App
+### App Description: <br>
+Analyzes a radiology exam dataset and generates graphs on user-set filters.
+
+- Runs on the `Django` frame work
+- Utilizes `Pandas` library for dataset analysis
+- Utilizes `Matplotlib` for data visualization
+- Unit testing done with `pytest`
+- Currently running on `Render` cloud service
 
 ## Progress . . .
-- Use `Pandas` to read mock `.cvs` and apply filters
-- Use `matplotlib` to plot the filters that have been built so far
+- Allow user to upload and store `.csv` to app
+- Uploaded `.csv` is parsed and formatted to a `pd.Dataframe` and then stored to the server disk as a `.pickle`
+- Analysis is performed on a user selected dataset by reading the appropriate `.pickle` as a `pd.Dataframe` 
+- Various filters are now functional for graph generation
 
-```Usage: python my_project.py <Modality:XR, CT, US, NM, MR> <Month:bool>```
+## Breakdown
+- Compatible datasets(just `.csv` files for now) are essentially HL7 data organized by the following columns:
 
-### XR and CT by day
+```
+        COLUMN NAME                      HL7 ORM Segment
+        ______________________________________________________________________
+        'Exam Complete Date/Tm' . . . . . ORC.5 (order status is complete)
+        'Order Procedure Accession' . . . ORC.2
+        'Exam Order Date/Time'. . . . . . ORC.15 ex:'YYYY-mm-ddTHH:MM:SS'
+        'Final Date/Tm' . . . . . . . . . OBR.22.1 (time of final report)
+        'Exam Order Name' . . . . . . . . OBR.4
+        'Modality'. . . . . . . . . . . . OBR.24
+```
+- Modality can be inferred if the accession number or order name implies a modality
+- This data is then formatted and analyzed
 
-![](/img/ct-day.png)
-![](/img/xr-day.png)
+wip.....
 
-### XR and CT by month
+### Example graph
 
-![](/img/ct-month.png)
-![](/img/xr-month.png)
+![](/img/grph.png)
 
-### Notes
+## TODO
 
-- Run server with `python manage.py runserver`
-- Get back into the python env looking into the env/bin directory. instrunctions there
+- Provide cleaner solution for analysis summary
+    - Add totals for shift views
+    - Display avg number of exams
+- Add a modality view bar chart
+- Add exam complete: exam ordered ratio view
+- Add after hours stat order volume
+- Add user log in

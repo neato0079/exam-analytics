@@ -86,7 +86,9 @@ def parse_filter_request(request:HttpRequest) -> dict:
                 'shift_view': shift_view
             }
 
-            print(f'Parsed filter form request{client_form}')
+            log_form = dict(client_form) # query obj is immutable. convert to dict
+            del log_form['csrfmiddlewaretoken']
+            print(f'Parsed filter form request{log_form}')
 
             return post_req
         
