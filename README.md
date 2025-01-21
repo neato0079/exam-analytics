@@ -29,17 +29,11 @@ Analyzes a radiology exam dataset and generates graphs on user-set filters.
 
 wip.....
 
-### XR and CT by day
+### Example graph
 
-![](/img/ct-day.png)
-![](/img/xr-day.png)
-
-### XR and CT by month
-
-![](/img/ct-month.png)
-![](/img/xr-month.png)
+![](/img/grph.png)
 
 ### Notes
 
 - Run server with `python manage.py runserver`
-- Get back into the python env looking into the env/bin directory. instrunctions there
+- Get back into the python env looking into the env/bin directory. instructions there
