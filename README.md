@@ -1,11 +1,16 @@
-# exam-analytics
-Generate graphs displaying exam volume. Allows for filtering by modality, date, shift, ect...
+# Exam-Analytics
+Analyzes a radiology exam dataset and generates graphs on user-set filters.
+
+- Runs on the `Django` frame work.
+- Utilizes `Pandas` library for dataset analysis.
+- Utilizes `Matplotlib` for data visualization.
+- Unit testing done with `pytest`
 
 ## Progress . . .
-- Use `Pandas` to read mock `.cvs` and apply filters
-- Use `matplotlib` to plot the filters that have been built so far
+- Allow user to upload and store `.csv` to app
+- Various filters are now functional for graph generation
 
-```Usage: python my_project.py <Modality:XR, CT, US, NM, MR> <Month:bool>```
+wip.....
 
 ### XR and CT by day
 
