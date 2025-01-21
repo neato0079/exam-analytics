@@ -130,21 +130,25 @@ def build_usr_config(pickle_fn: str, config_fp:Path):
     # create parent dir if not present already
     user_conf_dir = config_fp.parent
     if not user_conf_dir.exists():
+        print(f'{config_fp} Does not exist! Will create {config_fp}')
         create_directory(user_conf_dir)
 
     # check if config file already exists and update if so
     if config_fp.exists():
+        print(f'{config_fp} already exists! Will update the config with {pickle_fn}')
         update_user_config(pickle_fn,config_fp)
+        print(f'Updated "user_config.json" in "{user_conf_dir}" successfully!')
+        return 
 
     # create user_config.json contents and fn
     data = {}
     data['user datasets'] = [pickle_fn]
-    print(type(config_fp)) #<class 'pathlib.PosixPath'>
-    print(config_fp)
+    # print(type(config_fp)) #<class 'pathlib.PosixPath'>
+    # print(config_fp)
     with config_fp.open("w") as f:
         json.dump(data, f, indent=4)
     
-    print(f'Created "user_config.json" in "{dir}" successfully!')
+    print(f'Created "user_config.json" in "{user_conf_dir}" successfully!')
 
 
 def save_pickle(df:pd.DataFrame, pickle_fp:Path):
@@ -211,8 +215,9 @@ def update_user_config(pickle_str:str, config_path:Path):
         data = json.load(file)
 
     # Add the new pickle file name
+    print(f'user datasets currently contains this before the append:{data["user datasets"]}')
     data["user datasets"].append(pickle_str)
-
+    print(f'user datasets now contains this after the append:{data["user datasets"]}')
     # encode the updated data back to the JSON file
     with config_file.open('w') as file:
         json.dump(data, file, indent=4)
