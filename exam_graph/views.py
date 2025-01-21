@@ -49,7 +49,7 @@ def test(request):
     file_name = request.GET['file'] + '.pickle'
     return JsonResponse({'Your Selection': f"File: {file_name}"}, status=200)
 
-
+# upload csv file to server disk as pickle
 def upload_csv(request):
 
     try:
