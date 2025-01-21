@@ -168,8 +168,13 @@ def format_df(df:pd.DataFrame) -> pd.DataFrame:
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='ISO8601')
 
-    # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
-    df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
+    if df['Modality'].isna().all():
+        # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
+        df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
+        print("Column 'Modality' is empty.")
+    else:
+        print("Column 'Modality' is not empty.")
+
 
     return df
 
