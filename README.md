@@ -1,4 +1,5 @@
-# Exam-Analytics
+# Exam-Analytics App
+### App Description: <br>
 Analyzes a radiology exam dataset and generates graphs on user-set filters.
 
 - Runs on the `Django` frame work
@@ -9,6 +10,8 @@ Analyzes a radiology exam dataset and generates graphs on user-set filters.
 
 ## Progress . . .
 - Allow user to upload and store `.csv` to app
+- Uploaded `.csv` is parsed and formatted to a `pd.Dataframe` and then stored to the server disk as a `.pickle`
+- Analysis is performed on a user selected dataset by reading the appropriate `.pickle` as a `pd.Dataframe` 
 - Various filters are now functional for graph generation
 
 ## Breakdown
@@ -33,7 +36,12 @@ wip.....
 
 ![](/img/grph.png)
 
-### Notes
+## TODO
 
-- Run server with `python manage.py runserver`
-- Get back into the python env looking into the env/bin directory. instructions there
+- Provide cleaner solution for analysis summary
+    - Add totals for shift views
+    - Display avg number of exams
+- Add a modality view bar chart
+- Add exam complete: exam ordered ratio view
+- Add after hours stat order volume
+- Add user log in
