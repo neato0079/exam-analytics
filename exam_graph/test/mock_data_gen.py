@@ -14,7 +14,7 @@ def gen_orc_sr(len:int, date_range:list[str]):
     return sr
 
 
-def mock_df_gen(orm_date_rng:list[str], df_len:int) -> pd.DataFrame:
+def gen_mock_df(orm_date_rng:list[str], df_len:int) -> pd.DataFrame:
 
     # set column names:
     columns = [
@@ -103,7 +103,7 @@ def gen_mod():
     return cc
 
 
-def df_to_mock_csv(df: pd.DataFrame, fn:str):
+def save_df_as_mock_csv(df: pd.DataFrame, fn:str):
     fn = fn + '.csv'
     fp = Path('/Users/mattbot/dev/') / fn
     df.to_csv(fp, index=False) 
@@ -113,6 +113,6 @@ start = '01/01/2024'
 
 end = '01/21/2025'
 time_rng = [start, end]
-new_df = mock_df_gen(time_rng, 3000)
+new_df = gen_mock_df(time_rng, 3000)
 
-df_to_mock_csv(new_df,'big_mock')
+# df_to_mock_csv(new_df,'big_mock')
