@@ -77,8 +77,10 @@ def upload_csv(request):
         try:
             # Format data for filters
             df = helper.format_df(df)
-        except:
-            print('data formatting is incorrect')
+        except Exception as e:
+            error_message = f'Unable to format data: {e}'
+            stack_trace = traceback.format_exc()  # Capture the full traceback
+            print(stack_trace)  # Log the detailed error in the console
             messages.error(request, "Cannot parse file. Check the help page to make sure your .csv file is in the correct format.")
 
             return redirect('/exam_graph')
@@ -86,14 +88,8 @@ def upload_csv(request):
         # set full config path user's new pickle
         pickle_fp = DATASET_DIR / pickle_fn
 
-        # handle existing file
-        if pickle_fp.exists():
-            # create copy to avoid overwrite
-            pickle_fp:Path = helper.pickle_copy(pickle_fp)
-            pickle_fn = str(pickle_fp.stem) + '.pickle'
-
         # update user_config.json with name of newly uploaded dataset
-        helper.build_usr_config(pickle_fn, USER_CONFIG_FP)
+        helper.build_usr_config(pickle_fp, USER_CONFIG_FP)
 
         # Store df as pickle on disk
         helper.save_pickle(df, pickle_fp)
