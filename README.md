@@ -5,6 +5,7 @@ Analyzes a radiology exam dataset and generates graphs on user-set filters.
 - Utilizes `Pandas` library for dataset analysis.
 - Utilizes `Matplotlib` for data visualization.
 - Unit testing done with `pytest`
+- Currently running on `Render` cloud service
 
 ## Progress . . .
 - Allow user to upload and store `.csv` to app
