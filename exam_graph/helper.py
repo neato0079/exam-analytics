@@ -125,7 +125,17 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             print(f"Column {column} could not be converted to datetime.")
 
 
-def build_usr_config(pickle_fn: str, config_fp:Path):
+def build_usr_config(pickle_fp: Path, config_fp:Path):
+
+    pickle_fn = str(pickle_fp.stem)
+
+    # handle existing file
+    if pickle_fp.exists():
+        print(f'{pickle_fp.stem} already exists! Making a copy ...')
+        # create copy to avoid overwrite
+        pickle_fp:Path = pickle_copy(pickle_fp)
+        pickle_fn = str(pickle_fp.stem)
+
 
     # create parent dir if not present already
     user_conf_dir = config_fp.parent
@@ -158,6 +168,10 @@ def save_pickle(df:pd.DataFrame, pickle_fp:Path):
     if not dataset_dir.exists(): # can probably just put this conditional in create_directory at this point. write tests first
         create_directory(dataset_dir)
 
+    # new pickle fp if it exists already
+    if pickle_fp.exists():
+        pickle_fp = pickle_copy(pickle_fp)
+
     # Store df on disk
     with pickle_fp.open('wb') as fp:
         pickle.dump(df, fp)
@@ -171,14 +185,13 @@ def format_df(df:pd.DataFrame) -> pd.DataFrame:
 
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='ISO8601')
-
-    if df['Modality'].isna().all():
-        # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
-        df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
-        print("Column 'Modality' is empty.")
-    else:
-        print("Column 'Modality' is not empty.")
-
+    
+    # don't need to extract modality aliases if they are already there
+    if 'Modality' in df.columns:
+        return df
+    
+    # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
+    df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
     return df
 
