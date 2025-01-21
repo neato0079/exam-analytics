@@ -131,6 +131,7 @@ def filter_submission_handler(request):
         
         if shift_view:
             graph_base64 = myplot.plot_shift(axes_data, period)
+            axes_data = helper.shift_totals(axes_data)
             axes_data = axes_data.to_html()
 
         else:
