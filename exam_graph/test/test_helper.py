@@ -49,8 +49,10 @@ def test_build_usr_config(tmp_path):
 
     # set dir and fp
     dir:Path = tmp_path / 'prop'
-    pickle_fn = 'test.pickle'
-    fp = dir / 'test_config.json'
+    pickle_fn = 'test'
+    config_fp = dir / 'test_config.json'
+    pickle_fp = dir / 'user_uploads' / pickle_fn
+
 
     # set content in test json
     expected_content = {
@@ -58,10 +60,10 @@ def test_build_usr_config(tmp_path):
     }
 
     # test in absense of config fp
-    helper.build_usr_config('test.pickle', fp)
+    helper.build_usr_config(pickle_fp, config_fp)
 
     # read into fp and check content against expected content
-    with open(fp, 'r') as json_file:
+    with open(config_fp, 'r') as json_file:
         actual_content = json.load(json_file)
     assert actual_content == expected_content, f"Expected {expected_content}, but got {actual_content}"
 
@@ -69,10 +71,10 @@ def test_build_usr_config(tmp_path):
     # test in absense of fp
     shutil.rmtree(dir)
     dir.mkdir(parents=True, exist_ok=True)
-    helper.build_usr_config('test.pickle', fp)
+    helper.build_usr_config(pickle_fp, config_fp)
 
     # read into fp and check content against expected content
-    with open(fp, 'r') as json_file:
+    with open(config_fp, 'r') as json_file:
         actual_content = json.load(json_file)
     assert actual_content == expected_content, f"Expected {expected_content}, but got {actual_content}"
 
@@ -83,19 +85,22 @@ def test_build_usr_config(tmp_path):
     dir.mkdir(parents=True, exist_ok=True) # create path
 
 
-    # write file again
-    with fp.open("w") as f:
+    # write config file again
+    with config_fp.open("w") as f:
         json.dump(expected_content, f, indent=4) 
 
-    helper.build_usr_config('test(1).pickle', fp)
+    # write pickle
+    pickle_fp.mkdir(parents=True, exist_ok=True)
+
+    helper.build_usr_config(pickle_fp, config_fp)
 
     # set new content in test json
     expected_new_content = {
-        'user datasets' : [pickle_fn, 'test(1).pickle']
+        'user datasets' : [pickle_fn, 'test(1)']
     }
 
     # read json and check for match
-    with open(fp, 'r') as json_file:
+    with open(config_fp, 'r') as json_file:
         actual_content = json.load(json_file)
     assert actual_content == expected_new_content, f"Expected {expected_new_content}, but got {actual_content}"
     # dir.mkdir()
