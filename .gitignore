@@ -36,3 +36,6 @@ exam_graph/static/graphs
 
 *.pdf
 *.ipynb
+
+# test coverage reports
+.coverage

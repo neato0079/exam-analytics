@@ -125,34 +125,49 @@ def set_dt_columns(df:pd.DataFrame) -> None:
             print(f"Column {column} could not be converted to datetime.")
 
 
-def build_usr_config(pickle_fn: str, config_fp:Path):
+def build_usr_config(pickle_fp: Path, config_fp:Path):
+
+    pickle_fn = str(pickle_fp.stem)
+
+    # handle existing file
+    if pickle_fp.exists():
+        print(f'{pickle_fp.stem} already exists! Making a copy ...')
+        # create copy to avoid overwrite
+        pickle_fp:Path = pickle_copy(pickle_fp)
+        pickle_fn = str(pickle_fp.stem)
+
 
     # create parent dir if not present already
     user_conf_dir = config_fp.parent
-    if not user_conf_dir.exists():
-        create_directory(user_conf_dir)
+    create_directory_or_nah(user_conf_dir)
 
     # check if config file already exists and update if so
     if config_fp.exists():
+        print(f'{config_fp} already exists! Will update the config with {pickle_fn}')
         update_user_config(pickle_fn,config_fp)
+        print(f'Updated "user_config.json" in "{user_conf_dir}" successfully!')
+        return 
 
     # create user_config.json contents and fn
     data = {}
     data['user datasets'] = [pickle_fn]
-    print(type(config_fp)) #<class 'pathlib.PosixPath'>
-    print(config_fp)
+    # print(type(config_fp)) #<class 'pathlib.PosixPath'>
+    # print(config_fp)
     with config_fp.open("w") as f:
         json.dump(data, f, indent=4)
     
-    print(f'Created "user_config.json" in "{dir}" successfully!')
+    print(f'Created "user_config.json" in "{user_conf_dir}" successfully!')
 
 
 def save_pickle(df:pd.DataFrame, pickle_fp:Path):
 
-    #check if parent directory exists
+    # check if parent directory exists
     dataset_dir = pickle_fp.parent
-    if not dataset_dir.exists(): # can probably just put this conditional in create_directory at this point. write tests first
-        create_directory(dataset_dir)
+    create_directory_or_nah(dataset_dir)
+
+    # new pickle fp if it exists already
+    if pickle_fp.exists():
+        pickle_fp = pickle_copy(pickle_fp)
 
     # Store df on disk
     with pickle_fp.open('wb') as fp:
@@ -167,7 +182,11 @@ def format_df(df:pd.DataFrame) -> pd.DataFrame:
 
     # Ensure that 'Exam Complete Date/Tm' is in datetime format
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'], format='ISO8601')
-
+    
+    # don't need to extract modality aliases if they are already there
+    if 'Modality' in df.columns:
+        return df
+    
     # Extract modality from 'Order Procedure Accession' (e.g., 'XR' from '24-XR-12345')
     df['Modality'] = df['Exam Order Name'].apply(lambda x: x[1:3])
 
@@ -206,14 +225,20 @@ def update_user_config(pickle_str:str, config_path:Path):
         data = json.load(file)
 
     # Add the new pickle file name
+    print(f'user datasets currently contains this before the append:{data["user datasets"]}')
     data["user datasets"].append(pickle_str)
-
+    print(f'user datasets now contains this after the append:{data["user datasets"]}')
     # encode the updated data back to the JSON file
     with config_file.open('w') as file:
         json.dump(data, file, indent=4)
 
 
-def create_directory(path:Path):
+def create_directory_or_nah(path:Path):
+    if path.exists():
+        print(f'{path} already exists!')
+        return
+    
+    print(f'{path} Does not exist! Will create {path} ...')
     # Create the directory
     path.mkdir(parents=True, exist_ok=True)
     

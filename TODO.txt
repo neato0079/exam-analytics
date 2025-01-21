@@ -1,11 +1,4 @@
-- Save user uploaded data to disk. The app's intention is to be used across mulitple facilities across one region so this data should be shared between mulitple users.
-
-- Allow for shift visualization
-    - it functions (1/10)
-    - add shift view option to html forma
-        done
-    - remove hardcode stuff
-        done
-    - allow shift view to work with tat
-        done
-
+update readme
+add modality view bar chart
+make summary nicer. add after hours mri exam completes
+moar tests
