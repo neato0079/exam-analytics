@@ -139,7 +139,7 @@ def filter_submission_handler(request):
             graph_base64 = myplot.plot_shift(axes_data, period)
 
             # compile summary data
-            agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'sum', 'max']).astype(int)           
+            agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
             agg_df.columns.name = ''
             agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
             agg_tb = agg_df.to_html()
@@ -159,7 +159,7 @@ def filter_submission_handler(request):
             # desc_str = desc.to_json()
             # desc_dict = json.loads(desc_str)
             # summary_json.update(desc_dict)
-            agg_sr:pd.Series = axes_data.aggregate(['mean', 'sum','max']).astype(int)
+            agg_sr:pd.Series = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)
             agg_sr.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
             agg_str = agg_sr.to_json()
             agg_dict = json.loads(agg_str)
