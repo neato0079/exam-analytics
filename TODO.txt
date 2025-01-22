@@ -1,4 +1,5 @@
 update readme
 add modality view bar chart
-make summary nicer. add after hours mri exam completes
+make summary nicer (kinda done). add after hours mri exam completes
 moar tests
+user login

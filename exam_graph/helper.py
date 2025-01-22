@@ -289,3 +289,23 @@ def check_date_range(df: pd.DataFrame, date_column:str = 'Exam Complete Date/Tm'
     latest_date = df[date_column].max().strftime("%Y-%m-%d")
     
     return earliest_date, latest_date
+
+
+# calculate shift totals
+def shift_totals(df:pd.DataFrame):
+
+    # get sums of shifts
+    am = int(df['AM'].sum())
+    pm = int(df['PM'].sum())
+    noc = int(df['NOC'].sum())
+
+    # compile sum data
+    data = {'AM': [], 'PM': [], 'NOC': []}
+    data['AM'].append(am)
+    data['PM'].append(pm)
+    data['NOC'].append(noc)
+
+    # create df sum data
+    summary_df = pd.DataFrame(data, index=['totals'])
+
+    return summary_df

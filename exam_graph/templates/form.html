@@ -29,7 +29,7 @@
                     <select id="User_selected_metric" name="User_selected_metric" required>
                         <option value="totals" {% if selected_metric == "totals" %}selected{% endif %}>totals</option>
                         <option value="tat" {% if selected_metric == "tat" %}selected{% endif %}>tat</option>
-                        <option value="mean" {% if selected_metric == "mean" %}selected{% endif %}>avg(doesnt work yet)</option>
+                        <!-- <option value="mean" {% if selected_metric == "mean" %}selected{% endif %}>avg(doesnt work yet)</option> -->
                         
                     </select>
                     <br><br>
@@ -87,7 +87,12 @@
         </div>
         <div class="summary">
             <h3>Analysis Summary</h3>
-            {{ summary|safe }}
+            {% for table in summary %}
+                <div class="table-container">
+                    {{ table|safe }}
+                </div>
+                <br><br>
+            {% endfor %}
         </div>
     </div>
 </body>
