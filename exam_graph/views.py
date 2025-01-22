@@ -12,7 +12,8 @@ from pathlib import Path
 import pickle
 from django.contrib import messages
 from decouple import config
-
+from json2html import *
+import json
 
 # Paths
 CONFIG_ROOT = Path(config('CONFIG_ROOT'))
@@ -128,16 +129,48 @@ def filter_submission_handler(request):
         # TESTING SHIFT PLOT. TOTALS ONLY
 
         axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
+
+        # set summary tables:
+        summary_tables = []
         
         if shift_view:
+
+            # create shift view graph
             graph_base64 = myplot.plot_shift(axes_data, period)
-            axes_data = helper.shift_totals(axes_data)
-            axes_data = axes_data.to_html()
+
+            # compile summary data
+            mean_df:pd.DataFrame = axes_data.aggregate(['mean']).astype(int)           
+            mean_df.columns.name = ''
+            mean_df.rename(index={'mean':'Avg'}, inplace=True)
+            mean_tb = mean_df.to_html()
+            shift_sum = helper.shift_totals(axes_data)
+            sum_tb = shift_sum.to_html()
+
+            # add to summary tables for html render
+            summary_tables.append(mean_tb)
+            summary_tables.append(sum_tb)
 
         else:
             # graph without shift view
             graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
-            axes_data = axes_data.to_frame().to_html()# convert to df for html view
+
+            # init summary json
+            summary_json = {}
+
+            # create analysis series
+            agg_sr:pd.Series = axes_data.aggregate(['mean', 'sum']).astype(int)
+            agg_sr.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
+            agg_str = agg_sr.to_json()
+            agg_dict = json.loads(agg_str)
+
+            # add data to summary_json
+            summary_json.update(agg_dict)
+
+            # convert to html table
+            generic_summary = json2html.convert(json = summary_json)
+
+            # add to summary tables for html render
+            summary_tables.append(generic_summary)
 
         stuff_for_html_render = {
             'graph': graph_base64,
@@ -147,7 +180,7 @@ def filter_submission_handler(request):
             'start_date': datestr[0],
             'end_date': datestr[1],
             'shift_view': shift_view,
-            'summary': axes_data,
+            'summary': summary_tables,
             'dataset_name': pickle_fp.stem
         }
   

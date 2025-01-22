@@ -87,7 +87,12 @@
         </div>
         <div class="summary">
             <h3>Analysis Summary</h3>
-            {{ summary|safe }}
+            {% for table in summary %}
+                <div class="table-container">
+                    {{ table|safe }}
+                </div>
+                <br><br>
+            {% endfor %}
         </div>
     </div>
 </body>
