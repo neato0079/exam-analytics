@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <div>
+    <div style="height: 100vh; display: flex; flex-direction: column; padding: 30px;">
         <h1>File Upload Constraints:</h1>
         <h3>- Only '.csv' files are accepted</h3>
         <h3>- Any columns with date/time values should be in ISO8601 format</h3>
@@ -18,8 +18,16 @@
         <div>
             <img src="{% static 'img/Screenshot.png' %}" alt="example_csv" />
         </div>
-
+        <div>- For a more detailed description of the app and progress notes, please check out the readme.md at my GitHub here!:</div>
+        <h2><a href="https://github.com/neato0079/exam-analytics?tab=readme-ov-file#exam-analytics-app" target="_blank">README.md</a></h2>
+        <footer>
+            <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
+            <a href="../help/" target="_top">Help</a> |
+            <a href="../" target="_top">Home</a>
+        </footer>
     </div>
+
+
 
 
 </body>
