@@ -15,10 +15,10 @@ Analyzes a radiology exam dataset and generates graphs on user-set filters.
 - Various filters are now functional for graph generation
 
 ## Breakdown
-- Compatible datasets(just `.csv` files for now) are essentially HL7 data organized by the following columns:
+- Compatible datasets(just `.csv` files for now) are essentially `HL7` data organized by the following columns:
 
 ```
-        COLUMN NAME                      HL7 ORM Segment
+        COLUMN NAME                       HL7 ORM Segment
         ______________________________________________________________________
         'Exam Complete Date/Tm' . . . . . ORC.5 (order status is complete)
         'Order Procedure Accession' . . . ORC.2
