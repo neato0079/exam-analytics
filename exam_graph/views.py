@@ -139,16 +139,13 @@ def filter_submission_handler(request):
             graph_base64 = myplot.plot_shift(axes_data, period)
 
             # compile summary data
-            mean_df:pd.DataFrame = axes_data.aggregate(['mean', 'max']).astype(int)           
-            mean_df.columns.name = ''
-            mean_df.rename(index={'mean':'Avg'}, inplace=True)
-            mean_tb = mean_df.to_html()
-            shift_sum = helper.shift_totals(axes_data)
-            sum_tb = shift_sum.to_html()
+            agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'sum', 'max']).astype(int)           
+            agg_df.columns.name = ''
+            agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
+            agg_tb = agg_df.to_html()
 
             # add to summary tables for html render
-            summary_tables.append(mean_tb)
-            summary_tables.append(sum_tb)
+            summary_tables.append(agg_tb)
 
         else:
             # graph without shift view
