@@ -306,6 +306,6 @@ def shift_totals(df:pd.DataFrame):
     data['NOC'].append(noc)
 
     # create df sum data
-    summary_df = pd.DataFrame(data)
+    summary_df = pd.DataFrame(data, index=['totals'])
 
     return summary_df
