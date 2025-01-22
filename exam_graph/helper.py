@@ -295,9 +295,9 @@ def check_date_range(df: pd.DataFrame, date_column:str = 'Exam Complete Date/Tm'
 def shift_totals(df:pd.DataFrame):
 
     # get sums of shifts
-    am = df['AM'].sum()
-    pm = df['PM'].sum()
-    noc = df['NOC'].sum()
+    am = int(df['AM'].sum())
+    pm = int(df['PM'].sum())
+    noc = int(df['NOC'].sum())
 
     # compile sum data
     data = {'AM': [], 'PM': [], 'NOC': []}
