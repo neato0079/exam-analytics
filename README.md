@@ -1,6 +1,6 @@
 # Exam-Analytics App
 ### App Description: <br>
-Analyzes a radiology exam dataset and generates graphs on user-set filters.
+Analyzes a user uploaded radiology exam dataset and generates graphs on user-set filters.
 
 - Runs on the `Django` frame work
 - Utilizes `Pandas` library for dataset analysis
@@ -28,6 +28,7 @@ Analyzes a radiology exam dataset and generates graphs on user-set filters.
         'Modality'. . . . . . . . . . . . OBR.24
 ```
 - Modality can be inferred if the accession number or order name implies a modality
+- Typically an EHR should provide a way to export a `.csv` file with the data shown above. This will be the source of data for this app. 
 - This data is then formatted and analyzed
 
 wip.....
