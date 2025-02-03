@@ -296,4 +296,5 @@ def mkdf():
 df = mkdf()
 dates= gen_start_times(3, [start, end])
 df['Exam Order Date/Time'] = dates
+plot_shift((df))
 print(df)
