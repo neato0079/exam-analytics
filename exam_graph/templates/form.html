@@ -81,8 +81,11 @@
     </div>
     <div class="results">
         <div class="graph-container">
-            {% if graph %}
-            <img src="data:image/png;base64,{{ graph }}" alt="Generated Graph">
+            {% if graphs %}
+                {% for graph in graphs %}
+                    <img class="graph" src="data:image/png;base64,{{ graph }}" alt="Generated Graph" style="margin-top: 30px;">
+                    
+                {% endfor %}
             {% endif %}
         </div>
         <div class="summary">

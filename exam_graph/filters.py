@@ -268,7 +268,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'totals': totals,
         'mean': mean,
         'tat': tat,
-        'shift': shift_view,
+        'shift_view': shift_view,
         'tat_shift': tat_shift_view,
         'shift_ratios':shift_ratios,
     }
@@ -290,22 +290,26 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list[dateti
 
     # apply x axis value (time constraints)
     df = period(df, xfilt['period'])
+    print(filters)
 
     # apply modality filters if needed
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
 
     # handle shift view on tat
-    if filters['shift_view'] and filters['User_selected_metric'] == 'tat':
-        return metric_filt(df, 'tat_shift') # returns a df not series
+    if filters['shift_view'] == 'True' and filters['User_selected_metric'] == 'tat':
+
+        return None, metric_filt(df, 'tat_shift') # returns a df not series
 
     # handle shift view on totals
-    if filters['shift_view']:
-        return metric_filt(df, 'shift_ratios') # returns a df not series
+    if filters['shift_view'] == 'True':
+
+        return metric_filt(df, 'shift_ratios'), metric_filt(df,'shift_view') # returns a df not series
 
     # if metric == 'shift view'
     
     df_axes = metric_filt(df, metric)
+   
     return df_axes
 
 
