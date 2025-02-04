@@ -108,6 +108,7 @@ def plot_shift(df, period):
     return graph_base64
 
 def plot_ratios(df:pd.DataFrame):
+    plt.rcParams['figure.figsize'] = (10, 6)
     df.plot.line()
     plt.axhline(y=1, color='r', linestyle='--')
     plt.xlabel('Date Range')

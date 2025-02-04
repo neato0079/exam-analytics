@@ -83,7 +83,9 @@
         <div class="graph-container">
             {% if graphs %}
                 {% for graph in graphs %}
-                    <img class="graph" src="data:image/png;base64,{{ graph }}" alt="Generated Graph" style="margin-top: 30px;">
+                <a class="graph" href="data:image/png;base64,{{ graph }}" target="_blank">
+                    <img  src="data:image/png;base64,{{ graph }}" alt="Generated Graph" style="margin-top: 30px;">
+                </a>
                     
                 {% endfor %}
             {% endif %}
