@@ -109,10 +109,10 @@ def save_df_as_mock_csv(df: pd.DataFrame, fn:str):
     df.to_csv(fp, index=False) 
 
 
-start = '01/01/2024'
+start = '07/01/2024'
 
-end = '01/21/2025'
+end = '07/31/2024'
 time_rng = [start, end]
 new_df = gen_mock_df(time_rng, 3000)
 
-# df_to_mock_csv(new_df,'big_mock')
+# save_df_as_mock_csv(new_df,'big_mock_july')
