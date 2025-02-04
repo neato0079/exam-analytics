@@ -268,16 +268,13 @@ def logout(request:HttpRequest):
     user = request.user
     logout(request)
     dic = {
-        'user': user,
-        'mess': 'successfully logged out!'
+        'mess': f'{user} successfully logged out!'
     }
     return render(request, 'login.html', dic)
 
 
 def wholog(request:HttpRequest):
     user = request.user
-    dic = {
-        'user': user,
-        'mess': 'is logged in'
-    }
-    return JsonResponse({'Login success': f"user: {user}"}, status=200)
+
+    return f'Current logged in user: {user}'
+    return JsonResponse({'Current logged in user': f"user: {user}"}, status=200)

@@ -13,6 +13,10 @@
 <body>
 
     <div class="main">
+        <div class="top_nav">
+            <a href='' target="login_page">Login</a>
+            <a href='../wholog/' target="wholog" method="POST">Logout</a>
+        </div>
 
             <form class="login" action="/exam_graph/app_login/" method="POST">
                 {% csrf_token %}
@@ -26,13 +30,14 @@
                 <label>
                     <input type="checkbox" checked="checked" name="remember"> Remember me
                 </label>
-                <footer>
-                    <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
-                    <a href="help/" target="_top">Help</a> |
-                    <a href="../" target="../">Home</a>
-                </footer>
-
+                
             </form>
+            {{ mess }}
+            <footer>
+                <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
+                <a href="help/" target="_top">Help</a> |
+                <a href="../" target="../">Home</a>
+            </footer>
 
     </div>
             <script src="../static/scripts/home_script.js"></script>
