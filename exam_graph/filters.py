@@ -57,12 +57,10 @@ week_view_options = [
 ]
 
 # cut df down to a date range
-def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
+def dt_range(df: pd.DataFrame, start:datetime, end:datetime) -> pd.DataFrame:
+    
     # Ensure 'Exam Order Date/Time' is a datetime object
     df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'])
-
-    
-    # Define the start and end date range
 
     
     # Filter rows where 'Exam Order Date/Time' is between start and end
@@ -279,7 +277,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filters:dict) -> pd.Series:
+def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list[datetime], filters:dict) -> pd.Series:
 
     # get date range
     start = daterange[0]
@@ -312,6 +310,13 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filte
     series_axes = metric_filt(df, metric)
 
     return series_axes
+
+def shift_ratios(df:pd.DataFrame) -> pd.DataFrame:
+    # get number of completes for PM
+    # get number of orders for PM
+    # ratio = complete:orders
+    # if ratio > 1 then PM shift might need more staffing 
+    pass
 """
 NOTES
 
