@@ -57,12 +57,10 @@ week_view_options = [
 ]
 
 # cut df down to a date range
-def dt_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
+def dt_range(df: pd.DataFrame, start:datetime, end:datetime) -> pd.DataFrame:
+    
     # Ensure 'Exam Order Date/Time' is a datetime object
     df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'])
-
-    
-    # Define the start and end date range
 
     
     # Filter rows where 'Exam Order Date/Time' is between start and end
@@ -101,7 +99,7 @@ def get_shifts(df):
 
 # creates a new column for 'User_selected_period'
 
-
+# periods are set by Exam Order Date/Time
 def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
 
     # If the user wants to only see modality metrics, we already have a modality column in our df so nothing needs to be done
@@ -122,7 +120,7 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     period_selection = alias[period_selection]
 
     # set time stamps to datetime object
-    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
+    df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'])
 
     # create new column to we can group by the user's selected period
     df['User_selected_period'] = df['Exam Complete Date/Tm'].dt.to_period(period_selection)
@@ -226,7 +224,9 @@ def shift_view(df:pd.DataFrame) -> pd.DataFrame:
  
     # Ensure 'Exam Order Date/Time' is a datetime object
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
-    df['Shift'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
+    df['Shift'] = df['Exam Complete Date/Tm'].apply(helper.get_shift) # removed later
+    df['Shift Ordered'] = df['Exam Order Date/Time'].apply(helper.get_shift)
+    df['Shift Completed'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
     # print(df)
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
@@ -268,8 +268,9 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'totals': totals,
         'mean': mean,
         'tat': tat,
-        'shift': shift_view,
-        'tat_shift': tat_shift_view
+        'shift_view': shift_view,
+        'tat_shift': tat_shift_view,
+        'shift_ratios':shift_ratios,
     }
     
     # Apply relevant metric function to df
@@ -279,7 +280,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filters:dict) -> pd.Series:
+def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list[datetime], filters:dict) -> pd.Series:
 
     # get date range
     start = daterange[0]
@@ -289,22 +290,26 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filte
 
     # apply x axis value (time constraints)
     df = period(df, xfilt['period'])
+    print(filters)
 
     # apply modality filters if needed
     if len(xfilt['modalities']) > 0:
         df = mod_filt(df, xfilt['modalities'])
 
     # handle shift view on tat
-    if filters['shift_view'] and filters['User_selected_metric'] == 'tat':
-        return metric_filt(df, 'tat_shift') # returns a df not series
+    if filters['shift_view'] == 'True' and filters['User_selected_metric'] == 'tat':
+
+        return None, metric_filt(df, 'tat_shift') # returns a df not series
 
     # handle shift view on totals
-    if filters['shift_view']:
-        return metric_filt(df, 'shift') # returns a df not series
+    if filters['shift_view'] == 'True':
+
+        return metric_filt(df, 'shift_ratios'), metric_filt(df,'shift_view') # returns a df not series
 
     # if metric == 'shift view'
     
     df_axes = metric_filt(df, metric)
+   
     return df_axes
 
 
@@ -312,6 +317,35 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list, filte
     series_axes = metric_filt(df, metric)
 
     return series_axes
+
+def shift_ratios(df:pd.DataFrame) -> pd.DataFrame:
+    # get number of completes for PM
+    # get number of orders for PM
+    # ratio = complete:orders
+    # if ratio > 1 then PM shift might need more staffing 
+    df['Shift Ordered'] = df['Exam Order Date/Time'].apply(helper.get_shift)
+    df['Shift Completed'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
+    # cut df to relevant data
+    shift_data = df[['User_selected_period','Shift Ordered','Shift Completed']]
+
+    # create 2 separate dfs grouping by ordered and completed shifts
+    ordered = shift_data.groupby(['User_selected_period', 'Shift Ordered']).size().reset_index(name="ordered_count")
+    completed = shift_data.groupby(['User_selected_period', 'Shift Completed']).size().reset_index(name="complete_count")
+
+    # merge them and get the ratios for each shift
+    merged = pd.merge(ordered, completed,
+                  left_on=["User_selected_period", "Shift Ordered"],
+                  right_on=["User_selected_period", "Shift Completed"],
+                  how="outer").fillna(0)
+    merged = merged.rename(columns={"Shift Ordered": "Shift"})
+    merged = merged.drop(columns=["Shift Completed"])  # No longer needed
+    pivot_df = merged.pivot(index="User_selected_period", columns="Shift", values=["ordered_count", "complete_count"]).fillna(0)
+    for shift in ["AM", "PM", "NOC"]:
+        pivot_df[("completion_ratio", shift)] = pivot_df[("complete_count", shift)] / pivot_df[("ordered_count", shift)]
+
+    # cut down df again
+    new_df=pivot_df['completion_ratio'] 
+    return new_df
 """
 NOTES
 

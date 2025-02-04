@@ -106,3 +106,21 @@ def plot_shift(df, period):
     graph_base64 = base64.b64encode(buffer.getvalue()).decode()
     buffer.close()
     return graph_base64
+
+def plot_ratios(df:pd.DataFrame):
+    plt.rcParams['figure.figsize'] = (10, 6)
+    df.plot.line()
+    plt.axhline(y=1, color='r', linestyle='--')
+    plt.xlabel('Date Range')
+    plt.ylabel('Exam Complete to Exam Order Ratio')
+    
+    # Save the graph to an in-memory buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', dpi = 200, bbox_inches='tight')
+    buffer.seek(0)
+    plt.close()
+
+    # Encode the buffer as base64
+    graph_base64 = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
+    return graph_base64

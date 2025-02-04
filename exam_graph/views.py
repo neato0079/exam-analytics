@@ -131,15 +131,22 @@ def filter_submission_handler(request):
 
         # TESTING SHIFT PLOT. TOTALS ONLY
 
-        axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
 
         # set summary tables:
         summary_tables = []
         
         if shift_view:
-
+            ratio_data, axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
+            
             # create shift view graph
-            graph_base64 = myplot.plot_shift(axes_data, period)
+            general = myplot.plot_shift(axes_data,period)
+            graph_base64 = [general]
+
+            # create ratio graph only on total metric
+            if metric == 'totals':
+                ratio = myplot.plot_ratios(ratio_data)
+                graph_base64.append(ratio)
+                
 
             # compile summary data
             agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
@@ -151,8 +158,9 @@ def filter_submission_handler(request):
             summary_tables.append(agg_tb)
 
         else:
+            axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
             # graph without shift view
-            graph_base64 = myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)
+            graph_base64 = [myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)]
 
             # init summary json
             summary_json = {}
@@ -177,7 +185,7 @@ def filter_submission_handler(request):
             summary_tables.append(generic_summary)
 
         stuff_for_html_render = {
-            'graph': graph_base64,
+            'graphs': graph_base64,
             'selected_period': period,
             'selected_modality': modality_lst,
             'selected_metric': metric,

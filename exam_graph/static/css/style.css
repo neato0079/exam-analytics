@@ -203,9 +203,10 @@ tr:hover {
 
 .graph-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
+    max-height: 80vh;
     width: 80%;
     padding: 20px; /* Add padding for spacing */
 }
@@ -319,4 +320,11 @@ tr:hover {
     align-items: center;
     justify-content: center;
     height: 100vh;
+}
+
+.graph{
+    /* margin-top: 10px; */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
 }
