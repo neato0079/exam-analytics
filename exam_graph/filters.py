@@ -269,7 +269,8 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
         'mean': mean,
         'tat': tat,
         'shift': shift_view,
-        'tat_shift': tat_shift_view
+        'tat_shift': tat_shift_view,
+        'shift_ratios':shift_ratios,
     }
     
     # Apply relevant metric function to df
@@ -300,7 +301,7 @@ def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list[dateti
 
     # handle shift view on totals
     if filters['shift_view']:
-        return metric_filt(df, 'shift') # returns a df not series
+        return metric_filt(df, 'shift_ratios') # returns a df not series
 
     # if metric == 'shift view'
     
@@ -318,7 +319,29 @@ def shift_ratios(df:pd.DataFrame) -> pd.DataFrame:
     # get number of orders for PM
     # ratio = complete:orders
     # if ratio > 1 then PM shift might need more staffing 
-    pass
+    df['Shift Ordered'] = df['Exam Order Date/Time'].apply(helper.get_shift)
+    df['Shift Completed'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
+    # cut df to relevant data
+    shift_data = df[['User_selected_period','Shift Ordered','Shift Completed']]
+
+    # create 2 separate dfs grouping by ordered and completed shifts
+    ordered = shift_data.groupby(['User_selected_period', 'Shift Ordered']).size().reset_index(name="ordered_count")
+    completed = shift_data.groupby(['User_selected_period', 'Shift Completed']).size().reset_index(name="complete_count")
+
+    # merge them and get the ratios for each shift
+    merged = pd.merge(ordered, completed,
+                  left_on=["User_selected_period", "Shift Ordered"],
+                  right_on=["User_selected_period", "Shift Completed"],
+                  how="outer").fillna(0)
+    merged = merged.rename(columns={"Shift Ordered": "Shift"})
+    merged = merged.drop(columns=["Shift Completed"])  # No longer needed
+    pivot_df = merged.pivot(index="User_selected_period", columns="Shift", values=["ordered_count", "complete_count"]).fillna(0)
+    for shift in ["AM", "PM", "NOC"]:
+        pivot_df[("completion_ratio", shift)] = pivot_df[("complete_count", shift)] / pivot_df[("ordered_count", shift)]
+
+    # cut down df again
+    new_df=pivot_df['completion_ratio'] 
+    return new_df
 """
 NOTES
 

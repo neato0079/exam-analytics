@@ -139,7 +139,7 @@ def filter_submission_handler(request):
         if shift_view:
 
             # create shift view graph
-            graph_base64 = myplot.plot_shift(axes_data, period)
+            graph_base64 = myplot.plot_ratios(axes_data)
 
             # compile summary data
             agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
