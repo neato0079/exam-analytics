@@ -32,7 +32,10 @@ def home(request:HttpRequest):
 
     else:
         files = ['no datasets uploaded']
-    return render(request, 'index.html', {'files': files})
+
+    user = helper.get_user(request)
+
+    return render(request, 'index.html', {'files': files, 'user': user})
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
 def form_page(request):
@@ -65,7 +68,7 @@ def upload_csv(request):
             print('not a csv')
             messages.error(request, 'Upload ".csv" files only please! I am still just a baby app!')
 
-            return redirect('/exam_graph')
+            return redirect('/')
 
         file_str = str(request.FILES[file]).split('.')[0]
         pickle_fn = file_str + ".pickle"
@@ -84,7 +87,7 @@ def upload_csv(request):
             print(stack_trace)  # Log the detailed error in the console
             messages.error(request, "Cannot parse file. Check the help page to make sure your .csv file is in the correct format.")
 
-            return redirect('/exam_graph')
+            return redirect('/')
 
         # set full config path user's new pickle
         pickle_fp = DATASET_DIR / pickle_fn
@@ -95,7 +98,7 @@ def upload_csv(request):
         # Store df as pickle on disk
         helper.save_pickle(df, pickle_fp)
         messages.info(request, f'{file_str} uploaded!')
-        return redirect('/exam_graph')
+        return redirect('/')
         
     except Exception as e:
         error_message = f"An error occurred! Try checking the help section! Here is your error!: {e}"
@@ -217,3 +220,64 @@ def load_data(request:HttpRequest):
         'dataset_name': pickle_fp.stem
     }
     return render(request, 'form.html', stuff_for_html_render)
+
+
+def login(request:HttpRequest):
+    from django.contrib.auth import authenticate
+    user = request.POST["username"]
+    password = request.POST["password"]
+    is_auth = authenticate(username=user, password=password)
+    dic = {
+        'user': user,
+        'mess': 'mess'
+    }
+    if is_auth is not None:
+        # A backend authenticated the credentials
+        dic['mess'] = 'logged in!!!!'
+        return render(request, 'login.html', dic)
+
+    else:
+    # No backend authenticated the credentials
+        dic['mess'] = 'not logged in'
+        return render(request, 'login.html', dic)
+
+
+def login_page(request:HttpRequest):
+    return render(request, 'login.html')
+
+def app_login(request:HttpRequest):
+    from django.contrib.auth import authenticate, login
+    user = request.POST["username"]
+    password = request.POST["password"]
+    is_auth = authenticate(username=user, password=password)
+
+    if is_auth is not None:
+        # A backend authenticated the credentials
+        login(request, is_auth)
+
+        return JsonResponse({'Login success': f"user: {user}"}, status=200)
+
+    else:
+    # No backend authenticated the credentials
+
+        return JsonResponse({'Login failed': f"user: {user}"}, status=200)
+
+
+
+
+def logout(request:HttpRequest):
+    from django.contrib.auth import logout
+    print(request.user)
+    user = request.user
+    logout(request)
+    dic = {
+        'mess': f'{user} successfully logged out!'
+    }
+    return render(request, 'login.html', dic)
+
+
+def wholog(request:HttpRequest):
+    user = helper.get_user(request)
+
+
+    return JsonResponse({'Current logged in user': f"user: {user}"}, status=200)

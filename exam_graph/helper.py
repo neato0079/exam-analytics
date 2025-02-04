@@ -309,3 +309,17 @@ def shift_totals(df:pd.DataFrame):
     summary_df = pd.DataFrame(data, index=['totals'])
 
     return summary_df
+
+
+def get_user(request):
+    from django.contrib.auth.models import User
+    from django.contrib.sessions.models import Session
+    session_key = request.session.session_key
+    try:
+        session = Session.objects.get(session_key=session_key)
+        user_id = session.get_decoded().get('_auth_user_id')
+        user = User.objects.get(pk=user_id)
+        return user
+    except (Session.DoesNotExist, User.DoesNotExist):
+        user = None
+        return user

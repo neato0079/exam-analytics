@@ -2,4 +2,6 @@ update readme
 add modality view bar chart
 make summary nicer (kinda done). add after hours mri exam completes
 moar tests
-user login
+user signup
+associate datasets with user
+add ratio graph
