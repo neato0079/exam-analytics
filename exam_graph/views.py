@@ -274,7 +274,7 @@ def logout(request:HttpRequest):
 
 
 def wholog(request:HttpRequest):
-    user = request.user
+    user = helper.get_user(request)
 
-    return f'Current logged in user: {user}'
+
     return JsonResponse({'Current logged in user': f"user: {user}"}, status=200)
