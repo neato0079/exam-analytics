@@ -311,9 +311,9 @@ def shift_totals(df:pd.DataFrame):
     return summary_df
 
 
-from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
 def get_user(request):
+    from django.contrib.auth.models import User
+    from django.contrib.sessions.models import Session
     session_key = request.session.session_key
     try:
         session = Session.objects.get(session_key=session_key)
