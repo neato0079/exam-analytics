@@ -217,3 +217,32 @@ def load_data(request:HttpRequest):
         'dataset_name': pickle_fp.stem
     }
     return render(request, 'form.html', stuff_for_html_render)
+
+
+def login(request:HttpRequest):
+    from django.contrib.auth import authenticate
+    user = request.POST["username"]
+    password = request.POST["password"]
+    is_auth = authenticate(username=user, password=password)
+    dic = {
+        'user': user,
+        'mess': 'mess'
+    }
+    if is_auth is not None:
+        # A backend authenticated the credentials
+        dic['mess'] = 'logged in!!!!'
+        return render(request, 'login.html', dic)
+
+    else:
+    # No backend authenticated the credentials
+        dic['mess'] = 'not logged in'
+        return render(request, 'login.html', dic)
+
+
+def wholog(request:HttpRequest):
+    user = request.user
+    dic = {
+        'user': user,
+        'mess': 'is logged in'
+    }
+    return render(request, 'login.html', dic)
