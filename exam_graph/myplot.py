@@ -106,3 +106,7 @@ def plot_shift(df, period):
     graph_base64 = base64.b64encode(buffer.getvalue()).decode()
     buffer.close()
     return graph_base64
+
+def plot_ratios(df:pd.DataFrame):
+    lines = df.plot.line()
+    plt.axhline(y=1, color='r', linestyle='--')
