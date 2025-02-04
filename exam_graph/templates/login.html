@@ -1,2 +1,42 @@
-{{ user }}
-{{ mess }}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiology Analytics</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <div class="main">
+
+            <form class="login" action="/exam_graph/app_login/" method="POST">
+                {% csrf_token %}
+                <label for="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="username" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="password" required>
+
+                <button type="submit">Login</button>
+                <label>
+                    <input type="checkbox" checked="checked" name="remember"> Remember me
+                </label>
+                <footer>
+                    <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
+                    <a href="help/" target="_top">Help</a> |
+                    <a href="../" target="../">Home</a>
+                </footer>
+
+            </form>
+
+    </div>
+            <script src="../static/scripts/home_script.js"></script>
+
+</body>
+
+</html>
