@@ -224,7 +224,9 @@ def shift_view(df:pd.DataFrame) -> pd.DataFrame:
  
     # Ensure 'Exam Order Date/Time' is a datetime object
     df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
-    df['Shift'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
+    df['Shift'] = df['Exam Complete Date/Tm'].apply(helper.get_shift) # removed later
+    df['Shift Ordered'] = df['Exam Order Date/Time'].apply(helper.get_shift)
+    df['Shift Completed'] = df['Exam Complete Date/Tm'].apply(helper.get_shift)
     # print(df)
 
     # Group by 'Exam Date' and 'Shift', then count the number of exams for each shift
