@@ -14,11 +14,21 @@
 
     <div class="main">
         <div class="top_nav">
-            <a href='' target="login_page">Login</a>
-            <a href='/' target="logout" method="POST">Logout</a>
+            {% block content %}
+            {% if user.is_authenticated %}
+                Hi {{ user.username }}!
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Log Out</button>
+                </form>
+            {% else %}
+                <p>You are not logged in</p>
+                <a href="{% url 'login' %}">Log In</a>
+            {% endif %}
+            {% endblock %}
         </div>
 
-            <form class="login" action="/exam_graph/app_login/" method="POST">
+            <form class="login" method="POST">
                 {% csrf_token %}
                 <label for="uname"><b>Username</b></label>
                 <input type="text" placeholder="Enter Username" name="username" required>
@@ -35,9 +45,10 @@
             {{ mess }}
             <footer>
                 <a href="https://github.com/neato0079/exam-analytics" target="_blank">GitHub</a> |
-                <a href="help/" target="_top">Help</a> |
-                <a href="../" target="../">Home</a>
+                <a href="../../help/" target="_top">Help</a> |
+                <a href="../../" target="home">Home</a>
             </footer>
+            
 
     </div>
             <script src="../static/scripts/home_script.js"></script>

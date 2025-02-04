@@ -32,7 +32,10 @@ def home(request:HttpRequest):
 
     else:
         files = ['no datasets uploaded']
-    return render(request, 'index.html', {'files': files})
+
+    user = helper.get_user(request)
+
+    return render(request, 'index.html', {'files': files, 'user': user})
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
 def form_page(request):
