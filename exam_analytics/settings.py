@@ -18,6 +18,7 @@ from decouple import config
 
 # Get the SECRET_KEY from the .env file
 SECRET_KEY = config('SECRET_KEY')
+DATABASE_LOC = config('DATABASE_LOC')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -84,7 +85,7 @@ WSGI_APPLICATION = 'exam_analytics.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': "mydatabase",
+        'NAME': DATABASE_LOC,
     }
 }
 
