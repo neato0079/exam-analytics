@@ -99,7 +99,7 @@ def get_shifts(df):
 
 # creates a new column for 'User_selected_period'
 
-
+# periods are set by Exam Order Date/Time
 def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
 
     # If the user wants to only see modality metrics, we already have a modality column in our df so nothing needs to be done
@@ -120,7 +120,7 @@ def period(df:pd.DataFrame, period_selection:str) -> pd.DataFrame:
     period_selection = alias[period_selection]
 
     # set time stamps to datetime object
-    df['Exam Complete Date/Tm'] = pd.to_datetime(df['Exam Complete Date/Tm'])
+    df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'])
 
     # create new column to we can group by the user's selected period
     df['User_selected_period'] = df['Exam Complete Date/Tm'].dt.to_period(period_selection)
