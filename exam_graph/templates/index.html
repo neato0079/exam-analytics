@@ -31,7 +31,7 @@
             </div>
 
 
-            <form class="file-select-form" action="/exam_graph/load_data/" method="GET">
+            <form class="file-select-form" action="load_data/" method="GET">
                 <label for="file-select">Select a Dataset for Analysis:</label>
                 <select id="file-select" name="file">
                     {% for file in files %}
@@ -41,7 +41,7 @@
                 <button type="submit" class="load-button">Load Data</button>
             </form>
 
-            <form id="upload-form" action="/exam_graph/upload/" method="post" enctype="multipart/form-data">
+            <form id="upload-form" action="upload/" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="upload-container" id="upload-container">
                     <p>To add a new Dataset, drag and drop a .csv file here, or</p>

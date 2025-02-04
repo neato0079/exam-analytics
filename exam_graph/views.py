@@ -68,7 +68,7 @@ def upload_csv(request):
             print('not a csv')
             messages.error(request, 'Upload ".csv" files only please! I am still just a baby app!')
 
-            return redirect('/exam_graph')
+            return redirect('/')
 
         file_str = str(request.FILES[file]).split('.')[0]
         pickle_fn = file_str + ".pickle"
@@ -87,7 +87,7 @@ def upload_csv(request):
             print(stack_trace)  # Log the detailed error in the console
             messages.error(request, "Cannot parse file. Check the help page to make sure your .csv file is in the correct format.")
 
-            return redirect('/exam_graph')
+            return redirect('/')
 
         # set full config path user's new pickle
         pickle_fp = DATASET_DIR / pickle_fn
@@ -98,7 +98,7 @@ def upload_csv(request):
         # Store df as pickle on disk
         helper.save_pickle(df, pickle_fp)
         messages.info(request, f'{file_str} uploaded!')
-        return redirect('/exam_graph')
+        return redirect('/')
         
     except Exception as e:
         error_message = f"An error occurred! Try checking the help section! Here is your error!: {e}"
