@@ -237,6 +237,40 @@ def login(request:HttpRequest):
     # No backend authenticated the credentials
         dic['mess'] = 'not logged in'
         return render(request, 'login.html', dic)
+    
+
+def login(request:HttpRequest):
+    from django.contrib.auth import authenticate
+    user = request.POST["username"]
+    password = request.POST["password"]
+    is_auth = authenticate(username=user, password=password)
+    dic = {
+        'user': user,
+        'mess': 'mess'
+    }
+    if is_auth is not None:
+        # A backend authenticated the credentials
+        dic['mess'] = 'logged in!!!!'
+        return render(request, 'login.html', dic)
+
+    else:
+    # No backend authenticated the credentials
+        dic['mess'] = 'not logged in'
+        return render(request, 'login.html', dic)
+
+
+
+
+def logout(request:HttpRequest):
+    from django.contrib.auth import logout
+    print(request.user)
+    user = request.user
+    logout(request)
+    dic = {
+        'user': user,
+        'mess': 'successfully logged out!'
+    }
+    return render(request, 'login.html', dic)
 
 
 def wholog(request:HttpRequest):
