@@ -115,4 +115,4 @@ end = '07/03/2024'
 time_rng = [start, end]
 new_df = gen_mock_df(time_rng, 10000)
 
-save_df_as_mock_csv(new_df,'big_mock_one_day')
+# save_df_as_mock_csv(new_df,'big_mock_one_day')
