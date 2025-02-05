@@ -33,16 +33,26 @@ Analyzes a user uploaded radiology exam dataset and generates graphs on user-set
 
 wip.....
 
-### Example graph
-
+### Example Graphs
+*The following graphs were generated using mocked datasets*
+#### Totals Graph with Shift View On
+This graph displays the total number of exams ordered by month over the course of a year. Each bar is broken down by shift to allow the user to visualize how the exam order volume is spread over the different work shifts.
 ![](/img/grph.png)
+
+#### Shift Ratios 
+The Shift Ratio graph allows for visualization of the ratio of Exam Completes(`ORC.5`) to Exam Orders (`ORC.15`) for each shift. These ratios can help make staffing descisions. For example, this graph shows us that the AM shift typically has a ratio < 1, meaning AM shift typically completes less exams than ordered on that shift. This could be used as evidence of a need of increased staffing for AM shift. 
+
+Keep in mind no one tool should give us definitive evidence of any one particular staffing need. More analytics are needed for more definite claims about staffing needs. For example it could be the case that the hours closest to AM shift change are typically high volume hours for the Emergency Deparment. In this scenario, this ratio may not necessarily suggest any staffing issues at all as while more exams are ordered at the end of the shift, there is less time for AM shift to finish those exams before the end of the shift. This graph shows that PM shift sometimes has a ratio > 1, which could be accounting for the PM shift "cleaning up" the ED rush hour volume before the volume returns to normal.
+![](/img/shft-ratio.png)
+
 
 ## TODO
 
 - Provide cleaner solution for analysis summary
-    - Add totals for shift views
-    - Display avg number of exams
+    - Display ratio break down for each shift (average, min, max)
+    - Provide more than just a summary table
 - Add a modality view bar chart
-- Add exam complete: exam ordered ratio view
 - Add after hours stat order volume
-- Add user log in
+- Associate users with respective dataset. This may be organized by indivisual users or groups.
+- Try to optimize. App runs slowly on large datasets
+- Migrate to AWS
