@@ -109,10 +109,44 @@ def save_df_as_mock_csv(df: pd.DataFrame, fn:str):
     df.to_csv(fp, index=False) 
 
 
-start = '07/01/2024'
+start = '08/01/2024'
 
-end = '07/03/2024'
+end = '08/03/2024'
 time_rng = [start, end]
-new_df = gen_mock_df(time_rng, 10000)
+# new_df = gen_mock_df(time_rng, 10000)
+
+
+class DataMocker:
+
+    def __init__(self, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/03/2024'):
+        self.dt_rng_start = dt_rng_start
+        self.dt_rng_end = dt_rng_end
+        self.daterange = [self.dt_rng_start, self.dt_rng_end]
+        
+    def gen_rand_dt(self, daterange:list[str]=None) -> datetime:
+        if not daterange : daterange = self.daterange
+
+        if len(daterange) != 2:
+            raise ValueError("daterange must be a list with exactly two elements: [start, end].")
+        
+        start, end = [daterange[0], daterange[1]]
+        start_dt, end_dt = [datetime.strptime(start, '%m/%d/%Y'), datetime.strptime(end, '%m/%d/%Y')]
+
+        # set date diff range in min
+        delta =  end_dt - start_dt
+        min_delta = delta.days * 24 * 60
+
+        # grab a random n min form that range
+        rand_min = timedelta(minutes=randrange(min_delta))
+
+        # add min to start date
+        rand_date = start_dt + rand_min
+        
+        # return dt_obj
+        return rand_date
+
+# data = DataMocker()
+# print(data.gen_rand_dt())
+# print(data.gen_rand_dt(time_rng))
 
 # save_df_as_mock_csv(new_df,'big_mock_one_day')
