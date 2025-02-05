@@ -6,3 +6,7 @@ user signup
 associate datasets with user
 make ratio graph more pretty
 add summary for ratio graph
+try moving to OOP?
+
+2/5
+project features are coming along. probably migrate to AWS soon
