@@ -331,6 +331,8 @@ def shift_ratios(df:pd.DataFrame) -> pd.DataFrame:
     # create 2 separate dfs grouping by ordered and completed shifts
     ordered = shift_data.groupby(['User_selected_period', 'Shift Ordered']).size().reset_index(name="ordered_count")
     completed = shift_data.groupby(['User_selected_period', 'Shift Completed']).size().reset_index(name="complete_count")
+    # print(ordered)
+    # print(completed)
 
     # merge them and get the ratios for each shift
     merged = pd.merge(ordered, completed,
@@ -339,6 +341,7 @@ def shift_ratios(df:pd.DataFrame) -> pd.DataFrame:
                   how="outer").fillna(0)
     merged = merged.rename(columns={"Shift Ordered": "Shift"})
     merged = merged.drop(columns=["Shift Completed"])  # No longer needed
+    print(merged)
     pivot_df = merged.pivot(index="User_selected_period", columns="Shift", values=["ordered_count", "complete_count"]).fillna(0)
     for shift in ["AM", "PM", "NOC"]:
         pivot_df[("completion_ratio", shift)] = pivot_df[("complete_count", shift)] / pivot_df[("ordered_count", shift)]
