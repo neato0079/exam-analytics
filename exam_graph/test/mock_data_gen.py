@@ -118,18 +118,19 @@ time_rng = [start, end]
 
 class DataMocker:
 
-    def __init__(self, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/03/2024'):
+    def __init__(self, datast_len:int, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/31/2024'):
+        self.datast_len = datast_len
         self.dt_rng_start = dt_rng_start
         self.dt_rng_end = dt_rng_end
-        self.daterange = [self.dt_rng_start, self.dt_rng_end]
-        
-    def gen_rand_dt(self, daterange:list[str]=None) -> datetime:
-        if not daterange : daterange = self.daterange
+        self.dt_rng = [self.dt_rng_start, self.dt_rng_end]
 
-        if len(daterange) != 2:
-            raise ValueError("daterange must be a list with exactly two elements: [start, end].")
+    # returns a random date/time within a given dt range    
+    def __rand_dt__(self, dt_rng:list[str]) -> datetime:
+
+        if len(dt_rng) != 2:
+            raise ValueError("dt_rng must be a list with exactly two elements: [start, end].")
         
-        start, end = [daterange[0], daterange[1]]
+        start, end = [dt_rng[0], dt_rng[1]]
         start_dt, end_dt = [datetime.strptime(start, '%m/%d/%Y'), datetime.strptime(end, '%m/%d/%Y')]
 
         # set date diff range in min
@@ -144,9 +145,19 @@ class DataMocker:
         
         # return dt_obj
         return rand_date
+    
+    def start_times(self, datast_len:int=None, dt_rng:list[str]=None):
+        if not dt_rng : dt_rng = self.dt_rng
+        if not datast_len : datast_len = self.datast_len
+        data = []
+        for i in range(datast_len):
+            data.append(self.__rand_dt__(dt_rng))
+        df = pd.Series(data)
+        return df
 
-# data = DataMocker()
-# print(data.gen_rand_dt())
+
+data = DataMocker(5)
+print(data.__rand_dt__(time_rng))
 # print(data.gen_rand_dt(time_rng))
 
 # save_df_as_mock_csv(new_df,'big_mock_one_day')
