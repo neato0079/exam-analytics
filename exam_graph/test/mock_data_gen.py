@@ -115,7 +115,7 @@ end = '08/03/2024'
 time_rng = [start, end]
 new_df = gen_mock_df(time_rng, 10000)
 
-
+# behavior?
 class MockedData:
 
     def gen_mod(self):
@@ -141,7 +141,43 @@ class MockedData:
 
         return acc_num 
 
+class MockedHL7Fields:
+    def __init__(self):
+        self.ORC5 = 'Exam Complete Date/Tm' # this is our ORM.ORC.5 (order status is complete)
+        self.ORC2 = 'Order Procedure Accession' # ORM.ORC.2
+        self.ORC15 = 'Exam Order Date/Time' # ex:'2024-07-10T01:15:00'; this is our HL7:ORM.ORC.15 (NW order time)
+        self.OBR22_1 = 'Final Date/Tm' # this is our ORM.OBR.22.1 (time of report)
+        self.OBR4 = 'Exam Order Name' # ORM.OBR.4
+        self.OBR24 = 'Modality'
+        pass
+
+    def get_fields(self) -> dict:
+        return {
+            'ORC5': self.ORC5 ,
+            'ORC2': self.ORC2,
+            'ORC15': self.ORC15,
+            'OBR22_1': self.OBR22_1,
+            'OBR4': self.OBR4,
+            'OBR24': self.OBR24
+        }
+    
+    def make_df(self):
+        fields = self.get_fields()
+        df = pd.DataFrame(columns=fields.values())
+        return df
+    
+
 class ExamsDataFrame:
+    def __init__(self, columns=None):
+        # set column names:
+
+        
+        # create empty df
+        return  pd.DataFrame(columns=columns)
+            
+
+# data
+class idk:
 
     def __init__(self, datast_len:int, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/31/2024'):
         self.datast_len = datast_len
@@ -181,10 +217,11 @@ class ExamsDataFrame:
         return df
 
 def main():
-    data = DataMocker(5)
-    print(data.__rand_dt__(time_rng))
+    # data = ExamsDataFrame(5)
+    hl7 = MockedHL7Fields()
+    print(hl7.make_df())
     # print(data.gen_rand_dt(time_rng))
-    print(gen_mock_df(time_rng, 10))
+    # print(gen_mock_df(time_rng, 10))
 
     # save_df_as_mock_csv(new_df,'big_mock_one_day')
 
