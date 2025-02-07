@@ -115,8 +115,43 @@ end = '08/03/2024'
 time_rng = [start, end]
 new_df = gen_mock_df(time_rng, 10000)
 
+class MockedHL7Fields:
+
+    def __init__(self):
+        self.ORC5 = 'Exam Complete Date/Tm' # this is our ORM.ORC.5 (order status is complete)
+        self.ORC2 = 'Order Procedure Accession' # ORM.ORC.2
+        self.ORC15 = 'Exam Order Date/Time' # ex:'2024-07-10T01:15:00'; this is our HL7:ORM.ORC.15 (NW order time)
+        self.OBR22_1 = 'Final Date/Tm' # this is our ORM.OBR.22.1 (time of report)
+        self.OBR4 = 'Exam Order Name' # ORM.OBR.4
+        self.OBR24 = 'Modality'
+        
+    def get_fields(self) -> dict:
+        return {
+            'ORC5': self.ORC5 ,
+            'ORC2': self.ORC2,
+            'ORC15': self.ORC15,
+            'OBR22_1': self.OBR22_1,
+            'OBR4': self.OBR4,
+            'OBR24': self.OBR24
+        }
+    
+    def get_columns(self) -> list:
+        return  self.get_fields().values()
+    
+    def rename_ORC5(self, name):
+        self.ORC5 = name
+    
+    # returns a df with attributes as columns and no data
+    def make_df(self) -> pd.DataFrame:
+        fields = self.get_columns()
+        df = pd.DataFrame(columns=fields)
+        return df
+    
+
 # behavior?
 class MockedData:
+    def __init__(self, mock_hl7=None):
+        self.mock_HL7 = MockedHL7Fields().get_fields()
 
     def gen_mod(self):
 
@@ -140,58 +175,45 @@ class MockedData:
         acc_num = f"{year}-{modality}-{rand_num}"
 
         return acc_num 
-
-class MockedHL7Fields:
-    def __init__(self):
-        self.ORC5 = 'Exam Complete Date/Tm' # this is our ORM.ORC.5 (order status is complete)
-        self.ORC2 = 'Order Procedure Accession' # ORM.ORC.2
-        self.ORC15 = 'Exam Order Date/Time' # ex:'2024-07-10T01:15:00'; this is our HL7:ORM.ORC.15 (NW order time)
-        self.OBR22_1 = 'Final Date/Tm' # this is our ORM.OBR.22.1 (time of report)
-        self.OBR4 = 'Exam Order Name' # ORM.OBR.4
-        self.OBR24 = 'Modality'
-        pass
-
-    def get_fields(self) -> dict:
-        return {
-            'ORC5': self.ORC5 ,
-            'ORC2': self.ORC2,
-            'ORC15': self.ORC15,
-            'OBR22_1': self.OBR22_1,
-            'OBR4': self.OBR4,
-            'OBR24': self.OBR24
-        }
     
-    def make_df(self):
-        fields = self.get_fields()
-        df = pd.DataFrame(columns=fields.values())
-        return df
-    
+
+
+
+
+
+
 
 class ExamsDataFrame:
-    def __init__(self, columns=None):
+    def __init__(self, hl7_fields:dict=MockedHL7Fields().get_fields()):
         # set column names:
-
+        self.columns = hl7_fields.values()
+        self.hl7_map = hl7_fields
         
-        # create empty df
-        return  pd.DataFrame(columns=columns)
+    # create empty df
+    def make_df(self) -> pd.DataFrame:
+        return  pd.DataFrame(columns=self.columns)
+    def get_hl7_map(self):
+        return self.hl7_map 
+
             
-
 # data
-class idk:
+class BuildData:
 
-    def __init__(self, datast_len:int, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/31/2024'):
+    def __init__(self, df:object=ExamsDataFrame().make_df(), datast_len:int=300, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/31/2024', mock_hl7=ExamsDataFrame().get_hl7_map()):
+        self.df = df
         self.datast_len = datast_len
         self.dt_rng_start = dt_rng_start
         self.dt_rng_end = dt_rng_end
         self.dt_rng = [self.dt_rng_start, self.dt_rng_end]
+        self.mock_HL7 = mock_hl7
 
     # returns a random date/time within a given dt range    
-    def __rand_dt__(self, dt_rng:list[str]) -> datetime:
+    def rand_dt(self) -> datetime:
 
-        if len(dt_rng) != 2:
+        if len(self.dt_rng) != 2:
             raise ValueError("dt_rng must be a list with exactly two elements: [start, end].")
         
-        start, end = [dt_rng[0], dt_rng[1]]
+        start, end = [self.dt_rng[0], self.dt_rng[1]]
         start_dt, end_dt = [datetime.strptime(start, '%m/%d/%Y'), datetime.strptime(end, '%m/%d/%Y')]
 
         # set date diff range in min
@@ -207,29 +229,77 @@ class idk:
         # return dt_obj
         return rand_date
     
-    def start_times(self, datast_len:int=None, dt_rng:list[str]=None):
-        if not dt_rng : dt_rng = self.dt_rng
-        if not datast_len : datast_len = self.datast_len
+
+    # generate start times for ORC5
+    def gen_order_times(self):
+        date = self.mock_HL7['ORC15'] 
         data = []
-        for i in range(datast_len):
-            data.append(self.__rand_dt__(dt_rng))
-        df = pd.Series(data)
-        return df
+        for i in range(self.datast_len):
+            data.append(self.rand_dt())
+        times = pd.Series(data)
+        self.df[date] = times
+    
+
+    def build_modalities(self):
+        mod_col = self.mock_HL7['OBR24']
+
+        def mod():
+            # set modalities and their freq
+            modality = ['CT', 'MR', 'XR', 'US', 'NM']
+            weights = [7, 3, 10, 3, 1] 
+
+            # select a random two-character string from the modality list
+            return  choices(modality, weights=weights, k=1)[0]
+
+        self.df[mod_col] = self.df[mod_col].apply(lambda x:mod())
+
+
+    def generate_acc_num(self, date_obj: datetime, modality:str) -> str:
+
+        # Extract the last two digits of the year
+        year = date_obj.strftime('%y')
+
+        # Generate a random seven-digit number
+        rand_num = f"{randint(0, 9999999):07d}"
+
+        # Combine the parts into the desired format
+        acc_num = f"{year}-{modality}-{rand_num}"
+
+        return acc_num 
+    
+    def build_acc_num(self) -> str:
+        mod = self.mock_HL7['OBR24']
+        date = self.mock_HL7['ORC15']   
+        acc = self.mock_HL7['ORC2']
+
+        self.df[acc] = self.df.apply(lambda col: self.generate_acc_num(col[date], col[mod]), axis=1)
+
+    # Add delay to exam complete in minutes from 15-45 min
+    def build_complete_dt(self):
+        order_time = self.mock_HL7['ORC15']
+        complete_time = self.mock_HL7['ORC5']
+        # Add delay to ORC.5 in minutes from 15-45 min
+        self.df[complete_time] = self.df[order_time] + pd.to_timedelta(pd.Series(choices(range(15, 46), k=len(self.df))), unit='m')
+
+    # Add delay to exam Final in minutes from 15-60 min
+    def build_final_dt(self):
+        complete_time = self.mock_HL7['ORC5']
+        final_time = self.mock_HL7['OBR22_1']
+        self.df[final_time] = self.df[complete_time] + pd.to_timedelta(pd.Series(choices(range(15, 46), k=len(self.df))), unit='m')
+
+    def go_go_gadget_build(self):
+        self.gen_order_times()
+        self.build_modalities()
+        self.build_acc_num()
+        self.build_complete_dt()
+        self.build_final_dt()
+        return self.df
+
 
 def main():
-    # data = ExamsDataFrame(5)
-    hl7 = MockedHL7Fields()
-    print(hl7.make_df())
-    # print(data.gen_rand_dt(time_rng))
-    # print(gen_mock_df(time_rng, 10))
 
-    # save_df_as_mock_csv(new_df,'big_mock_one_day')
-
-    # set mock data attributes(df columns)
-
-    # generate values for those attributes
-
-    # save
+    df = BuildData(datast_len=3).go_go_gadget_build()
+    print(df)
 
 if __name__ == "__main__":
     main()
