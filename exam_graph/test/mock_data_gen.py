@@ -206,6 +206,7 @@ class BuildData:
         self.dt_rng_end = dt_rng_end
         self.dt_rng = [self.dt_rng_start, self.dt_rng_end]
         self.mock_HL7 = mock_hl7
+        self.go_go_gadget_build()
 
     # returns a random date/time within a given dt range    
     def rand_dt(self) -> datetime:
@@ -295,11 +296,23 @@ class BuildData:
         self.build_final_dt()
         return self.df
 
+    def save_df_as_mock_csv(self, fn:str, path:str='/Users/mattbot/dev/'):
+        fn = fn + '.csv'
+        fp = Path(path) / fn
+        if fp.exists():
+            print(f'{fp} already exists!!!')
+            return
+        self.df.to_csv(fp, index=False) 
+        print(f'Successfully saved file @ {fp}!!!')
 
 def main():
 
-    df = BuildData(datast_len=3).go_go_gadget_build()
-    print(df)
+    df = BuildData(datast_len=100)
+    df.save_df_as_mock_csv('OOP_test2')
+    
+    # df2 = data.go_go_gadget_build(datast_len=3)
+    # df=df.go_go_gadget_build()
+    # print(df)
 
 if __name__ == "__main__":
     main()
