@@ -155,9 +155,12 @@ class DataMocker:
         df = pd.Series(data)
         return df
 
+def main():
+    data = DataMocker(5)
+    print(data.__rand_dt__(time_rng))
+    # print(data.gen_rand_dt(time_rng))
 
-data = DataMocker(5)
-print(data.__rand_dt__(time_rng))
-# print(data.gen_rand_dt(time_rng))
+    # save_df_as_mock_csv(new_df,'big_mock_one_day')
 
-# save_df_as_mock_csv(new_df,'big_mock_one_day')
+if __name__ == "__main__":
+    main()
