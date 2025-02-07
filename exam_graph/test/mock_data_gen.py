@@ -113,10 +113,35 @@ start = '08/01/2024'
 
 end = '08/03/2024'
 time_rng = [start, end]
-# new_df = gen_mock_df(time_rng, 10000)
+new_df = gen_mock_df(time_rng, 10000)
 
 
-class DataMocker:
+class MockedData:
+
+    def gen_mod(self):
+
+        # set modalities and their freq
+        modality = ['CT', 'MR', 'XR', 'US', 'NM']
+        weights = [7, 3, 10, 3, 1] 
+
+        # select a random two-character string from the modality list
+        cc = choices(modality, weights=weights, k=1)[0]
+        return cc
+    
+    def generate_acc_num(self, date_obj: datetime, modality:str) -> str:
+
+        # Extract the last two digits of the year
+        year = date_obj.strftime('%y')
+
+        # Generate a random seven-digit number
+        rand_num = f"{randint(0, 9999999):07d}"
+
+        # Combine the parts into the desired format
+        acc_num = f"{year}-{modality}-{rand_num}"
+
+        return acc_num 
+
+class ExamsDataFrame:
 
     def __init__(self, datast_len:int, dt_rng_start:str='07/01/2024', dt_rng_end:str='07/31/2024'):
         self.datast_len = datast_len
@@ -159,8 +184,15 @@ def main():
     data = DataMocker(5)
     print(data.__rand_dt__(time_rng))
     # print(data.gen_rand_dt(time_rng))
+    print(gen_mock_df(time_rng, 10))
 
     # save_df_as_mock_csv(new_df,'big_mock_one_day')
+
+    # set mock data attributes(df columns)
+
+    # generate values for those attributes
+
+    # save
 
 if __name__ == "__main__":
     main()
