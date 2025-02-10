@@ -6,6 +6,8 @@ from exam_graph import helper
 from exam_graph import filters
 from pathlib import Path
 from datetime import datetime, date
+import formatter
+import validator
 
 # csv gets ingested into this class
 # we can do validation here and df conversion
@@ -21,32 +23,16 @@ class ExamDataFrame:
             self.fp = fp
             self.df = accepted_file_types[file_type](self.fp)
             self.df = self.df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
-            print(f'Successfully read {self.fp.stem} to df')
+            self.df.name = fp.stem
+            print(f'Successfully read {self.fp.stem} to df',end='\n\n')
         else:
-            print('Cannot read file')
+            print('Cannot read file',end='\n\n')
 
+    def validate_self(self):
+        validator.validate_df(self.df)
 
-    def validate_columns(self) -> None:
-        defaults = HL7Fields().get_columns()
-        columns = list(self.df.columns)
-        missing = []
-        for col in defaults:
-            if col not in columns:
-                missing.append(col)
-        if len(missing) > 0:
-            print(f'Missing columns:{missing}')
-        else:
-            print('Columns validated!')
-        print(defaults)
-        print(list(self.df.columns))
-
-
-    def set_modality_col(self):
-        if 'Modality' not in self.df.columns:
-            self.df['Modality'] = self.df['Exam Order Name'].apply(lambda x: x[1:3])
-            print("NO MODALITIES SET OFF OF ORDER NAMES")
-            print(self.df.head())
-
+    def format_self(self):
+        self.df = formatter.format_df(self.df)
 
     def df_type(self):
         return type(self.df)
@@ -167,28 +153,22 @@ class HL7Fields:
 
 
 def main():
-    my_csv = Path('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv')
+    my_csv = Path('/Users/mattbot/dev/big_mock_july2.csv')
     master_df = ExamDataFrame()
     master_df.read_file(my_csv)
     df = master_df.get_df()
+    # df['Modality'] = 1
 
-    # master_df.set_modality_col()
     # master_df.validate_columns()
     # str_dt = '2024-09-14T14:15:00'
     # a = date.fromisoformat(str_dt)
 
-    def convert_dt(row):
-        try:
-            # print(f'{row} converted to dt')
-            converted = pd.to_datetime(row, format='mixed')
-            return converted
-        except:
 
-            return row
-
-    df = df.apply(lambda x: convert_dt(x))
     # df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'] )
-    print(df.dtypes)
+    master_df.format_self()
+    master_df.validate_self()
+    print(df.head())
+
 
 
 if __name__ == '__main__':
