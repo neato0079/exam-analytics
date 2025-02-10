@@ -25,35 +25,46 @@ from pathlib import Path
 # csv gets ingested into this class
 # we can do validation here and df conversion
 class ExamDataFrame:
-    def __init__(self, fp:Path):
-        self.fp=fp
+    def __init__(self, df:pd.DataFrame=None):
         self.fields = HL7Fields()
         self.df = None
 
-    def read_file(self):
+    def read_file(self, fp:Path):
         accepted_file_types = {'.csv': pd.read_csv}
-        file_type = self.fp.suffix
+        file_type = fp.suffix
         if file_type in accepted_file_types:
+            self.fp = fp
             self.df = accepted_file_types[file_type](self.fp)
             self.df = self.df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
             print(f'Successfully read {self.fp.stem} to df')
         else:
             print('Cannot read file')
 
-    def validate_columns(self):
-        columns = HL7Fields().get_columns()
-        return columns
+
+    def validate_columns(self) -> None:
+        defaults = HL7Fields().get_columns()
+        columns = list(self.df.columns)
+        missing = []
+        for col in defaults:
+            if col not in columns:
+                missing.append(col)
+        if len(missing) > 0:
+            print(f'Missing columns:{missing}')
+        else:
+            print('Columns validated!')
+        print(defaults)
+        print(list(self.df.columns))
     
     def set_modality_col(self):
         if 'Modality' not in self.df.columns:
             self.df['Modality'] = self.df['Exam Order Name'].apply(lambda x: x[1:3])
             print("NO MODALITIES SET OFF OF ORDER NAMES")
             print(self.df.head())
-    
+
     def df_type(self):
         return type(self.df)
     
-    def get_df(self):
+    def get_df(self) -> pd.DataFrame:
         return self.df
 
 
@@ -169,12 +180,13 @@ class HL7Fields:
 
 def main():
     my_csv = Path('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv')
-    empty_df = ExamDataFrame(my_csv)
-    empty_df.read_file()
-    df = empty_df.get_df()
-    print(list(df.columns))
-    print(HL7Fields.show_default_fields())
-    empty_df.set_modality_col()
+    master_df = ExamDataFrame()
+    master_df.read_file(my_csv)
+    df = master_df.get_df()
+
+    master_df.set_modality_col()
+    master_df.validate_columns()
+    print(df)
 
 
 if __name__ == '__main__':
