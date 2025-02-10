@@ -1,5 +1,9 @@
 import pandas as pd
 import sys
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 # for line in sys.path:
 #      print(line)
 
@@ -21,14 +25,30 @@ from pathlib import Path
 # csv gets ingested into this class
 # we can do validation here and df conversion
 class ExamDataFrame:
-    def __init__(self, df:pd.DataFrame):
-        self.df=df
+    def __init__(self, fp:Path):
+        self.fp=fp
         self.fields = HL7Fields()
-        pass
+        self.df = None
+
+    def read_file(self):
+        accepted_file_types = {'.csv': pd.read_csv}
+        file_type = self.fp.suffix
+        if file_type in accepted_file_types:
+            self.df = accepted_file_types[file_type](self.fp)
+            self.df = self.df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+            print(f'Successfully read {self.fp.stem} to df')
+        else:
+            print('Cannot read file')
 
     def validate_columns(self):
         columns = HL7Fields().get_columns()
         return columns
+    
+    def set_modality_col(self):
+        if 'Modality' not in self.df.columns:
+            self.df['Modality'] = self.df['Exam Order Name'].apply(lambda x: x[1:3])
+            print("NO MODALITIES SET OFF OF ORDER NAMES")
+            print(self.df.head())
     
     def df_type(self):
         return type(self.df)
@@ -144,27 +164,17 @@ class HL7Fields:
     
     @classmethod
     def show_default_fields(cls) -> list:
-        return  cls().get_fields().values()
+        return  list(cls().get_fields().values())
 
-class Person:
-    def __init__(self, name):
-        self.name = name
 
-class Employee(Person):  # Employee inherits from Person
-    def __init__(self, name, salary):
-        super().__init__(name)
-        self.salary = salary
 def main():
-    # df = helper.pickle_to_df('/Users/mattbot/dev/exam_analytics_properties/user_uploads/big_mock_july.pickle')
-    # print(df.head())
-    # empty_df = HL7Fields()
-    # my_df = ExamDataFrame(df)
-    # filt = FilteredExamData(my_df)
-    # print(my_df.df_type()) #<class 'pandas.core.frame.DataFrame'>
-    # print(filt.child_df_type()) # <class '__main__.ExamDataFrame'>
-    me = Employee('Me', )
-
-# main()
+    my_csv = Path('/Users/mattbot/dev/exam-analytics/mock_exam_data_v3.csv')
+    empty_df = ExamDataFrame(my_csv)
+    empty_df.read_file()
+    df = empty_df.get_df()
+    print(list(df.columns))
+    print(HL7Fields.show_default_fields())
+    empty_df.set_modality_col()
 
 
 if __name__ == '__main__':
