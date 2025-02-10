@@ -3,24 +3,26 @@ from datetime import datetime, time
 import traceback
 from exam_graph.utils.exam_data_set import HL7Fields
 
+class Shifts:
+    def __init__(self):
+        self.AM = [time(7, 0), time(15, 0)]
+        self.PM = [time(15, 0), time(23, 0)]
+        self.NOC = [time(23, 0), time(7, 0)]
+
+    def dict(self):
+        return self.__dict__
 
 
 # change to object to allow for changing of column names and shift times
 class Formatter:
 
-    default_shifts = {
-        'AM': [time(7, 0), time(15, 0)],
-        'PM': [time(15, 0), time(23, 0)],
-        'NOC': [time(23, 0), time(7, 0)]
-    }
-
-    def __init__(self, df:pd.DataFrame=None, shifts:dict=default_shifts, hl7=HL7Fields()):
+    def __init__(self, df:pd.DataFrame=None, shifts:dict=Shifts().dict(), hl7=HL7Fields()):
         self.shifts = shifts
         self.hl7 = hl7
         self.df = df
 
     def __str__(self):
-        return 'Pass a dictionary of shifts where the values are lists with a start and end time. Example:\n\n {default_shifts}'
+        return 'Pass a new shift object to change the defualt shift times. Example:\n\n {default_shifts}'
 
     def strip_ws(self) -> pd.DataFrame:
         print("Stripping white spaces ...", end='\n\n')

@@ -162,8 +162,13 @@ def main():
 
 
     # df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'] )
-    master_df.validate_self()
+    # master_df.validate_self()
     print(df.head())
+    # shi = Shifts()
+    # print(shi.dict())
+    # shi.EX = [time(17, 0), time(1, 0)]
+    # print(shi.dict())
+
 
 
 
