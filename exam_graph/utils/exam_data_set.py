@@ -6,14 +6,48 @@ from exam_graph import helper
 from exam_graph import filters
 from pathlib import Path
 from datetime import datetime, date
-import formatter
+from formatter import *
 import validator
 
+
+class HL7Fields:
+
+    def __init__(self):
+        self.order_complete_dt = 'Exam Complete Date/Tm' # this is our ORM.ORC.5 (order status is complete)
+        self.acc = 'Order Procedure Accession' # ORM.ORC.2
+        self.order_dt = 'Exam Order Date/Time' # ex:'2024-07-10T01:15:00'; this is our HL7:ORM.ORC.15 (NW order time)
+        self.final_dt = 'Final Date/Tm' # this is our ORM.OBR.22.1 (time of report)
+        self.order_name = 'Exam Order Name' # ORM.OBR.4
+        self.modality = 'Modality'
+        
+    def get_fields(self) -> dict:
+        return {
+            'ORC5': self.order_complete_dt,
+            'ORC2': self.acc,
+            'ORC15': self.order_dt,
+            'OBR22_1': self.final_dt,
+            'OBR4': self.order_name,
+            'OBR24': self.modality
+        }
+    
+    def get_columns(self) -> list:
+        return  list(self.get_fields().values())
+    
+    # returns a df with attributes as columns and no data
+    def make_df(self) -> pd.DataFrame:
+        fields = self.get_columns(self)
+        df = pd.DataFrame(columns=fields)
+        return df
+    
+    @classmethod
+    def show_default_fields(cls) -> list:
+        return  list(cls().get_fields().values())
+    
 # csv gets ingested into this class
 # we can do validation here and df conversion
 class ExamDataFrame:
-    def __init__(self, df:pd.DataFrame=None):
-        self.fields = HL7Fields()
+    def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields()):
+        self.hl7_fields = hl7_fields
         self.df = None
 
     def read_file(self, fp:Path):
@@ -24,7 +58,7 @@ class ExamDataFrame:
             self.df = accepted_file_types[file_type](self.fp)
             self.df.name = fp.stem
             print(f'Successfully read {self.fp.stem} to df',end='\n\n')
-            self.df = formatter.format_df(self.df)
+            self.df = Formatter(df=self.df,hl7=self.hl7_fields).format_df()
         else:
             print('Cannot read file',end='\n\n')
 
@@ -32,7 +66,7 @@ class ExamDataFrame:
         validator.validate_df(self.df)
 
     def format_self(self):
-        self.df = formatter.format_df(self.df)
+        self.df = Formatter.format_df(self.df)
 
     def df_type(self):
         return type(self.df)
@@ -113,43 +147,6 @@ class FilteredExamData(ExamDataFrame):
 
     def child_df_type(self):
         return self.df
-
-
-class HL7Fields:
-
-    def __init__(self):
-        self.ORC5 = 'Exam Complete Date/Tm' # this is our ORM.ORC.5 (order status is complete)
-        self.ORC2 = 'Order Procedure Accession' # ORM.ORC.2
-        self.ORC15 = 'Exam Order Date/Time' # ex:'2024-07-10T01:15:00'; this is our HL7:ORM.ORC.15 (NW order time)
-        self.OBR22_1 = 'Final Date/Tm' # this is our ORM.OBR.22.1 (time of report)
-        self.OBR4 = 'Exam Order Name' # ORM.OBR.4
-        self.OBR24 = 'Modality'
-        
-    def get_fields(self) -> dict:
-        return {
-            'ORC5': self.ORC5 ,
-            'ORC2': self.ORC2,
-            'ORC15': self.ORC15,
-            'OBR22_1': self.OBR22_1,
-            'OBR4': self.OBR4,
-            'OBR24': self.OBR24
-        }
-    
-    def get_columns(self) -> list:
-        return  list(self.get_fields().values())
-    
-    def rename_ORC5(self, name):
-        self.ORC5 = name
-    
-    # returns a df with attributes as columns and no data
-    def make_df(self) -> pd.DataFrame:
-        fields = self.get_columns(self)
-        df = pd.DataFrame(columns=fields)
-        return df
-    
-    @classmethod
-    def show_default_fields(cls) -> list:
-        return  list(cls().get_fields().values())
 
 
 def main():
