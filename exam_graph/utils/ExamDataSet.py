@@ -1,26 +1,11 @@
-import pandas as pd
-import sys
 from dotenv import load_dotenv
-import os
-
 load_dotenv()
-# for line in sys.path:
-#      print(line)
 
-# print(dir(sys))
-# print(sys.modules)
-# print(globals())
-import os
-# os.environ['PYTHONPATH'] = '/Users/mattbot/dev/exam-analytics'
-# try:
-#     user_paths = os.environ['PYTHONPATH'].split(os.pathsep)
-# except KeyError:
-#     user_paths = []
-# print(os.environ)
-# print(user_paths)
+import pandas as pd
 from exam_graph import helper
 from exam_graph import filters
 from pathlib import Path
+from datetime import datetime, date
 
 # csv gets ingested into this class
 # we can do validation here and df conversion
@@ -54,16 +39,19 @@ class ExamDataFrame:
             print('Columns validated!')
         print(defaults)
         print(list(self.df.columns))
-    
+
+
     def set_modality_col(self):
         if 'Modality' not in self.df.columns:
             self.df['Modality'] = self.df['Exam Order Name'].apply(lambda x: x[1:3])
             print("NO MODALITIES SET OFF OF ORDER NAMES")
             print(self.df.head())
 
+
     def df_type(self):
         return type(self.df)
-    
+
+
     def get_df(self) -> pd.DataFrame:
         return self.df
 
@@ -184,9 +172,23 @@ def main():
     master_df.read_file(my_csv)
     df = master_df.get_df()
 
-    master_df.set_modality_col()
-    master_df.validate_columns()
-    print(df)
+    # master_df.set_modality_col()
+    # master_df.validate_columns()
+    # str_dt = '2024-09-14T14:15:00'
+    # a = date.fromisoformat(str_dt)
+
+    def convert_dt(row):
+        try:
+            # print(f'{row} converted to dt')
+            converted = pd.to_datetime(row, format='mixed')
+            return converted
+        except:
+
+            return row
+
+    df = df.apply(lambda x: convert_dt(x))
+    # df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'] )
+    print(df.dtypes)
 
 
 if __name__ == '__main__':
