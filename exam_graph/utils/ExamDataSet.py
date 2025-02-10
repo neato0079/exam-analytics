@@ -22,9 +22,9 @@ class ExamDataFrame:
         if file_type in accepted_file_types:
             self.fp = fp
             self.df = accepted_file_types[file_type](self.fp)
-            self.df = self.df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
             self.df.name = fp.stem
             print(f'Successfully read {self.fp.stem} to df',end='\n\n')
+            self.df = formatter.format_df(self.df)
         else:
             print('Cannot read file',end='\n\n')
 
@@ -165,7 +165,6 @@ def main():
 
 
     # df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'] )
-    master_df.format_self()
     master_df.validate_self()
     print(df.head())
 

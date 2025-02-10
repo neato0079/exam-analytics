@@ -2,13 +2,11 @@ import pandas as pd
 from datetime import datetime, time
 import traceback
 
-def convert_dt(row):
-    try:
-        # print(f'{row} converted to dt')
-        converted = pd.to_datetime(row, format='mixed')
-        return converted
-    except:
-        return row
+def strip_ws(df:pd.DataFrame) -> pd.DataFrame:
+    print("Stripping white spaces ...", end='\n\n')
+    df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
+    return df
+
 
 def set_dt_columns(df:pd.DataFrame) -> None:
     converted = []
@@ -56,6 +54,7 @@ def format_df(df:pd.DataFrame):
     print(f'Formatting {df.name} ...',end='\n\n')
     try:
         formatters = [
+            strip_ws,
             set_dt_columns,
             set_shift,
             set_modality_col,
@@ -63,7 +62,7 @@ def format_df(df:pd.DataFrame):
         for formatter in formatters:
             formatter(df)
 
-        print(f'{df.name} successfully formatted!')
+        print(f'{df.name} successfully formatted!', end='\n\n')
     except Exception as e:
         error_message = f'Unable to format data: {e}'
         stack_trace = traceback.format_exc()  # Capture the full traceback

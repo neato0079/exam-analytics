@@ -1,5 +1,6 @@
 import ExamDataSet
 import pandas as pd
+import traceback
 
 def validate_columns(df:pd.DataFrame) -> None:
     defaults = ExamDataSet.HL7Fields().get_columns()
@@ -20,5 +21,16 @@ def validate_dtypes(df:pd.DataFrame) -> None:
     print(df.dtypes,end='\n\n')
 
 def validate_df(df:pd.DataFrame) -> None:
-    validate_columns(df)
-    validate_dtypes(df)
+    print(f'Validating {df.name} data...', end='\n\n')
+    try:
+        validators = [
+            validate_columns,
+            validate_dtypes,
+        ]
+        for validate in validators:
+            validate(df)
+
+    except Exception as e:
+        error_message = f'Unable to validate data: {e}'
+        stack_trace = traceback.format_exc()  # Capture the full traceback
+        print(stack_trace)  # Log the detailed error in the console
