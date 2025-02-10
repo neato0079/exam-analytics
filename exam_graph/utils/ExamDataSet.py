@@ -40,6 +40,7 @@ class ExamDataFrame:
 # this will contain the selected filters for a given analysis
 class UserFilters:
 
+    # Metric function dict
     metric_dict = {
         'totals': filters.totals,
         'mean': filters.mean,
@@ -49,10 +50,20 @@ class UserFilters:
         'shift_ratios': filters.shift_ratios,
     }
 
-    def __init__(self, metric:str, view:str, date_range:str):
+    def __init__(self, metric:str, view:str, granular_view:str, date_range:str):
         self.metric = metric
-        # Metric function dictionary
-        
+        columns = []
+        # each filter can tell us what columns to keep. in other words, what columns are relevant to out neccessary calculations
+        # the goal is to cut down as much of data we can so that we are working with a small amount, recuding any excessive overhead. As we read through the filters, toss the needed column names into an array or something
+
+        # first thing to consider is the date range. this is an easy cut because the only data we need for calculations is within that range
+
+        # next we can look at the selected modalities. We can delete any rows that don't match the selected modalities. We can also just delete the modality column if the user wants to view all the modalities. Same for shifts
+
+        # next, we can look at the metric. Right now we only have totals and tat. for totals, row count is enough so no specific column needed there. for tat we need exam compelete time, and exam final time so keep those columns
+
+        # next we can look at the view. This should tell us a lot about what we can cut. default view is just value of the metric(y) over time(x). But if our view is set to Shift ?....
+
 
     def averages(self, period):
         # if the user has selected a monthly period, the x axis will represent months in a range. the value of each month for this filter is a weekly avgerage. so july would have a weekly average 
