@@ -1,9 +1,9 @@
-import ExamDataSet
+import exam_graph.utils.exam_data_set as exam_data_set
 import pandas as pd
 import traceback
 
 def validate_columns(df:pd.DataFrame) -> None:
-    defaults = ExamDataSet.HL7Fields().get_columns()
+    defaults = exam_data_set.HL7Fields().get_columns()
     columns = list(df.columns)
     missing = []
     for col in defaults:
