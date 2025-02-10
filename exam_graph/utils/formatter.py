@@ -2,6 +2,19 @@ import pandas as pd
 from datetime import datetime, time
 import traceback
 
+# change to object to allow for changing of column names and shift times
+class Formatter:
+    
+    default_shifts = {
+        'AM': [time(7, 0), time(15, 0)],
+        'PM': [time(15, 0), time(23, 0)],
+        'NOC': [time(23, 0), time(7, 0)]
+    }
+
+    def __init__(self, shifts=default_shifts):
+        self.shifts = shifts
+        
+
 def strip_ws(df:pd.DataFrame) -> pd.DataFrame:
     print("Stripping white spaces ...", end='\n\n')
     df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
