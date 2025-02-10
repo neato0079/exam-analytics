@@ -25,7 +25,7 @@ class MockedHL7Fields:
             'OBR24': self.OBR24
         }
     
-    def get_columns(self) -> list:
+    def get_columns(self) -> dict: # returns class 'dict_values'
         return  self.get_fields().values()
     
     def rename_ORC5(self, name):
