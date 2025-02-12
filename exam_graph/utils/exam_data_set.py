@@ -49,8 +49,8 @@ class ExamDataFrame:
 class FilteredExamData:
     def __init__(self, exam_data:ExamDataFrame):
         self.exam_data = exam_data
-        self.df = pd.DataFrame(exam_data.get_df())
-        self.hl7_fields = exam_data.hl7_fields
+        self.df = pd.DataFrame(self.exam_data.get_df())
+        self.hl7_fields = self.exam_data.hl7_fields
 
 
 
