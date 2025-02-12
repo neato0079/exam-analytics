@@ -18,13 +18,13 @@ class ExamDataFrame:
         self.hl7_fields = hl7_fields
         self.df = None
         self.shifts = shifts
+        self.f_type_pd_convert_map = {'.csv': pd.read_csv}
 
     def read_file(self, fp:Path):
-        accepted_file_types = {'.csv': pd.read_csv}
         file_type = fp.suffix
-        if file_type in accepted_file_types:
+        if file_type in self.f_type_pd_convert_map:
             self.fp = fp
-            self.df = accepted_file_types[file_type](self.fp)
+            self.df:pd.DataFrame = self.f_type_pd_convert_map[file_type](self.fp)
             self.df.name = fp.stem
             print(f'Successfully read {self.fp.stem} to df',end='\n\n')
             self.df = Formatter(df=self.df, shifts=self.shifts, hl7=self.hl7_fields).format_df()
