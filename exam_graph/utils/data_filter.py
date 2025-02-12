@@ -1,10 +1,36 @@
 from exam_graph import filters
-# this will contain the selected filters for a given analysis
+from django.http import JsonResponse, HttpRequest, QueryDict
+from datetime import datetime
 
 class FilterRequest:
-    def __init__(self):
-        pass
+    def __init__(self, post_form:dict):
+        self.post_form = post_form
+        self.parse_POST(self.post_form)
+    
+    # this takes a request.POST from HttpRequest 
+    def parse_POST(self, post_form:QueryDict):
+            start_str = post_form.get('start_date')
+            end_str = post_form.get('end_date')
+            start_date = datetime.strptime(start_str, '%Y-%m-%d') if start_str else None
+            end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
 
+            self.date_range = [start_date, end_date]
+            self.metric = post_form['User_selected_metric']
+            self.modality = post_form.getlist('User_selected_modality')
+            self.period = post_form['period']
+            self.shift_view = post_form['shift_view'] if 'shift_view' in post_form else None
+            self.date_range_string = [start_str, end_str]
+
+            log_form = post_form.dict() # query obj is immutable. convert to dict
+            del log_form['csrfmiddlewaretoken'] # we don't want to see the CSRF token in the logs
+            print(f'Parsed filter form request{log_form}')
+    
+
+
+
+
+
+# this will contain the selected filters for a given analysis
 class UserFilters:
 
     # Metric function dict
@@ -66,3 +92,7 @@ class UserFilters:
 
 # validated df goes here and a filter
 # this is where we apply all the filters
+
+
+if __name__ == '__main__':
+    pass
