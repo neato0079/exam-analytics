@@ -300,7 +300,7 @@ def master_filter(df:pd.DataFrame, filters:FilterRequest):
     # handle shift view on tat
     if filters.shift_view == 'True' and filters.metric == 'tat':
 
-        return None, metric_filt(df, 'tat_shift') # returns a df not series
+        return None, metric_filt(df, 'tat_shift') # returns a series
 
     # handle shift view on totals
     if filters.shift_view == 'True':
