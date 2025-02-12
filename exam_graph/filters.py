@@ -281,7 +281,7 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, filters:FilterRequest) -> pd.Series:
+def master_filter(df:pd.DataFrame, filters:FilterRequest):
 
     # get date range
     start = filters.date_range[0]
@@ -304,12 +304,13 @@ def master_filter(df:pd.DataFrame, filters:FilterRequest) -> pd.Series:
 
     # handle shift view on totals
     if filters.shift_view == 'True':
-
-        return metric_filt(df, 'shift_ratios'), metric_filt(df,'shift_view') # returns a df not series
+        metrics_data:pd.DataFrame = metric_filt(df,'shift_view')
+        ratio_data:pd.DataFrame = metric_filt(df, 'shift_ratios')
+        return ratio_data, metrics_data  
 
     # if metric == 'shift view'
     
-    df_axes = metric_filt(df, filters.metric)
+    df_axes:pd.Series = metric_filt(df, filters.metric)
    
     return df_axes
 

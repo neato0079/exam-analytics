@@ -122,15 +122,15 @@ def filter_submission_handler(request:HttpRequest):
         try:
 
             # parse filter request
-            filter_params:FilterRequest = FilterRequest(request.POST)  # returns a class instance containing the necessary arguments for master_filter()
+            filtr:FilterRequest = FilterRequest(request.POST)  # returns a class instance containing the necessary arguments for master_filter()
 
             # df = filter_params['source_dataframe']
-            period = filter_params.period
-            modality_lst = filter_params.modalities
-            metric = filter_params.metric
-            daterange = filter_params.date_range
-            datestr = filter_params.date_range_string
-            shift_view = filter_params.shift_view
+            period = filtr.period
+            modality_lst = filtr.modalities
+            metric = filtr.metric
+            daterange = filtr.date_range
+            datestr = filtr.date_range_string
+            shift_view = filtr.shift_view
 
             # TESTING SHIFT PLOT. TOTALS ONLY
 
@@ -139,7 +139,9 @@ def filter_submission_handler(request:HttpRequest):
             summary_tables = []
 
             if shift_view:
-                ratio_data, axes_data = filters.master_filter(df, filter_params)
+                # axes_data:pd.DataFrame
+                ratio_data, axes_data = filters.master_filter(df, filtr)
+
 
                 # create shift view graph
                 general = myplot.plot_shift(axes_data,period)
@@ -150,29 +152,22 @@ def filter_submission_handler(request:HttpRequest):
                     ratio = myplot.plot_ratios(ratio_data)
                     graph_base64.append(ratio)
 
-
                 # compile summary data
-                agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
-                agg_df.columns.name = ''
-                agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
-                agg_tb = agg_df.to_html()
+                summary = DataSummary(axes_data)
 
                 # add to summary tables for html render
-                summary_tables.append(agg_tb)
+                summary_tables.append(summary.build_table())
 
             else:
-                axes_data = filters.master_filter(df, filter_params)
+                axes_data:pd.Series = filters.master_filter(df, filtr)
                 # graph without shift view
                 graph_base64 = [myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)]
 
-                # init summary json
-                summary_json = DataSummary(axes_data)
+                # build summary
+                summary = DataSummary(axes_data)
 
-                # convert to html table
-                generic_summary = json2html.convert(json = summary_json.general_summary)
-
-                # add to summary tables for html render
-                summary_tables.append(generic_summary)
+                # convert to html table and add to summary tables for html render
+                summary_tables.append(summary.build_table())
 
             stuff_for_html_render = {
                 'graphs': graph_base64,
