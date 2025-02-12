@@ -51,52 +51,6 @@ filters = {
     }
 
 }
-
-
-# take user's filter request and convert it into a dictionary compliant with our graphing function
-def parse_filter_request(request:HttpRequest) -> dict: 
-
-    if request.method == 'POST':
-
-        try:
-            # parse form request
-            client_form: dict = request.POST
-            start_str = client_form.get('start_date')
-            end_str = client_form.get('end_date')
-            start_date = datetime.strptime(start_str, '%Y-%m-%d') if start_str else None
-            end_date = datetime.strptime(end_str, '%Y-%m-%d') if end_str else None
-            metric = client_form['User_selected_metric']
-            modality = client_form.getlist('User_selected_modality')
-            period = client_form['period']
-            shift_view = None
-
-            if 'shift_view' in client_form:
-                
-                shift_view = client_form['shift_view']
-
-
-            post_req = {
-                'date_range': [start_date, end_date], 
-                'date_str': [start_str, end_str],
-                'xfilt': {
-                    'period': period,
-                    'modalities': modality
-                },
-                'User_selected_metric': metric,
-                'shift_view': shift_view
-            }
-
-            log_form = dict(client_form) # query obj is immutable. convert to dict
-            del log_form['csrfmiddlewaretoken']
-            print(f'Parsed filter form request{log_form}')
-
-            return post_req
-        
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON body"}, status=400)
-
-    else:
-        return JsonResponse({"Your GET": request.method})
     
 
 # returns shift str for a given dt
