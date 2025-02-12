@@ -14,6 +14,9 @@ from django.contrib import messages
 from decouple import config
 from json2html import *
 import json
+from exam_graph.utils.data_filter import FilterRequest
+from exam_graph.utils.summary import DataSummary
+
 
 # Paths
 CONFIG_ROOT = Path(config('CONFIG_ROOT'))
@@ -107,103 +110,70 @@ def upload_csv(request):
         return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
 
 
-def filter_submission_handler(request):
+def filter_submission_handler(request:HttpRequest):
 
-    # parsed_mocked_data = helper.build_test_master_json_df()
+    # get requested pickel server fp and convert it to a df
     pickle_fp:Path = helper.selected_pickle_fp(USER_CONFIG_FP, DATASET_DIR)
     df = helper.pickle_to_df(pickle_fp)
     print('Filtered from source:')
     print(pickle_fp)
     
+    if request.method == 'POST':
+        try:
 
-    try:
+            # set our post request to an instance of FilterRequest for parsing
+            filtr:FilterRequest = FilterRequest(request.POST)  
 
-        # parse filter request
-        filter_params: dict = helper.parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
+            if filtr.shift_view:
+                # TYPE HINT axes_data:pd.DataFrame | pd.Series
+                ratio_data, axes_data = filters.master_filter(df, filtr)
 
-        # df = filter_params['source_dataframe']
-        period = filter_params['xfilt']['period']
-        modality_lst = filter_params['xfilt']['modalities']
-        metric = filter_params['User_selected_metric']
-        daterange = filter_params['date_range']
-        datestr = filter_params['date_str']
-        shift_view = filter_params['shift_view']
+                # create shift view graph
+                graph_base64 = [myplot.plot_shift(axes_data,filtr.period)]
 
-        # TESTING SHIFT PLOT. TOTALS ONLY
+                # create ratio graph only on total metric
+                if filtr.metric == 'totals':
+                    graph_base64.append(myplot.plot_ratios(ratio_data))
 
+                # compile summary data
+                summary = DataSummary(axes_data)
 
-        # set summary tables:
-        summary_tables = []
-        
-        if shift_view:
-            ratio_data, axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
-            
-            # create shift view graph
-            general = myplot.plot_shift(axes_data,period)
-            graph_base64 = [general]
+                # add to summary tables for html render
+                summary_tables = [summary.build_table()]
 
-            # create ratio graph only on total metric
-            if metric == 'totals':
-                ratio = myplot.plot_ratios(ratio_data)
-                graph_base64.append(ratio)
-                
+            else:
+                axes_data:pd.Series = filters.master_filter(df, filtr)
+                # graph without shift view
+                graph_base64 = [myplot.gen_encoded_graph(axes_data, filtr.period, filtr.metric, filtr.modalities)]
 
-            # compile summary data
-            agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
-            agg_df.columns.name = ''
-            agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
-            agg_tb = agg_df.to_html()
+                # build summary
+                summary = DataSummary(axes_data)
 
-            # add to summary tables for html render
-            summary_tables.append(agg_tb)
+                # convert to html table and add to summary tables for html render
+                summary_tables = [(summary.build_table())]
 
-        else:
-            axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
-            # graph without shift view
-            graph_base64 = [myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)]
+            stuff_for_html_render = {
+                'graphs': graph_base64,
+                'selected_period': filtr.period,
+                'selected_modality': filtr.modalities,
+                'selected_metric': filtr.metric,
+                'start_date': filtr.date_range_string[0],
+                'end_date': filtr.date_range_string[1],
+                'shift_view': filtr.shift_view,
+                'summary': summary_tables,
+                'dataset_name': pickle_fp.stem
+            }
+    
+            return render(request, 'form.html', stuff_for_html_render)
 
-            # init summary json
-            summary_json = {}
-
-            # create analysis series
-            # desc = axes_data.describe().astype(int)
-            # desc_str = desc.to_json()
-            # desc_dict = json.loads(desc_str)
-            # summary_json.update(desc_dict)
-            agg_sr:pd.Series = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)
-            agg_sr.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
-            agg_str = agg_sr.to_json()
-            agg_dict = json.loads(agg_str)
-
-            # add data to summary_json
-            summary_json.update(agg_dict)
-
-            # convert to html table
-            generic_summary = json2html.convert(json = summary_json)
-
-            # add to summary tables for html render
-            summary_tables.append(generic_summary)
-
-        stuff_for_html_render = {
-            'graphs': graph_base64,
-            'selected_period': period,
-            'selected_modality': modality_lst,
-            'selected_metric': metric,
-            'start_date': datestr[0],
-            'end_date': datestr[1],
-            'shift_view': shift_view,
-            'summary': summary_tables,
-            'dataset_name': pickle_fp.stem
-        }
-  
-        return render(request, 'form.html', stuff_for_html_render)
-
-
-    except Exception as e:
+        except Exception as e:
             error_message = f"An error occurred: {e}"
             stack_trace = traceback.format_exc()  # Capture the full traceback
             print(stack_trace)  # Log the detailed error in the console
             return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
+    else:
+        return HttpResponse(f'That requires a post request. You sent a {request.method} request!')
+
 
 
 def load_data(request:HttpRequest):

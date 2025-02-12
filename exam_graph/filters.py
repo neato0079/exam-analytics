@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 from . import helper
+from exam_graph.utils.data_filter import FilterRequest
 
 filters = {
     'date_range': {
@@ -280,35 +281,36 @@ def metric_filt(x_filtered_df:pd.DataFrame, metric:str) -> pd.Series:
    
 
 
-def master_filter(df:pd.DataFrame, xfilt:dict, metric:str, daterange:list[datetime], filters:dict) -> pd.Series:
+def master_filter(df:pd.DataFrame, filters:FilterRequest):
 
     # get date range
-    start = daterange[0]
-    end = daterange[1]
+    start = filters.date_range[0]
+    end = filters.date_range[1]
 
     df = dt_range(df,start,end)
 
     # apply x axis value (time constraints)
-    df = period(df, xfilt['period'])
+    df = period(df, filters.period)
     print(filters)
 
     # apply modality filters if needed
-    if len(xfilt['modalities']) > 0:
-        df = mod_filt(df, xfilt['modalities'])
+    if len(filters.modalities) > 0:
+        df = mod_filt(df, filters.modalities)
 
     # handle shift view on tat
-    if filters['shift_view'] == 'True' and filters['User_selected_metric'] == 'tat':
+    if filters.shift_view == 'True' and filters.metric == 'tat':
 
-        return None, metric_filt(df, 'tat_shift') # returns a df not series
+        return None, metric_filt(df, 'tat_shift') # returns a series
 
     # handle shift view on totals
-    if filters['shift_view'] == 'True':
-
-        return metric_filt(df, 'shift_ratios'), metric_filt(df,'shift_view') # returns a df not series
+    if filters.shift_view == 'True':
+        metrics_data:pd.DataFrame = metric_filt(df,'shift_view')
+        ratio_data:pd.DataFrame = metric_filt(df, 'shift_ratios')
+        return ratio_data, metrics_data  
 
     # if metric == 'shift view'
     
-    df_axes = metric_filt(df, metric)
+    df_axes:pd.Series = metric_filt(df, filters.metric)
    
     return df_axes
 
