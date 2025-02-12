@@ -124,27 +124,22 @@ def filter_submission_handler(request:HttpRequest):
             # set our post request to an instance of FilterRequest for parsing
             filtr:FilterRequest = FilterRequest(request.POST)  
 
-            # set summary tables:
-            summary_tables = []
-
             if filtr.shift_view:
-                # axes_data:pd.DataFrame | pd.Series
+                # TYPE HINT axes_data:pd.DataFrame | pd.Series
                 ratio_data, axes_data = filters.master_filter(df, filtr)
 
                 # create shift view graph
-                general = myplot.plot_shift(axes_data,filtr.period)
-                graph_base64 = [general]
+                graph_base64 = [myplot.plot_shift(axes_data,filtr.period)]
 
                 # create ratio graph only on total metric
                 if filtr.metric == 'totals':
-                    ratio = myplot.plot_ratios(ratio_data)
-                    graph_base64.append(ratio)
+                    graph_base64.append(myplot.plot_ratios(ratio_data))
 
                 # compile summary data
                 summary = DataSummary(axes_data)
 
                 # add to summary tables for html render
-                summary_tables.append(summary.build_table())
+                summary_tables = [summary.build_table()]
 
             else:
                 axes_data:pd.Series = filters.master_filter(df, filtr)
@@ -155,7 +150,7 @@ def filter_submission_handler(request:HttpRequest):
                 summary = DataSummary(axes_data)
 
                 # convert to html table and add to summary tables for html render
-                summary_tables.append(summary.build_table())
+                summary_tables = [(summary.build_table())]
 
             stuff_for_html_render = {
                 'graphs': graph_base64,
