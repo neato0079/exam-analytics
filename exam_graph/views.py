@@ -15,6 +15,8 @@ from decouple import config
 from json2html import *
 import json
 from exam_graph.utils.data_filter import FilterRequest
+from exam_graph.utils.summary import DataSummary
+
 
 # Paths
 CONFIG_ROOT = Path(config('CONFIG_ROOT'))
@@ -164,23 +166,10 @@ def filter_submission_handler(request:HttpRequest):
                 graph_base64 = [myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)]
 
                 # init summary json
-                summary_json = {}
-
-                # create analysis series
-                # desc = axes_data.describe().astype(int)
-                # desc_str = desc.to_json()
-                # desc_dict = json.loads(desc_str)
-                # summary_json.update(desc_dict)
-                agg_sr:pd.Series = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)
-                agg_sr.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
-                agg_str = agg_sr.to_json()
-                agg_dict = json.loads(agg_str)
-
-                # add data to summary_json
-                summary_json.update(agg_dict)
+                summary_json = DataSummary(axes_data)
 
                 # convert to html table
-                generic_summary = json2html.convert(json = summary_json)
+                generic_summary = json2html.convert(json = summary_json.general_summary)
 
                 # add to summary tables for html render
                 summary_tables.append(generic_summary)
