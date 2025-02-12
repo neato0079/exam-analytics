@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpRequest, QueryDict
 from datetime import datetime
 
 class FilterRequest:
-    def __init__(self, post_form:dict):
+    def __init__(self, post_form:QueryDict):
         self.post_form = post_form
         self.parse_POST(self.post_form)
     
