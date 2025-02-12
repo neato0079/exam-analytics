@@ -14,6 +14,7 @@ from django.contrib import messages
 from decouple import config
 from json2html import *
 import json
+from exam_graph.utils.data_filter import FilterRequest
 
 # Paths
 CONFIG_ROOT = Path(config('CONFIG_ROOT'))
@@ -107,7 +108,7 @@ def upload_csv(request):
         return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
 
 
-def filter_submission_handler(request):
+def filter_submission_handler(request:HttpRequest):
 
     # parsed_mocked_data = helper.build_test_master_json_df()
     pickle_fp:Path = helper.selected_pickle_fp(USER_CONFIG_FP, DATASET_DIR)
@@ -115,95 +116,98 @@ def filter_submission_handler(request):
     print('Filtered from source:')
     print(pickle_fp)
     
+    if request.method == 'POST':
+        try:
 
-    try:
+            # parse filter request
+            filter_params:FilterRequest = FilterRequest(request.POST)  # returns a class instance containing the necessary arguments for master_filter()
 
-        # parse filter request
-        filter_params: dict = helper.parse_filter_request(request) # returns a dictionary containing the necessary arguments for master_filter()
+            # df = filter_params['source_dataframe']
+            period = filter_params.period
+            modality_lst = filter_params.modalities
+            metric = filter_params.metric
+            daterange = filter_params.date_range
+            datestr = filter_params.date_range_string
+            shift_view = filter_params.shift_view
 
-        # df = filter_params['source_dataframe']
-        period = filter_params['xfilt']['period']
-        modality_lst = filter_params['xfilt']['modalities']
-        metric = filter_params['User_selected_metric']
-        daterange = filter_params['date_range']
-        datestr = filter_params['date_str']
-        shift_view = filter_params['shift_view']
-
-        # TESTING SHIFT PLOT. TOTALS ONLY
-
-
-        # set summary tables:
-        summary_tables = []
-        
-        if shift_view:
-            ratio_data, axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
-            
-            # create shift view graph
-            general = myplot.plot_shift(axes_data,period)
-            graph_base64 = [general]
-
-            # create ratio graph only on total metric
-            if metric == 'totals':
-                ratio = myplot.plot_ratios(ratio_data)
-                graph_base64.append(ratio)
-                
-
-            # compile summary data
-            agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
-            agg_df.columns.name = ''
-            agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
-            agg_tb = agg_df.to_html()
-
-            # add to summary tables for html render
-            summary_tables.append(agg_tb)
-
-        else:
-            axes_data = filters.master_filter(df, filter_params['xfilt'], metric ,daterange, filter_params)
-            # graph without shift view
-            graph_base64 = [myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)]
-
-            # init summary json
-            summary_json = {}
-
-            # create analysis series
-            # desc = axes_data.describe().astype(int)
-            # desc_str = desc.to_json()
-            # desc_dict = json.loads(desc_str)
-            # summary_json.update(desc_dict)
-            agg_sr:pd.Series = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)
-            agg_sr.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
-            agg_str = agg_sr.to_json()
-            agg_dict = json.loads(agg_str)
-
-            # add data to summary_json
-            summary_json.update(agg_dict)
-
-            # convert to html table
-            generic_summary = json2html.convert(json = summary_json)
-
-            # add to summary tables for html render
-            summary_tables.append(generic_summary)
-
-        stuff_for_html_render = {
-            'graphs': graph_base64,
-            'selected_period': period,
-            'selected_modality': modality_lst,
-            'selected_metric': metric,
-            'start_date': datestr[0],
-            'end_date': datestr[1],
-            'shift_view': shift_view,
-            'summary': summary_tables,
-            'dataset_name': pickle_fp.stem
-        }
-  
-        return render(request, 'form.html', stuff_for_html_render)
+            # TESTING SHIFT PLOT. TOTALS ONLY
 
 
-    except Exception as e:
+            # set summary tables:
+            summary_tables = []
+
+            if shift_view:
+                ratio_data, axes_data = filters.master_filter(df, filter_params)
+
+                # create shift view graph
+                general = myplot.plot_shift(axes_data,period)
+                graph_base64 = [general]
+
+                # create ratio graph only on total metric
+                if metric == 'totals':
+                    ratio = myplot.plot_ratios(ratio_data)
+                    graph_base64.append(ratio)
+
+
+                # compile summary data
+                agg_df:pd.DataFrame = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)           
+                agg_df.columns.name = ''
+                agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
+                agg_tb = agg_df.to_html()
+
+                # add to summary tables for html render
+                summary_tables.append(agg_tb)
+
+            else:
+                axes_data = filters.master_filter(df, filter_params)
+                # graph without shift view
+                graph_base64 = [myplot.gen_encoded_graph(axes_data, period, metric, modality_lst)]
+
+                # init summary json
+                summary_json = {}
+
+                # create analysis series
+                # desc = axes_data.describe().astype(int)
+                # desc_str = desc.to_json()
+                # desc_dict = json.loads(desc_str)
+                # summary_json.update(desc_dict)
+                agg_sr:pd.Series = axes_data.aggregate(['mean', 'max', 'sum']).astype(int)
+                agg_sr.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
+                agg_str = agg_sr.to_json()
+                agg_dict = json.loads(agg_str)
+
+                # add data to summary_json
+                summary_json.update(agg_dict)
+
+                # convert to html table
+                generic_summary = json2html.convert(json = summary_json)
+
+                # add to summary tables for html render
+                summary_tables.append(generic_summary)
+
+            stuff_for_html_render = {
+                'graphs': graph_base64,
+                'selected_period': period,
+                'selected_modality': modality_lst,
+                'selected_metric': metric,
+                'start_date': datestr[0],
+                'end_date': datestr[1],
+                'shift_view': shift_view,
+                'summary': summary_tables,
+                'dataset_name': pickle_fp.stem
+            }
+    
+            return render(request, 'form.html', stuff_for_html_render)
+
+
+        except Exception as e:
             error_message = f"An error occurred: {e}"
             stack_trace = traceback.format_exc()  # Capture the full traceback
             print(stack_trace)  # Log the detailed error in the console
             return HttpResponse(f"{error_message}<br><pre>{stack_trace}</pre>", content_type="text/html")
+    else:
+        return HttpResponse(f'That requires a post request. You sent a {request.method} request!')
+
 
 
 def load_data(request:HttpRequest):
