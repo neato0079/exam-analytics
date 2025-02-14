@@ -5,15 +5,12 @@ import pandas as pd
 from exam_graph import helper
 from pathlib import Path
 from datetime import datetime, date, time
-from formatter import *
-import validator
+from .formatter import *
+from .validator import *
 
 
 
 
-    
-# csv gets ingested into this class
-# we can do validation here and df conversion
 class ExamDataFrame:
     """Contains a provided pd.DataFrame and custom methods to validate and format the data.
     
@@ -24,7 +21,8 @@ class ExamDataFrame:
     If a data frame is passed with 'df=', the self.df attribute is simply set to the provided data frame
     """
 
-    def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields(), file=None, shifts=Shifts().dict()):
+    def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields(), file=None, shifts=Shifts().dict(), upload_req=None):
+        self.upload_req=upload_req
         self.file = file
         self.hl7_fields = hl7_fields
         self.df = df
@@ -33,6 +31,8 @@ class ExamDataFrame:
 
 
     def initialize_df(self):
+        if self.upload_req:
+            self.read_upload()
         
         if self.df is None and self.file == None:
             "init empty df"
@@ -43,14 +43,30 @@ class ExamDataFrame:
         if self.file and self.df is None:
             self.read_file(self.file)
             return
+        
 
-    
+    def read_upload(self):
+        # get user uploaded file form http request
+        files = self.upload_req.keys()
+        file = next(iter(files))
+        print(file)
+        self.file_str = str(self.upload_req[file]).split('.')[0]
+        self.pickle_fn = self.file_str + ".pickle"
+        
+        csv_file = self.upload_req[file]
+        self.df = pd.read_csv(csv_file)
+        print(self.df.head())
+
+
+
+
     def read_file(self, fp:Path | bytes | str):
         file_type = fp.suffix
         f_type_pd_convert_map = {
         '.csv': pd.read_csv
         }
-        if file_type in f_type_pd_convert_map:
+
+        try:
             self.fp = fp
 
         
@@ -61,11 +77,12 @@ class ExamDataFrame:
 
             print(f'Successfully read {self.df.name} to df',end='\n\n')
 
-        else:
-            print('Cannot read file',end='\n\n')
+        except:
+            print('Cannot read file {fp}',end='\n\n')
+            print(traceback.format_exc())
 
     def validate_self(self):
-        validator.validate_df(self.df)
+        validate_df(self.df)
 
     def format_self(self):
         self.df = Formatter(df=self.df).basic_format()
