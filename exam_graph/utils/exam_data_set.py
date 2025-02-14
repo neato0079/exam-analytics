@@ -58,8 +58,6 @@ class ExamDataFrame:
         print(self.df.head())
 
 
-
-
     def read_file(self, fp:Path | bytes | str):
         file_type = fp.suffix
         f_type_pd_convert_map = {
@@ -89,14 +87,11 @@ class ExamDataFrame:
 
 
 
-
 class FilteredExamData:
     def __init__(self, exam_data:ExamDataFrame):
         self.exam_data = exam_data
         self.df = pd.DataFrame(self.exam_data.df)
         self.hl7_fields = self.exam_data.hl7_fields
-
-
 
     def period(self, period_selection:str) -> pd.DataFrame:
         # if df == None:
@@ -132,35 +127,6 @@ def main():
     my_csv = Path('/Users/mattbot/dev/big_mock_july2.csv')
     master_df = ExamDataFrame(file=my_csv)
     print(master_df.df.head())
-    # master_df.format_self()
-    # df = master_df.df
-
-    # df2 = ExamDataFrame(df=df)
-    # df2.format_self()
-    # print(df)
-    # print(df2.df)
-    # # print(master_df.file)
-
-    # print(isinstance(df, NoneType))
-    # def build_df(df=None):
-    #     if df.empty:
-    #         # some logic
-    #         return
-    #     if df == None:
-    #         # some logic
-    #         return
-
-    # filt = FilteredExamData(master_df)
-
-
-    # period_filtered= filt.period('Week')
-
-
-    # test 
-    # create custom HL7 and build df with ExamDataFrame to emulate a user uploading a csv with differently formatted column names
-
-
-
 
 
 
