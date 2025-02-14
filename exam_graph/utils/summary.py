@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 from json2html import *
+from typing import TypeAlias
 
 
 class DataSummary:
@@ -27,8 +28,8 @@ class DataSummary:
             agg_df.rename(index={'mean':'Avg', 'sum': 'Total'}, inplace=True)
             return agg_df
 
-
-    def build_table(self):
+    HtmlTable: TypeAlias = str
+    def build_table(self) -> HtmlTable:
         if isinstance(self.axes_data, pd.Series):
             return json2html.convert(json = self.build_summary_data())
         if isinstance(self.axes_data, pd.DataFrame):

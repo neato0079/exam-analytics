@@ -1,6 +1,9 @@
 # aka API handler i guess??
 # the urls.py from this same directory "handles" the client's url requests by calling functions from this file
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpRequest
 import pandas as pd
@@ -16,6 +19,7 @@ from json2html import *
 import json
 from exam_graph.utils.data_filter import FilterRequest
 from exam_graph.utils.summary import DataSummary
+from exam_graph.utils.exam_data_set import ExamDataFrame
 
 
 # Paths
@@ -59,28 +63,30 @@ def test(request):
 # upload csv file to server disk as pickle
 def upload_csv(request):
 
+    # convert upload file to df
     try:
         # get user uploaded file form http request
         files = request.FILES.keys()
-        file = next(iter(files))
 
+        # ingest file into class
         # check if its a cvs file
-        file_prefx = str(request.FILES[file]).split('.')[-1]
-        print(f'requested file upload type: .{file_prefx}')
-        if file_prefx != 'csv':
-            print('not a csv')
-            messages.error(request, 'Upload ".csv" files only please! I am still just a baby app!')
+        try:
+            exam_data_master = ExamDataFrame(upload_req=request.FILES)
+            df = exam_data_master.df
 
+        except Exception as e:
+            messages.error(request, 'Upload ".csv" files only please! I am still just a baby app!')
+            stack_trace = traceback.format_exc()  # Capture the full traceback
+            print(stack_trace)  # Log the detailed error in the console
             return redirect('/')
 
-        file_str = str(request.FILES[file]).split('.')[0]
-        pickle_fn = file_str + ".pickle"
-        csv_file = request.FILES[file]
-
-        # Read CSV into a DataFrame
-        df = pd.read_csv(csv_file)
-
+        # TODO:
         # Check if the data is formatted correctly
+        # try:
+        #   exam_data_master.format_self
+        #   df = exam_data_master.df
+
+        # Check if the df is formatted correctly
         try:
             # Format data for filters
             df = helper.format_df(df)
@@ -92,15 +98,16 @@ def upload_csv(request):
 
             return redirect('/')
 
+    # save pickle
         # set full config path user's new pickle
-        pickle_fp = DATASET_DIR / pickle_fn
+        pickle_fp = DATASET_DIR / exam_data_master.pickle_fn
 
         # update user_config.json with name of newly uploaded dataset
         helper.build_usr_config(pickle_fp, USER_CONFIG_FP)
 
         # Store df as pickle on disk
         helper.save_pickle(df, pickle_fp)
-        messages.info(request, f'{file_str} uploaded!')
+        messages.info(request, f'{exam_data_master.file_str} uploaded!')
         return redirect('/')
         
     except Exception as e:
@@ -127,6 +134,11 @@ def filter_submission_handler(request:HttpRequest):
             if filtr.shift_view:
                 # TYPE HINT axes_data:pd.DataFrame | pd.Series
                 ratio_data, axes_data = filters.master_filter(df, filtr)
+                if axes_data.empty:
+                    messages.error(request, 'No data was found with those filters!')
+                    stack_trace = traceback.format_exc()  # Capture the full traceback
+                    print(stack_trace)  # Log the detailed error in the console
+                    return redirect('formyayay')
 
                 # create shift view graph
                 graph_base64 = [myplot.plot_shift(axes_data,filtr.period)]
@@ -143,6 +155,12 @@ def filter_submission_handler(request:HttpRequest):
 
             else:
                 axes_data:pd.Series = filters.master_filter(df, filtr)
+                if axes_data.empty:
+                    messages.error(request, 'No data was found with those filters!')
+                    stack_trace = traceback.format_exc()  # Capture the full traceback
+                    print(stack_trace)  # Log the detailed error in the console
+                    return redirect('formyayay')
+                    
                 # graph without shift view
                 graph_base64 = [myplot.gen_encoded_graph(axes_data, filtr.period, filtr.metric, filtr.modalities)]
 

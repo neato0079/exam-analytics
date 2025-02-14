@@ -3,6 +3,23 @@ from django.http import JsonResponse, HttpRequest, QueryDict
 from datetime import datetime
 
 class FilterRequest:
+    """
+    Takes a Django QueryDict and parses it on class initiation.
+    After parsing, the class instance contains the following attributes with which to apply to a Pandas DataFrame:
+
+    date_range:list[datetime | None]
+
+    metric:str
+
+    modalities:list[str]
+
+    period
+
+    shift_view: str | None
+
+    date_range_string:list[str | None]
+    """
+
     def __init__(self, post_form:QueryDict):
         self.post_form = post_form
         self.parse_POST(self.post_form)
@@ -25,10 +42,21 @@ class FilterRequest:
             del log_form['csrfmiddlewaretoken'] # we don't want to see the CSRF token in the logs
             print(f'Parsed filter form request{log_form}')
     
-    def get_x_filts(self):
+    def top_lvl_filters(self):
         return {
                 'period': self.period,
-                'modalities': self.modalities
+                'date_range': self.date_range
+                }
+    
+    def attribute_focus(self):
+        # this can tell us what the x axis is
+        # Think of it like this. With every filter request this is what we are doing to our dataset:
+        # For <date_range> provide a <metric> for all rows grouped by a unique <focus>
+        # So for our default totals analysis we ask:
+        # For <date_range> provide a <total> for all rows grouped by a unique <period>
+        return {
+                'shift_view': self.shift_view,
+                'date_range': self.date_range
                 }
 
 

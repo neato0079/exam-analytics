@@ -161,12 +161,16 @@ class BuildData:
         print(f'Successfully saved file @ {fp}!!!')
 
 def main():
-    start = '08/01/2024'
+    # start = '08/01/2024'
 
-    end = '08/03/2024'
-    time_rng = [start, end]
-    df = BuildData(datast_len=100)
-    df.save_df_as_mock_csv('OOP_test2')
+    # end = '08/03/2024'
+    # time_rng = [start, end]
+    # df = BuildData(datast_len=100)
+    # df.save_df_as_mock_csv('OOP_test2')
+    fields = MockedHL7Fields()
+    print(fields.get_columns())
+    fields.OBR22_1='Final'
+    print(fields.get_columns())
 
     # TODO: figure out a better way to organize this
 
