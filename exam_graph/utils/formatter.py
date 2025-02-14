@@ -36,6 +36,24 @@ class HL7Fields:
     def show_default_fields(cls) -> list:
         return  list(cls().get_fields().values())
     
+    
+    # use this method to set new hl7 field names if the relevant df has slightly different column names
+    def adapt(self, df:pd.DataFrame):
+        att_keywords = {
+            'complete': 'order_complete_dt' 
+        }
+        # adapt self attr to respective df column names
+
+        for col_nm in df.columns:
+            for word in col_nm:
+                if word not in att_keywords.keys():
+                    continue
+                for keyw in att_keywords.keys():
+                    if word == keyw:
+                        self[att_keywords[keyw]] = col_nm
+                        continue
+
+    
 
 class Shifts:
     def __init__(self):
@@ -98,7 +116,7 @@ class Formatter:
             print("Setting Modalities...",end='\n\n')
             print(self.df[self.hl7.modality].head(),end='\n\n')
 
-    def format_df(self, df:pd.DataFrame=None) -> pd.DataFrame:
+    def basic_format(self, df:pd.DataFrame=None) -> pd.DataFrame:
         if df == None:
             df = self.df 
         # df = df.apply(lambda x: convert_dt(x))
@@ -189,3 +207,9 @@ def format_df(df:pd.DataFrame):
         print(stack_trace)  # Log the detailed error in the console
 
     return df
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
