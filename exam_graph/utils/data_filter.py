@@ -13,7 +13,7 @@ class FilterRequest:
 
     modalities:list[str]
 
-    period
+    period:str
 
     shift_view: str | None
 
@@ -25,7 +25,7 @@ class FilterRequest:
         self.parse_POST(self.post_form)
     
     # this takes a request.POST from HttpRequest 
-    def parse_POST(self, post_form:QueryDict):
+    def parse_POST(self, post_form:QueryDict) -> None:
             start_str = post_form.get('start_date')
             end_str = post_form.get('end_date')
             start_date = datetime.strptime(start_str, '%Y-%m-%d') if start_str else None
@@ -34,7 +34,7 @@ class FilterRequest:
             self.date_range:list[datetime | None] = [start_date, end_date]
             self.metric:str = post_form['User_selected_metric']
             self.modalities:list[str] = post_form.getlist('User_selected_modality')
-            self.period = post_form['period']
+            self.period:str = post_form['period']
             self.shift_view: str | None = post_form['shift_view'] if 'shift_view' in post_form else None
             self.date_range_string:list[str | None] = [start_str, end_str]
 
@@ -51,9 +51,10 @@ class FilterRequest:
     def attribute_focus(self):
         # this can tell us what the x axis is
         # Think of it like this. With every filter request this is what we are doing to our dataset:
-        # For <date_range> provide a <metric> for all rows grouped by a unique <focus>
+        # For <date_range> provide a <metric> for <thing we are measuring> grouped by a unique <focus>
         # So for our default totals analysis we ask:
-        # For <date_range> provide a <total> for all rows grouped by a unique <period>
+        # For <date_range> provide a <total> for <exams> grouped by a unique <period>
+        # For <date_range> provide a <mean> for <tat> grouped by a unique <period>
         return {
                 'shift_view': self.shift_view,
                 'date_range': self.date_range

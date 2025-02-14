@@ -14,22 +14,12 @@ from . import myplot
 from pathlib import Path
 import pickle
 from django.contrib import messages
-from decouple import config
 from json2html import *
 import json
 from exam_graph.utils.data_filter import FilterRequest
 from exam_graph.utils.summary import DataSummary
 from exam_graph.utils.exam_data_set import ExamDataFrame
-
-
-# Paths
-CONFIG_ROOT = Path(config('CONFIG_ROOT'))
-USER_PROP = Path(config('USER_PROP'))
-DATASETS = Path(config('DATASETS'))
-USER_CONFIG_FN = Path(config('USER_CONFIG_FP'))
-USER_PROP_DIR = CONFIG_ROOT / USER_PROP
-DATASET_DIR = CONFIG_ROOT / USER_PROP / DATASETS
-USER_CONFIG_FP = USER_PROP_DIR / USER_CONFIG_FN
+from exam_graph.utils.global_paths import *
 
 # Create your views here.
 def home(request:HttpRequest):
