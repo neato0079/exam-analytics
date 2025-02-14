@@ -35,23 +35,23 @@ def home(request:HttpRequest):
     return render(request, 'index.html', {'files': files, 'user': user})
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
-def form_page(request):
+def form_page(request:HttpRequest):
     return render(request, 'form.html', {'graph': 'graph_file_path'})
 
-def help(request):
+def help(request:HttpRequest):
     return render(request, 'help.html')
 
-def display_mock_csv(request):
+def display_mock_csv(request:HttpRequest):
     df = helper.build_test_master_json_df()
     graph = df.to_html()
     return render(request, 'test_template.html', {'graph': graph})
 
-def test(request):
+def test(request:HttpRequest):
     file_name = request.GET['file'] + '.pickle'
     return JsonResponse({'Your Selection': f"File: {file_name}"}, status=200)
 
 # upload csv file to server disk as pickle
-def upload_csv(request):
+def upload_csv(request:HttpRequest):
 
     # convert upload file to df
     try:
