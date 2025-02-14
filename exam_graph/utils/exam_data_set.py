@@ -46,6 +46,11 @@ class ExamDataFrame:
         
 
     def read_upload(self):
+        """
+        Takes a Django HttpRequest.FILES and attempts to read it into a pd.DataFrame
+
+        The resulting dataframe is set to self.df
+        """
         # get user uploaded file form http request
         files = self.upload_req.keys()
         file = next(iter(files))
@@ -59,6 +64,9 @@ class ExamDataFrame:
 
 
     def read_file(self, fp:Path | bytes | str):
+        """
+        Reads a file path to a pd.Dataframe
+        """
         file_type = fp.suffix
         f_type_pd_convert_map = {
         '.csv': pd.read_csv
