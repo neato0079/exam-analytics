@@ -14,22 +14,12 @@ from . import myplot
 from pathlib import Path
 import pickle
 from django.contrib import messages
-from decouple import config
 from json2html import *
 import json
 from exam_graph.utils.data_filter import FilterRequest
 from exam_graph.utils.summary import DataSummary
 from exam_graph.utils.exam_data_set import ExamDataFrame
-
-
-# Paths
-CONFIG_ROOT = Path(config('CONFIG_ROOT'))
-USER_PROP = Path(config('USER_PROP'))
-DATASETS = Path(config('DATASETS'))
-USER_CONFIG_FN = Path(config('USER_CONFIG_FP'))
-USER_PROP_DIR = CONFIG_ROOT / USER_PROP
-DATASET_DIR = CONFIG_ROOT / USER_PROP / DATASETS
-USER_CONFIG_FP = USER_PROP_DIR / USER_CONFIG_FN
+from exam_graph.utils.global_paths import *
 
 # Create your views here.
 def home(request:HttpRequest):
@@ -45,23 +35,18 @@ def home(request:HttpRequest):
     return render(request, 'index.html', {'files': files, 'user': user})
     # return HttpResponse('<h1>asdfasdfasdfasdf</h1>')
 
-def form_page(request):
+def form_page(request:HttpRequest):
     return render(request, 'form.html', {'graph': 'graph_file_path'})
 
-def help(request):
+def help(request:HttpRequest):
     return render(request, 'help.html')
 
-def display_mock_csv(request):
-    df = helper.build_test_master_json_df()
-    graph = df.to_html()
-    return render(request, 'test_template.html', {'graph': graph})
-
-def test(request):
+def test(request:HttpRequest):
     file_name = request.GET['file'] + '.pickle'
     return JsonResponse({'Your Selection': f"File: {file_name}"}, status=200)
 
 # upload csv file to server disk as pickle
-def upload_csv(request):
+def upload_csv(request:HttpRequest):
 
     # convert upload file to df
     try:
@@ -93,7 +78,7 @@ def upload_csv(request):
         except Exception as e:
             error_message = f'Unable to format data: {e}'
             stack_trace = traceback.format_exc()  # Capture the full traceback
-            print(stack_trace)  # Log the detailed error in the console
+            print(stack_trace)  
             messages.error(request, "Cannot parse file. Check the help page to make sure your .csv file is in the correct format.")
 
             return redirect('/')
