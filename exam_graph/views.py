@@ -63,10 +63,10 @@ def test(request):
 # upload csv file to server disk as pickle
 def upload_csv(request):
 
+    # convert upload file to df
     try:
         # get user uploaded file form http request
         files = request.FILES.keys()
-        file = request.FILES[next(iter(files))]
 
         # ingest file into class
         # check if its a cvs file
@@ -74,26 +74,19 @@ def upload_csv(request):
             exam_data_master = ExamDataFrame(upload_req=request.FILES)
             df = exam_data_master.df
 
-        # file_prefx = str(request.FILES[file]).split('.')[-1]
-        # print(f'requested file upload type: .{file_prefx}')
         except Exception as e:
             messages.error(request, 'Upload ".csv" files only please! I am still just a baby app!')
             stack_trace = traceback.format_exc()  # Capture the full traceback
             print(stack_trace)  # Log the detailed error in the console
             return redirect('/')
 
-
-    # sample code for how ingestion will work with classes
-    # get user uploaded file form http request
-    # files = request.FILES.keys()
-    # file = request.FILES[next(iter(files))]
-    # exam_data_master = ExamDataFrame().read_file(file)
-    # Check if the data is formatted correctly
-    # try:
-    #   exam_data_master.format_self
-    #   df = exam_data_master.df
-
+        # TODO:
         # Check if the data is formatted correctly
+        # try:
+        #   exam_data_master.format_self
+        #   df = exam_data_master.df
+
+        # Check if the df is formatted correctly
         try:
             # Format data for filters
             df = helper.format_df(df)
@@ -105,6 +98,7 @@ def upload_csv(request):
 
             return redirect('/')
 
+    # save pickle
         # set full config path user's new pickle
         pickle_fp = DATASET_DIR / exam_data_master.pickle_fn
 
@@ -140,6 +134,11 @@ def filter_submission_handler(request:HttpRequest):
             if filtr.shift_view:
                 # TYPE HINT axes_data:pd.DataFrame | pd.Series
                 ratio_data, axes_data = filters.master_filter(df, filtr)
+                if axes_data.empty:
+                    messages.error(request, 'No data was found with those filters!')
+                    stack_trace = traceback.format_exc()  # Capture the full traceback
+                    print(stack_trace)  # Log the detailed error in the console
+                    return redirect('formyayay')
 
                 # create shift view graph
                 graph_base64 = [myplot.plot_shift(axes_data,filtr.period)]
@@ -156,6 +155,12 @@ def filter_submission_handler(request:HttpRequest):
 
             else:
                 axes_data:pd.Series = filters.master_filter(df, filtr)
+                if axes_data.empty:
+                    messages.error(request, 'No data was found with those filters!')
+                    stack_trace = traceback.format_exc()  # Capture the full traceback
+                    print(stack_trace)  # Log the detailed error in the console
+                    return redirect('formyayay')
+                    
                 # graph without shift view
                 graph_base64 = [myplot.gen_encoded_graph(axes_data, filtr.period, filtr.metric, filtr.modalities)]
 
