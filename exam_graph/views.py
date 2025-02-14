@@ -80,6 +80,16 @@ def upload_csv(request):
         # Read CSV into a DataFrame
         df = pd.read_csv(csv_file)
 
+    # sample code for how ingestion will work with classes
+    # get user uploaded file form http request
+    # files = request.FILES.keys()
+    # file = request.FILES[next(iter(files))]
+    # exam_data_master = ExamDataFrame().read_file(file)
+    # Check if the data is formatted correctly
+    # try:
+    #   exam_data_master.format_self
+    #   df = exam_data_master.df
+
         # Check if the data is formatted correctly
         try:
             # Format data for filters
