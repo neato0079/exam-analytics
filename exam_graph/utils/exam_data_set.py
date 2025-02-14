@@ -19,9 +19,9 @@ class ExamDataFrame:
     
     On initialization, if nothing is passed, an empty DataFrame is created at self.df with the provided columns from the hl7_fields arg. 
 
-    If a file is passed, the file is read and then set to the self.df attribute
+    If a file is passed with arg 'file=', the file is read and then set to the self.df attribute
 
-    If a data frame is passed, the self.df attribute is simply set to the provided data frame
+    If a data frame is passed with 'df=', the self.df attribute is simply set to the provided data frame
     """
 
     def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields(), file=None, shifts=Shifts().dict()):
@@ -33,12 +33,14 @@ class ExamDataFrame:
 
 
     def initialize_df(self):
-        if self.df == None and self.file == None:
+        
+        if self.df is None and self.file == None:
             "init empty df"
             columns = self.hl7_fields.get_columns()
             self.df = pd.DataFrame(columns=columns)
             return
-        if self.file and self.df == None:
+        
+        if self.file and self.df is None:
             self.read_file(self.file)
             return
 
@@ -111,13 +113,25 @@ class FilteredExamData:
 def main():
     """is tis a doc"""
     my_csv = Path('/Users/mattbot/dev/big_mock_july2.csv')
-    master_df = ExamDataFrame()
-    master_df.format_self()
+    master_df = ExamDataFrame(file=my_csv)
+    print(master_df.df.head())
+    # master_df.format_self()
+    # df = master_df.df
 
-    df = master_df.df
-    # print(master_df.file)
+    # df2 = ExamDataFrame(df=df)
+    # df2.format_self()
+    # print(df)
+    # print(df2.df)
+    # # print(master_df.file)
 
-    print(df)
+    # print(isinstance(df, NoneType))
+    # def build_df(df=None):
+    #     if df.empty:
+    #         # some logic
+    #         return
+    #     if df == None:
+    #         # some logic
+    #         return
 
     # filt = FilteredExamData(master_df)
 

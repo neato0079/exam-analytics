@@ -118,13 +118,13 @@ class Formatter:
             print(self.df[self.hl7.modality].head(),end='\n\n')
 
     def basic_format(self, df:pd.DataFrame=None) -> pd.DataFrame:
-        if self.df.empty:
-            print('No data frame to format')
-            return self.df
-        if df == None:
+        # if self.df.empty:
+        #     print('No data frame to format')
+        #     return df
+        if df is None:
             df = self.df 
         # df = df.apply(lambda x: convert_dt(x))
-        print(f'Formatting {df.name} ...',end='\n\n')
+        # print(f'Formatting {df.name} ...',end='\n\n')
         formatters = [
             strip_ws,
             set_dt_columns,
@@ -135,7 +135,7 @@ class Formatter:
             try:
                 formatter(df)
 
-                print(f'DataFrame "{df.name}" successfully formatted with {formatter.__name__}!', end='\n\n')
+                # print(f'DataFrame "{df.name}" successfully formatted with {formatter.__name__}!', end='\n\n')
             except Exception as e:
                 error_message = f'Unable to format data: {e}'
                 stack_trace = traceback.format_exc()  # Capture the full traceback
