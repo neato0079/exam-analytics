@@ -25,10 +25,21 @@ class FilterRequest:
             del log_form['csrfmiddlewaretoken'] # we don't want to see the CSRF token in the logs
             print(f'Parsed filter form request{log_form}')
     
-    def get_x_filts(self):
+    def top_lvl_filters(self):
         return {
                 'period': self.period,
-                'modalities': self.modalities
+                'date_range': self.date_range
+                }
+    
+    def attribute_focus(self):
+        # this can tell us what the x axis is
+        # Think of it like this. With every filter request this is what we are doing to our dataset:
+        # For <date_range> provide a <metric> for all rows grouped by a unique <focus>
+        # So for our default totals analysis we ask:
+        # For <date_range> provide a <total> for all rows grouped by a unique <period>
+        return {
+                'shift_view': self.shift_view,
+                'date_range': self.date_range
                 }
 
 
