@@ -69,7 +69,8 @@ class ExamDataFrame:
         """
         file_type = fp.suffix
         f_type_pd_convert_map = {
-        '.csv': pd.read_csv
+        '.csv': pd.read_csv,
+        '.pickle': pd.read_pickle
         }
 
         try:

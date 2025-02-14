@@ -41,11 +41,6 @@ def form_page(request:HttpRequest):
 def help(request:HttpRequest):
     return render(request, 'help.html')
 
-def display_mock_csv(request:HttpRequest):
-    df = helper.build_test_master_json_df()
-    graph = df.to_html()
-    return render(request, 'test_template.html', {'graph': graph})
-
 def test(request:HttpRequest):
     file_name = request.GET['file'] + '.pickle'
     return JsonResponse({'Your Selection': f"File: {file_name}"}, status=200)
@@ -83,7 +78,7 @@ def upload_csv(request:HttpRequest):
         except Exception as e:
             error_message = f'Unable to format data: {e}'
             stack_trace = traceback.format_exc()  # Capture the full traceback
-            print(stack_trace)  # Log the detailed error in the console
+            print(stack_trace)  
             messages.error(request, "Cannot parse file. Check the help page to make sure your .csv file is in the correct format.")
 
             return redirect('/')
