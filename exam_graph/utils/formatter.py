@@ -77,6 +77,7 @@ class Formatter:
         return 'Pass a new shift object to change the defualt shift times. Example:\n\n {default_shifts}'
 
     def strip_ws(self) -> pd.DataFrame:
+        strip_ws.__str__ = 'strip_ws()'
         print("Stripping white spaces ...", end='\n\n')
         self.df.apply(lambda col: col.str.strip() if col.dtype == "object" else col)
         return self.df
@@ -117,25 +118,28 @@ class Formatter:
             print(self.df[self.hl7.modality].head(),end='\n\n')
 
     def basic_format(self, df:pd.DataFrame=None) -> pd.DataFrame:
+        if self.df.empty:
+            print('No data frame to format')
+            return self.df
         if df == None:
             df = self.df 
         # df = df.apply(lambda x: convert_dt(x))
         print(f'Formatting {df.name} ...',end='\n\n')
-        try:
-            formatters = [
-                strip_ws,
-                set_dt_columns,
-                set_shift,
-                set_modality_col,
-            ]
-            for formatter in formatters:
+        formatters = [
+            strip_ws,
+            set_dt_columns,
+            set_shift,
+            set_modality_col,
+        ]
+        for formatter in formatters:
+            try:
                 formatter(df)
 
-            print(f'{df.name} successfully formatted!', end='\n\n')
-        except Exception as e:
-            error_message = f'Unable to format data: {e}'
-            stack_trace = traceback.format_exc()  # Capture the full traceback
-            print(stack_trace)  # Log the detailed error in the console
+                print(f'DataFrame "{df.name}" successfully formatted with {formatter.__name__}!', end='\n\n')
+            except Exception as e:
+                error_message = f'Unable to format data: {e}'
+                stack_trace = traceback.format_exc()  # Capture the full traceback
+                print(stack_trace)  # Log the detailed error in the console
 
         return df
         

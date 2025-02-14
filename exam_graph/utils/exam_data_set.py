@@ -10,24 +10,55 @@ import validator
 
 
 
+
     
 # csv gets ingested into this class
 # we can do validation here and df conversion
 class ExamDataFrame:
-    def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields(), shifts=Shifts().dict()):
-        self.hl7_fields = hl7_fields
-        self.df = None
-        self.shifts = shifts
-        self.f_type_pd_convert_map = {'.csv': pd.read_csv}
+    """Contains a provided pd.DataFrame and custom methods to validate and format the data.
+    
+    On initialization, if nothing is passed, an empty DataFrame is created at self.df with the provided columns from the hl7_fields arg. 
 
-    def read_file(self, fp:Path):
+    If a file is passed, the file is read and then set to the self.df attribute
+
+    If a data frame is passed, the self.df attribute is simply set to the provided data frame
+    """
+
+    def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields(), file=None, shifts=Shifts().dict()):
+        self.file = file
+        self.hl7_fields = hl7_fields
+        self.df = df
+        self.shifts = shifts
+        self.initialize_df()
+
+
+    def initialize_df(self):
+        if self.df == None and self.file == None:
+            "init empty df"
+            columns = self.hl7_fields.get_columns()
+            self.df = pd.DataFrame(columns=columns)
+            return
+        if self.file and self.df == None:
+            self.read_file(self.file)
+            return
+
+    
+    def read_file(self, fp:Path | bytes | str):
         file_type = fp.suffix
-        if file_type in self.f_type_pd_convert_map:
+        f_type_pd_convert_map = {
+        '.csv': pd.read_csv
+        }
+        if file_type in f_type_pd_convert_map:
             self.fp = fp
-            self.df:pd.DataFrame = self.f_type_pd_convert_map[file_type](self.fp)
+
+        
+            # read into pd.Dataframe with appropriate pd conversion method
+            self.df:pd.DataFrame = f_type_pd_convert_map[file_type](self.fp)
+
             self.df.name = fp.stem
-            print(f'Successfully read {self.fp.stem} to df',end='\n\n')
-            self.df = Formatter(df=self.df, shifts=self.shifts, hl7=self.hl7_fields).basic_format()
+
+            print(f'Successfully read {self.df.name} to df',end='\n\n')
+
         else:
             print('Cannot read file',end='\n\n')
 
@@ -35,21 +66,15 @@ class ExamDataFrame:
         validator.validate_df(self.df)
 
     def format_self(self):
-        self.df = Formatter.basic_format(self.df)
+        self.df = Formatter(df=self.df).basic_format()
 
-    def df_type(self):
-        return type(self.df)
-
-
-    def get_df(self) -> pd.DataFrame:
-        return self.df
 
 
 
 class FilteredExamData:
     def __init__(self, exam_data:ExamDataFrame):
         self.exam_data = exam_data
-        self.df = pd.DataFrame(self.exam_data.get_df())
+        self.df = pd.DataFrame(self.exam_data.df)
         self.hl7_fields = self.exam_data.hl7_fields
 
 
@@ -84,34 +109,27 @@ class FilteredExamData:
 
 
 def main():
+    """is tis a doc"""
     my_csv = Path('/Users/mattbot/dev/big_mock_july2.csv')
     master_df = ExamDataFrame()
-    master_df.read_file(my_csv)
-    df = master_df.get_df()
+    master_df.format_self()
 
-    print(df.head())
+    df = master_df.df
+    # print(master_df.file)
 
-    filt = FilteredExamData(master_df)
+    print(df)
 
-
-    period_filtered= filt.period('Week')
-    print(period_filtered.head())
-    # filt = filt.period('Week').head()
-    # print(filt.head())
-    # df['Modality'] = 1
-
-    # master_df.validate_columns()
-    # str_dt = '2024-09-14T14:15:00'
-    # a = date.fromisoformat(str_dt)
+    # filt = FilteredExamData(master_df)
 
 
-    # df['Exam Order Date/Time'] = pd.to_datetime(df['Exam Order Date/Time'] )
-    # master_df.validate_self()
-    print(df.head())
-    # shi = Shifts()
-    # print(shi.dict())
-    # shi.EX = [time(17, 0), time(1, 0)]
-    # print(shi.dict())
+    # period_filtered= filt.period('Week')
+
+
+    # test 
+    # create custom HL7 and build df with ExamDataFrame to emulate a user uploading a csv with differently formatted column names
+
+
+
 
 
 
