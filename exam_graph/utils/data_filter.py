@@ -3,6 +3,23 @@ from django.http import JsonResponse, HttpRequest, QueryDict
 from datetime import datetime
 
 class FilterRequest:
+    """
+    Takes a Django QueryDict and parses it on class initiation.
+    After parsing, the class instance contains the following attributes with which to apply to a Pandas DataFrame:
+
+    date_range:list[datetime | None]
+
+    metric:str
+
+    modalities:list[str]
+
+    period
+
+    shift_view: str | None
+
+    date_range_string:list[str | None]
+    """
+
     def __init__(self, post_form:QueryDict):
         self.post_form = post_form
         self.parse_POST(self.post_form)
