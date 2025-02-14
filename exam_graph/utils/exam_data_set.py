@@ -27,7 +27,7 @@ class ExamDataFrame:
             self.df:pd.DataFrame = self.f_type_pd_convert_map[file_type](self.fp)
             self.df.name = fp.stem
             print(f'Successfully read {self.fp.stem} to df',end='\n\n')
-            self.df = Formatter(df=self.df, shifts=self.shifts, hl7=self.hl7_fields).format_df()
+            self.df = Formatter(df=self.df, shifts=self.shifts, hl7=self.hl7_fields).basic_format()
         else:
             print('Cannot read file',end='\n\n')
 
@@ -35,7 +35,7 @@ class ExamDataFrame:
         validator.validate_df(self.df)
 
     def format_self(self):
-        self.df = Formatter.format_df(self.df)
+        self.df = Formatter.basic_format(self.df)
 
     def df_type(self):
         return type(self.df)
