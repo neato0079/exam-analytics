@@ -307,42 +307,57 @@ def create_price_tbl(base_price:int) -> pd.DataFrame:
     # df.reset_index(names='Render')
     return df
 
-def inc_drw_size(df:pd.DataFrame, incr_perc):
+def inc_drw_size(df:pd.DataFrame, incr, i=0):
     inc_i = 0   
-    prev = df.iat[0,0]
+    prev = df.iat[i,0]
     for col in df.columns:
-        prev = round(prev * incr_perc[inc_i])
+        prev = round(round(prev * incr[inc_i]) / 5) * 5 # round to the nearest 5th 
         df.loc['Sketch', col] = int(prev)
         inc_i += 1
 
     return df
 
-def inc_detail(df:pd.DataFrame, col, incr):
+def init_detail(df:pd.DataFrame, incr:list[int], col:str):
 
     inc_i = 0
     
     prev = df.loc[df.index[0], col]
+    # print("asdfasdf" + str(prev))
     for i in df.index:
-        prev += incr[inc_i]
-        df.loc[i, col] = int(prev)
+        prev = round(round(prev * incr[inc_i]) / 5) * 5 # round to the nearest 5th 
+        df.loc[i, col] = prev
         inc_i += 1
 
     return df
 
+# def inc_detail(df:pd.DataFrame, col, incr):
+
+#     inc_i = 0
+    
+#     prev = df.loc[df.index[0], col]
+#     for i in df.index:
+#         prev += incr[inc_i]
+#         df.loc[i, col] = int(prev)
+#         inc_i += 1
+
+#     return df
+
 
     
-incr_perc = [1, 1.33,1.25,1.5]
-incr = [0,30,15,10,15,35]
+size_incr = [1, 1.25,1.25,1.5]
+detail_incr = [1, 1.75, 1.25, 1.33, 1.5, 1.5]
 
 # initalize price sheet with base price
 df = create_price_tbl(30)
-print(df)
+# init increase prices by draw size
+inc_drw_size(df, size_incr)
 
-# percentage increase prices by draw size
-inc_drw_size(df, incr_perc)
-print(df)
+# # init prices by detail
+# init_detail(df, detail_incr)
 
-# flat increase prices by detail
+
+# increase detail prices using illustration sketch size as base
 for col in df.columns:
-    inc_detail(df, col, incr)
+    print(col)
+    init_detail(df, detail_incr, col)
 print(df)
