@@ -293,8 +293,56 @@ def mkdf():
     df = pd.DataFrame(columns=columns)
     return df
 
-df = mkdf()
-dates= gen_start_times(3, [start, end])
-df['Exam Order Date/Time'] = dates
-plot_shift((df))
+# df = mkdf()
+# dates= gen_start_times(3, [start, end])
+# df['Exam Order Date/Time'] = dates
+# plot_shift((df))
+# print(df)
+
+def create_price_tbl(base_price:int) -> pd.DataFrame:
+    c = ['Headshot', 'Bust', 'Half Figure', 'Full Figure']
+    r = ['Sketch', 'Lineart', 'B&W Flat','B&W Two-Tone', 'Flat Color', 'Two-Tone Color']
+    df = pd.DataFrame(index=r, columns=c)
+    df.loc['Sketch', 'Headshot'] = base_price
+    # df.reset_index(names='Render')
+    return df
+
+def inc_drw_size(df:pd.DataFrame, incr_perc):
+    inc_i = 0   
+    prev = df.iat[0,0]
+    for col in df.columns:
+        prev = round(prev * incr_perc[inc_i])
+        df.loc['Sketch', col] = int(prev)
+        inc_i += 1
+
+    return df
+
+def inc_detail(df:pd.DataFrame, col, incr):
+
+    inc_i = 0
+    
+    prev = df.loc[df.index[0], col]
+    for i in df.index:
+        prev += incr[inc_i]
+        df.loc[i, col] = int(prev)
+        inc_i += 1
+
+    return df
+
+
+    
+incr_perc = [1, 1.33,1.25,1.5]
+incr = [0,30,15,10,15,35]
+
+# initalize price sheet with base price
+df = create_price_tbl(30)
+print(df)
+
+# percentage increase prices by draw size
+inc_drw_size(df, incr_perc)
+print(df)
+
+# flat increase prices by detail
+for col in df.columns:
+    inc_detail(df, col, incr)
 print(df)
