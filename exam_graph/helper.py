@@ -278,7 +278,7 @@ def get_user(request):
         user = None
         return user
     
-def log_func(func):
+def test_decorator(func):
     def wrapper(*args, **kwargs):
         print('\n\n')
         print(f'Calling function: {func.__name__}. . . ')
@@ -303,7 +303,6 @@ def log_filters(func):
         print(f'Parsed the following filters:')
         for filter, val in user_filters.items():
             print(f'{filter}:\n\t{val}')
-
 
         print('\n\n')
         return func(*args)
