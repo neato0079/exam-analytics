@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')  # Use a non-GUI backend for server use
 import re
 import json
-from django.http import JsonResponse, HttpRequest
+from django.http import JsonResponse, HttpRequest, QueryDict
 from datetime import datetime, time
 from pathlib import Path
 import os
@@ -277,3 +277,34 @@ def get_user(request):
     except (Session.DoesNotExist, User.DoesNotExist):
         user = None
         return user
+    
+def log_func(func):
+    def wrapper(*args, **kwargs):
+        print('\n\n')
+        print(f'Calling function: {func.__name__}. . . ')
+        print(f'The arguments you passed are:\n\n{kwargs}')
+        for key in kwargs.keys():
+            print(key)
+
+        print('\n\n')
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def log_filters(func):
+    def wrapper(*args):
+        user_filters:QueryDict = args[1]
+        user_filters:dict = user_filters.dict() # query obj is immutable. convert to dict
+        del user_filters['csrfmiddlewaretoken'] # we don't want to see the CSRF token in the logs
+
+        print('\n\n')
+        print(f'Calling function: {func.__qualname__} . . . ')
+        print('\n\n')
+        print(f'Parsed the following filters:')
+        for filter, val in user_filters.items():
+            print(f'{filter}:\n\t{val}')
+
+
+        print('\n\n')
+        return func(*args)
+    return wrapper
