@@ -301,13 +301,13 @@ def mkdf():
 
 def create_price_tbl(base_price:int) -> pd.DataFrame:
     c = ['Headshot', 'Bust', 'Half Figure', 'Full Figure']
-    r = ['Sketch', 'Lineart', 'B&W Flat','B&W Two-Tone', 'Flat Color', 'Two-Tone Color']
+    r = ['Sketch', 'Line Art', 'B&W Flat','B&W Two-Tone', 'Flat Color', 'Two-Tone Color']
     df = pd.DataFrame(index=r, columns=c)
     df.loc['Sketch', 'Headshot'] = base_price
     # df.reset_index(names='Render')
     return df
 
-def inc_drw_size(df:pd.DataFrame, incr, i=0):
+def init_drw_size_prc(df:pd.DataFrame, incr, i=0):
     inc_i = 0   
     prev = df.iat[i,0]
     for col in df.columns:
@@ -317,7 +317,7 @@ def inc_drw_size(df:pd.DataFrame, incr, i=0):
 
     return df
 
-def init_detail(df:pd.DataFrame, incr:list[int], col:str):
+def incr_detail(df:pd.DataFrame, incr:list[int], col:str):
 
     inc_i = 0
     
@@ -345,12 +345,12 @@ def init_detail(df:pd.DataFrame, incr:list[int], col:str):
 
     
 size_incr = [1, 1.25,1.25,1.5]
-detail_incr = [1, 1.75, 1.25, 1.33, 1.5, 1.5]
+detail_incr = [1, 1.75, 1.25, 1.33, 1.33, 1.33]
 
 # initalize price sheet with base price
 df = create_price_tbl(30)
 # init increase prices by draw size
-inc_drw_size(df, size_incr)
+init_drw_size_prc(df, size_incr)
 
 # # init prices by detail
 # init_detail(df, detail_incr)
@@ -359,5 +359,5 @@ inc_drw_size(df, size_incr)
 # increase detail prices using illustration sketch size as base
 for col in df.columns:
     print(col)
-    init_detail(df, detail_incr, col)
+    incr_detail(df, detail_incr, col)
 print(df)
