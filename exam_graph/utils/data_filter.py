@@ -1,6 +1,7 @@
 from exam_graph import filters
 from django.http import JsonResponse, HttpRequest, QueryDict
 from datetime import datetime
+from exam_graph import helper
 
 class FilterRequest:
     """
@@ -25,6 +26,7 @@ class FilterRequest:
         self.parse_POST(self.post_form)
     
     # this takes a request.POST from HttpRequest 
+    @helper.log_filters
     def parse_POST(self, post_form:QueryDict) -> None:
             start_str = post_form.get('start_date')
             end_str = post_form.get('end_date')
@@ -38,9 +40,6 @@ class FilterRequest:
             self.shift_view: str | None = post_form['shift_view'] if 'shift_view' in post_form else None
             self.date_range_string:list[str | None] = [start_str, end_str]
 
-            log_form = post_form.dict() # query obj is immutable. convert to dict
-            del log_form['csrfmiddlewaretoken'] # we don't want to see the CSRF token in the logs
-            print(f'Parsed filter form request{log_form}')
     
     def top_lvl_filters(self):
         return {
