@@ -21,6 +21,10 @@ def validate_dtypes(df:pd.DataFrame) -> None:
     print(df.dtypes,end='\n\n')
 
 def validate_df(df:pd.DataFrame) -> None:
+    '''
+    Checks if column names match default values
+    Prints df data types. Doesn't validate anything here yet 
+    '''
     print(f'Validating {df.name} data...', end='\n\n')
     try:
         validators = [
