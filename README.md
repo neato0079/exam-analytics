@@ -8,6 +8,20 @@ Analyzes a user uploaded radiology exam dataset and generates graphs on user-set
 - Unit testing done with `pytest`
 - Currently running on `Render` cloud service
 
+User Upload Workflow:
+- User selects a file to upload
+- On file upload a view is called which validates the file and then saves the file to the server disk as a pickle.
+- A user config JSON file is created to save the name of the pickle. This config file holds the names of all the data sets uploaded by the user
+
+Load Data Workflow:
+- A data set drop down selection is populated by the aforementioned user config file 
+- When the user selects a data set, a view is called to set the selected data set on the server as the "current loaded dataset"
+- This just tells the app what file on disk to use for the user's filter and analysis requests
+
+Filter and Analysis Workflow:
+- A client side filter request created off of a form filled out by the user
+- The server saves this filter and applies it to the user's current loaded dataset
+
 ## Progress . . .
 - Allow user to upload and store `.csv` to app
 - Uploaded `.csv` is parsed and formatted to a `pd.Dataframe` and then stored to the server disk as a `.pickle`
