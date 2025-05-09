@@ -5,25 +5,29 @@ path to this readme: `exam_graph/docs/dev/readme.md`
 Run server with python `manage.py runserver`
 - Make sure you are in the correct python environment. You can check this by running the command `which python` in the terminal
 
+The html template syntax `{{ django_var|safe }}` is an "injection into the djagno server generated html. In this case `safe` tells python to interpret any `html` syntax as such rather than interpreting them as string representations. So if `django_var` = `<h1>Some Heading</h1>` on the serverside, once the `HTML` is generated, the webpage will just display `Some Heading` without the `h1` tags being visible to the user. The `h1` tags would actually just be `HTML` tags. This is because of the `safe` keyword in the template. Without that keyword, the `h1` tags would be displayed on the webpage as strings.
+
 TESTS
 -----
 code snippett:
 ```
-from django.urls import path, include
-from . import views
+# Create your views here.
+def documentation(request: HttpRequest, doc_path: str):
+    # Construct the full path safely
+    md_path = Path(settings.BASE_DIR) / 'exam_graph' /'docs' / doc_path
+    # md_path = "/Users/mattbot/dev/exam-analytics/exam_graph/docs/dev/readme.md"
+    # md_path = "/Users/mattbot/dev/exam-analytics/docs/dev/readme.md"
 
-urlpatterns = [
-    path('help/', views.help, name='help'),
-    path('', views.home, name='home'),
-    path('result/', views.filter_submission_handler, name='test'),
-    path('form/', views.form_page, name='formyayay'),
-    path('upload/', views.upload_csv, name='mock'),
-    path('load_data/', views.load_data, name='load_data'),
-    path('login/', views.login_page, name='login_page'),
-    path('app_login/', views.app_login, name='login'),    
-    path('logout/', views.logout, name='logout'),
-    path('wholog/', views.wholog, name='wholog'),
-    path("user/", include("django.contrib.auth.urls")),
-    path("docs/<path:doc_path>/", views.documentation, name='documentation')
-]
+    try:
+        with open(md_path, 'r', encoding='utf-8') as f:
+            markdown_text = f.read()
+    except FileNotFoundError:
+        return HttpResponseNotFound(f'Documentation file at {md_path} not found.')
+
+    html = markdown2.markdown(markdown_text, extras={"fenced-code-blocks":None, "tables":None,"highlightjs-lang": "python"})
+
+    return render(request, 'documentation.html', {
+        'doc_name': os.path.basename(md_path),
+        'html_content': html
+    })
 ```
