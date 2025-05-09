@@ -22,6 +22,9 @@ from exam_graph.utils.exam_data_set import ExamDataFrame
 from exam_graph.utils.global_paths import *
 
 # Create your views here.
+def documentation(request:HttpRequest):
+    return render(request, 'documentation.html')
+
 def home(request:HttpRequest):
 
     if DATASET_DIR.exists():
