@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse, HttpRequest
+from django.http import HttpResponse, JsonResponse, HttpRequest, HttpResponseNotFound
+from django.conf import settings
 import pandas as pd
 from . import helper
 from . import filters
@@ -20,10 +21,28 @@ from exam_graph.utils.data_filter import FilterRequest
 from exam_graph.utils.summary import DataSummary
 from exam_graph.utils.exam_data_set import ExamDataFrame
 from exam_graph.utils.global_paths import *
+import os
+import markdown2
 
 # Create your views here.
-def documentation(request:HttpRequest):
-    return render(request, 'documentation.html')
+def documentation(request: HttpRequest, doc_path: str):
+    # Construct the full path safely
+    md_path = Path(settings.BASE_DIR) / 'exam_graph' /'docs' / doc_path
+    # md_path = "/Users/mattbot/dev/exam-analytics/exam_graph/docs/dev/readme.md"
+    # md_path = "/Users/mattbot/dev/exam-analytics/docs/dev/readme.md"
+
+    try:
+        with open(md_path, 'r', encoding='utf-8') as f:
+            markdown_text = f.read()
+    except FileNotFoundError:
+        return HttpResponseNotFound(f'Documentation file at {md_path} not found.')
+
+    html = markdown2.markdown(markdown_text, extras=["fenced-code-blocks", "tables"])
+
+    return render(request, 'documentation.html', {
+        'doc_name': os.path.basename(md_path),
+        'html_content': html
+    })
 
 def home(request:HttpRequest):
 
