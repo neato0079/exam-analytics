@@ -1,24 +1,15 @@
-{% load static %}
-
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radiology Analytics</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Markdown Demo</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        pre { background: #f5f5f5; padding: 1rem; }
+        code { font-family: monospace; }
+    </style>
 </head>
-
 <body>
-    <div class="main">
-      For Devs:
-      Locally run with "python manage.py runserver"
-    </div>
-
-
-    <script src="../static/scripts/home_script.js"></script>
-
+    <h1>{{ doc_name }}</h1>
+    <div>{{ html_content|safe }}</div>
 </body>
-
 </html>
