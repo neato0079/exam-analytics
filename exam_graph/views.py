@@ -37,7 +37,7 @@ def documentation(request: HttpRequest, doc_path: str):
     except FileNotFoundError:
         return HttpResponseNotFound(f'Documentation file at {md_path} not found.')
 
-    html = markdown2.markdown(markdown_text, extras=["fenced-code-blocks", "tables"])
+    html = markdown2.markdown(markdown_text, extras={"fenced-code-blocks":None, "tables":None,"highlightjs-lang": "python"})
 
     return render(request, 'documentation.html', {
         'doc_name': os.path.basename(md_path),
