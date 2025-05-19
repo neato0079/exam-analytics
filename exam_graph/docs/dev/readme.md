@@ -7,6 +7,25 @@ Run server with `python manage.py runserver`
 
 The html template syntax `{{ django_var|safe }}` is an "injection into the djagno server generated html. In this case `safe` tells python to interpret any `html` syntax as such rather than interpreting them as string representations. So if `django_var` = `<h1>Some Heading</h1>` on the serverside, once the `HTML` is generated, the webpage will just display `Some Heading` without the `h1` tags being visible to the user. The `h1` tags would actually just be `HTML` tags. This is because of the `safe` keyword in the template. Without that keyword, the `h1` tags would be displayed on the webpage as strings.
 
+# App Features:
+- User can upload exam data files (only `.csv` files for now)
+- Dataset saved as `.pickle` on app server file system
+- User can select different uploaded datasets to perform analyses on
+- Uses Pandas to analyze data
+- Uses Matplotlib to plot data
+- User can login (no functionality yet though)
+
+# App Enviroment:
+- Django server
+- Hosted on `Render`
+- Serves client requests on `gunicorn` webserver
+- CI/CD via `GitHub Actions`
+
+# TODO:
+- Refactor to OOP
+    - Try to make things more modular to make future refactors easier
+- Move to AWS
+
 TESTS
 -----
 code snippett:
