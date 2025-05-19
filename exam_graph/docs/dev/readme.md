@@ -26,6 +26,14 @@ The html template syntax `{{ django_var|safe }}` is an "injection into the djagn
     - Try to make things more modular to make future refactors easier
 - Move to AWS
 
+# How Django Runs the App
+- Client sends a request to the Django server running on a gunicorn web server
+- Django sees the request URL
+- On the Django server, this URL is mapped to a view
+- The view is called and the server performs whatever logic is in that view
+- The view then sends a response out to the client
+- This response is usually a HTTP response that generates some HTML to be displayed on the client's browser
+
 TESTS
 -----
 code snippett:
