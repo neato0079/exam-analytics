@@ -34,6 +34,28 @@ The html template syntax `{{ django_var|safe }}` is an "injection into the djagn
 - The `view` then sends a response out to the client
 - This response is usually a HTTP response that generates some HTML to be displayed on the client's browser
 
+Upload Functionality
+--------------------
+client POST request > Django server saves user file to disk
+- formats data
+    - converts data to df
+    - apply format checks to df
+
+- adds dataset name to user profile via `helper.build_usr_config()`
+- saves as pickle onto disk
+
+FE:
+On the homepage, a file path is entered into an `HTML` form. This form's action is set to send a `POST` request to the `upload/` view with the user's selected file in the body of the request.
+
+BE:
+URL path: path('upload/', views.upload_csv, name='mock'),
+view functions: upload_csv()
+
+Data Filter Functionality
+------------------------- 
+
+
+
 TESTS
 -----
 code snippett:

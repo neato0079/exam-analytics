@@ -46,9 +46,9 @@ def documentation(request: HttpRequest, doc_path: str):
 
 def home(request:HttpRequest):
 
+    # create list of dataset names to display on home dropdown menu
     if DATASET_DIR.exists():
         files = [f.stem for f in DATASET_DIR.iterdir() if f.is_file()]  # List only files without suffix
-
     else:
         files = ['no datasets uploaded']
 
@@ -69,6 +69,11 @@ def test(request:HttpRequest):
 
 # upload csv file to server disk as pickle
 def upload_csv(request:HttpRequest):
+    '''
+    Only accepts .csv files for now
+    Checks if data is able to be formatted before saving to disk
+    Uses the format_df() function in the helper module
+    '''
 
     # convert upload file to df
     try:
