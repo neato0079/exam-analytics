@@ -54,7 +54,36 @@ view functions: upload_csv()
 Data Filter Functionality
 ------------------------- 
 
+### Setting Chosen Dataset:
+On the homepage, when the user clicks on "Load Data", a `GET` request is sent to the url `load_data/` which is  called from the the urls module at `exam_graph/urls.py`. This `GET` request contains a file string of the file for the chosen dataset. This url calls the `load_data()` function in the views module `exam_graph/views.py`. 
 
+`load_data()` builds a filepath from the file string from the `GET` request. This filepath points to the location of the dataset in `pickle` format stored on the app server. Then the userconfig is updated to set the selected dataset. This userconfig is a `JSON` file on the app server. Here is an example of a userconfig:
+
+```
+{
+    "user datasets": [
+        "big_mock_one_day",
+        "mock_exam_data_v3",
+        "mock_exam_data_v3(1)"
+    ],
+    "selected_dataset": "mock_exam_data_v3(1).pickle"
+}
+```
+Finally, `load_data()` will render `form.html`
+
+### Applying User Selected Filters to Dataset
+
+At the `form.html` page, the user can fill out an `html` form that sends a `POST` request to the `result/` url which calls the view `filter_submission_handler()`. Example of the body of this `POST` request:
+
+```
+csrfmiddlewaretoken=1234asdf
+
+start_date=2024-07-10&
+
+end_date=2024-09-14&User_selected_metric=totals&
+
+User_selected_modality=XR&period=week&shift_view=True
+```
 
 TESTS
 -----
