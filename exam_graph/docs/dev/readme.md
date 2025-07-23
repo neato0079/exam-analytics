@@ -3,7 +3,7 @@ Notes
 path to this readme: `exam_graph/docs/dev/readme.md`
 
 Run server with `python manage.py runserver`
-- Make sure you are in the correct python environment otherwise `python manage.py runserver` won't work. You can check this by running the command `which python` in the terminal
+- Make sure you are in the correct python environment otherwise `python manage.py runserver` won't work. You can check this by running the command `which python` in the terminal. If you're in the wrong environemt input `deactivate` into the terminal. Then to `source env/bin/activate`
 
 The html template syntax `{{ django_var|safe }}` is an "injection into the djagno server generated html. In this case `safe` tells python to interpret any `html` syntax as such rather than interpreting them as string representations. So if `django_var` = `<h1>Some Heading</h1>` on the serverside, once the `HTML` is generated, the webpage will just display `Some Heading` without the `h1` tags being visible to the user. The `h1` tags would actually just be `HTML` tags. This is because of the `safe` keyword in the template. Without that keyword, the `h1` tags would be displayed on the webpage as strings.
 
@@ -36,10 +36,10 @@ The html template syntax `{{ django_var|safe }}` is an "injection into the djagn
 
 Upload Functionality
 --------------------
-client POST request > Django server saves user file to disk
+User uploads local dataßset via client POST request > Django server processes the data with the following actions:
 - formats data
-    - converts data to df
-    - apply format checks to df
+    - data is converted to a pandas `df`
+    - apply format checks to `df`
 
 - adds dataset name to user profile via `helper.build_usr_config()`
 - saves as pickle onto disk
