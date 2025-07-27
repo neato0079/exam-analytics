@@ -69,7 +69,7 @@ On the homepage, when the user clicks on "Load Data", a `GET` request is sent to
     "selected_dataset": "mock_exam_data_v3(1).pickle"
 }
 ```
-Finally, `load_data()` will render `form.html`
+Finally, `load_data()` will render `form.html` with pre filled out values taken from the user's selected dataset
 
 ### Applying User Selected Filters to Dataset
 
@@ -85,27 +85,13 @@ end_date=2024-09-14&User_selected_metric=totals&
 User_selected_modality=XR&period=week&shift_view=True
 ```
 
-TESTS
------
-code snippett:
-```
-# Create your views here.
-def documentation(request: HttpRequest, doc_path: str):
-    # Construct the full path safely
-    md_path = Path(settings.BASE_DIR) / 'exam_graph' /'docs' / doc_path
-    # md_path = "/Users/mattbot/dev/exam-analytics/exam_graph/docs/dev/readme.md"
-    # md_path = "/Users/mattbot/dev/exam-analytics/docs/dev/readme.md"
+`filter_submission_handler()` does the following:
 
-    try:
-        with open(md_path, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-    except FileNotFoundError:
-        return HttpResponseNotFound(f'Documentation file at {md_path} not found.')
+- Converts the user selected dataset to a `Pandas` Dataframe by doing the following:
+    - Find the file path to the user's selected dataset in `pickle` format by referencing the user config
+    - Takes the `pickle` file and converts it to a Dataframe
 
-    html = markdown2.markdown(markdown_text, extras={"fenced-code-blocks":None, "tables":None,"highlightjs-lang": "python"})
-
-    return render(request, 'documentation.html', {
-        'doc_name': os.path.basename(md_path),
-        'html_content': html
-    })
-```
+- Take's the form data from the `POST` request and passes that data into an instance of our `FilterRequest` class.
+- Use this form to apply relevant filters to our Dataframe using logic from our `filters` module
+- Create a summary table of the resulting data
+- Create a graph of the data
