@@ -131,7 +131,7 @@ def upload_csv(request:HttpRequest):
 
 def filter_submission_handler(request:HttpRequest):
 
-    # get requested pickel server fp and convert it to a df
+    # get selected pickel fp and convert it to a df
     pickle_fp:Path = helper.selected_pickle_fp(USER_CONFIG_FP, DATASET_DIR)
     df = helper.pickle_to_df(pickle_fp)
     print('Filtered from source:')
