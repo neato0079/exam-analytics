@@ -21,7 +21,14 @@ class ExamDataFrame:
     If a data frame is passed with 'df=', the self.df attribute is simply set to the provided data frame
     """
 
-    def __init__(self, df:pd.DataFrame=None, hl7_fields=HL7Fields(), file=None, shifts=Shifts().dict(), upload_req=None):
+    def __init__(
+            self, 
+            df:pd.DataFrame=None, 
+            hl7_fields=HL7Fields(), 
+            file=None, 
+            shifts=Shifts().dict(), 
+            upload_req=None
+            ) -> None:
         self.upload_req=upload_req
         self.file = file
         self.hl7_fields = hl7_fields

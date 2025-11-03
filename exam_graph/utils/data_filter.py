@@ -22,8 +22,7 @@ class FilterRequest:
     """
 
     def __init__(self, post_form:QueryDict):
-        self.post_form = post_form
-        self.parse_POST(self.post_form)
+        self.parse_POST(post_form)
     
     # this takes a request.POST from HttpRequest 
     @helper.log_filters

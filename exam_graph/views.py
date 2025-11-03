@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse, HttpRequest
+from django.http import HttpResponse, JsonResponse, HttpRequest, HttpResponseNotFound
+from django.conf import settings
 import pandas as pd
 from . import helper
 from . import filters
@@ -20,13 +21,34 @@ from exam_graph.utils.data_filter import FilterRequest
 from exam_graph.utils.summary import DataSummary
 from exam_graph.utils.exam_data_set import ExamDataFrame
 from exam_graph.utils.global_paths import *
+import os
+import markdown2
 
 # Create your views here.
+def documentation(request: HttpRequest, doc_path: str):
+    # Construct the full path safely
+    md_path = Path(settings.BASE_DIR) / 'exam_graph' /'docs' / doc_path
+    # md_path = "/Users/mattbot/dev/exam-analytics/exam_graph/docs/dev/readme.md"
+    # md_path = "/Users/mattbot/dev/exam-analytics/docs/dev/readme.md"
+
+    try:
+        with open(md_path, 'r', encoding='utf-8') as f:
+            markdown_text = f.read()
+    except FileNotFoundError:
+        return HttpResponseNotFound(f'Documentation file at {md_path} not found.')
+
+    html = markdown2.markdown(markdown_text, extras={"fenced-code-blocks":None, "tables":None,"highlightjs-lang": "python"})
+
+    return render(request, 'documentation.html', {
+        'doc_name': os.path.basename(md_path),
+        'html_content': html
+    })
+
 def home(request:HttpRequest):
 
+    # create list of dataset names to display on home dropdown menu
     if DATASET_DIR.exists():
         files = [f.stem for f in DATASET_DIR.iterdir() if f.is_file()]  # List only files without suffix
-
     else:
         files = ['no datasets uploaded']
 
@@ -47,6 +69,11 @@ def test(request:HttpRequest):
 
 # upload csv file to server disk as pickle
 def upload_csv(request:HttpRequest):
+    '''
+    Only accepts .csv files for now
+    Checks if data is able to be formatted before saving to disk
+    Uses the format_df() function in the helper module
+    '''
 
     # convert upload file to df
     try:
@@ -104,7 +131,7 @@ def upload_csv(request:HttpRequest):
 
 def filter_submission_handler(request:HttpRequest):
 
-    # get requested pickel server fp and convert it to a df
+    # get selected pickel fp and convert it to a df
     pickle_fp:Path = helper.selected_pickle_fp(USER_CONFIG_FP, DATASET_DIR)
     df = helper.pickle_to_df(pickle_fp)
     print('Filtered from source:')

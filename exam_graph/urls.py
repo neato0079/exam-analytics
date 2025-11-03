@@ -13,6 +13,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('wholog/', views.wholog, name='wholog'),
     path("user/", include("django.contrib.auth.urls")),
+    path("docs/<path:doc_path>/", views.documentation, name='documentation')
 ]
 # what this includes: include("django.contrib.auth.urls")
 # user/login/ [name='login']
